@@ -171,29 +171,33 @@
 </div>
 
 <div class="container mx-auto px-6 py-8">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div class="mb-4 md:mb-0">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+        <div>
             <h1 class="text-3xl font-bold text-gray-800">Client Joy Dashboard</h1>
             <p class="text-gray-600">Manage and import your contacts</p>
         </div>
         <div class="flex items-center">
-            <span class="text-sm text-gray-500 mr-4">{{ contacts|length if contacts else 0 }} contacts</span>
-            <a href="{{ url_for('download_all_contacts') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
-                <i class="fas fa-download mr-2"></i> Download All
-            </a>
-            <button id="deleteAllBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
-                <i class="fas fa-trash-alt mr-2"></i> Delete All
-            </button>
-            <button id="removeDuplicatesBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
-                <i class="fas fa-broom mr-2"></i> Remove Duplicates
-            </button>
-            <button id="addContactBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
-                <i class="fas fa-user-plus mr-2"></i> Add Contact
-            </button>
-            <button id="openModal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
-                <i class="fas fa-upload mr-2"></i> Import Contacts
-            </button>
+            <span class="text-sm text-gray-500">{{ contacts|length if contacts else 0 }} contacts</span>
         </div>
+    </div>
+    
+    <!-- Action buttons row -->
+    <div class="flex flex-wrap items-center gap-3 mb-8">
+        <a href="{{ url_for('download_all_contacts') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+            <i class="fas fa-download mr-2"></i> Download All
+        </a>
+        <button id="deleteAllBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+            <i class="fas fa-trash-alt mr-2"></i> Delete All
+        </button>
+        <button id="removeDuplicatesBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+            <i class="fas fa-broom mr-2"></i> Remove Duplicates
+        </button>
+        <button id="addContactBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+            <i class="fas fa-user-plus mr-2"></i> Add Contact
+        </button>
+        <button id="openModal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+            <i class="fas fa-upload mr-2"></i> Import Contacts
+        </button>
     </div>
 
     <!-- Alerts for feedback -->
