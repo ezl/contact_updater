@@ -610,6 +610,51 @@ def get_contact(contact_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/download_all_contacts', methods=['GET'])
+def download_all_contacts():
+    try:
+        # Get all contacts
+        contacts = Contact.query.order_by(Contact.name).all()
+        
+        if not contacts:
+            return redirect(url_for('dashboard', error_message="No contacts to download"))
+        
+        # Create a DataFrame from the contacts
+        data = []
+        for contact in contacts:
+            contact_dict = {
+                'name': contact.name,
+                'cell': contact.cell,
+                'email': contact.email,
+                'mailing_address': contact.mailing_address,
+                'notes': contact.notes,
+                'birthday': contact.birthday,
+                'facebook': contact.facebook,
+                'instagram': contact.instagram,
+                'twitter': contact.twitter
+            }
+            data.append(contact_dict)
+        
+        df = pd.DataFrame(data)
+        
+        # Create a temporary file to store the CSV
+        temp_file = os.path.join(app.config['UPLOAD_FOLDER'], 'contacts_export.csv')
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        
+        # Write the DataFrame to CSV
+        df.to_csv(temp_file, index=False)
+        
+        # Return the file as an attachment
+        return send_from_directory(
+            app.config['UPLOAD_FOLDER'],
+            'contacts_export.csv',
+            as_attachment=True,
+            download_name=f'contacts_export_{datetime.now().strftime("%Y%m%d_%H%M%S")}.csv'
+        )
+    except Exception as e:
+        error_message = f"Error downloading contacts: {str(e)}"
+        return redirect(url_for('dashboard', error_message=error_message))
+
 if __name__ == '__main__':
     # Make sure uploads directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
