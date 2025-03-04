@@ -10,13 +10,14 @@
     @apply border-indigo-500 bg-indigo-50;
 }
 .contact-row {
-    @apply cursor-pointer transition duration-200;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease;
 }
 .contact-row:hover {
-    @apply bg-gray-50;
+    background-color: #EEF2FF !important; /* indigo-50 equivalent */
 }
 .contact-row.selected {
-    @apply bg-indigo-50;
+    background-color: #EEF2FF !important; /* indigo-50 equivalent */
 }
 .modal-field {
     @apply mb-4;
@@ -81,7 +82,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium bg-indigo-100 text-indigo-800 uppercase tracking-wider">Cell</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cell</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mailing Address</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
@@ -103,8 +104,8 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap bg-indigo-50">
-                                    <div class="text-sm font-medium text-indigo-800">{{ contact.cell }}</div>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ contact.cell }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ contact.email }}</div>
