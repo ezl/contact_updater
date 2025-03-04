@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Contact Updater{% endblock %}</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        {% block styles %}
+        /* Shared styles across pages */
+        {% endblock %}
+    </style>
+</head>
+<body class="font-sans bg-gray-50 text-gray-800">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-indigo-600 to-blue-500 shadow-md">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <a class="text-white font-bold text-xl" href="/">Contact Updater</a>
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="/" class="text-white {% if request.path == '/' %}bg-indigo-700{% else %}opacity-80 hover:opacity-100{% endif %} px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-home mr-1"></i> Home
+                    </a>
+                    <a href="/dashboard" class="{% if request.path == '/dashboard' %}bg-white text-indigo-600{% else %}text-white opacity-80 hover:opacity-100{% endif %} px-3 py-2 rounded-md text-sm font-medium">
+                        <i class="fas fa-th-large mr-1"></i> Dashboard
+                    </a>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button class="mobile-menu-button focus:outline-none text-white">
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile menu, hidden by default -->
+            <div class="hidden md:hidden mobile-menu mt-2 py-2">
+                <a href="/" class="block text-white {% if request.path == '/' %}bg-indigo-700{% else %}opacity-80 hover:opacity-100{% endif %} px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-home mr-1"></i> Home
+                </a>
+                <a href="/dashboard" class="block text-white {% if request.path == '/dashboard' %}bg-indigo-700{% else %}opacity-80 hover:opacity-100{% endif %} px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-th-large mr-1"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Shared Scripts -->
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-button').addEventListener('click', function() {
+            document.querySelector('.mobile-menu').classList.toggle('hidden');
+        });
+    </script>
+    
+    <!-- Page Specific Scripts -->
+    {% block scripts %}{% endblock %}
+</body>
+</html> 
