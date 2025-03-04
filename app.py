@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key_here'  # Required for flashing messages
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'csv'}
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contacts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite3.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy
@@ -30,11 +30,8 @@ class Contact(db.Model):
     dateAdded = db.Column(db.DateTime, default=datetime.utcnow)
     lastModified = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-# Create tables
-with app.app_context():
-    # Drop the existing table to recreate with the new schema
-    db.drop_all()
-    db.create_all()
+# Database setup is now handled by separate scripts
+# See init_db.py to create tables and reset_db.py to reset the database
 
 def allowed_file(filename):
     return '.' in filename and \
