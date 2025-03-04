@@ -1,0 +1,4 @@
+name,cell_number,email,mailing_address,birthday,notes
+John Doe,555-123-4567,john.doe@example.com,"123 Main St, Anytown, CA 12345",1985-06-15,College friend
+Jane Smith,555-987-6543,jane.smith@example.com,"456 Oak Ave, Someville, NY 54321",1990-03-22,Work colleague
+Michael Johnson,555-567-8901,michael@example.com,"789 Pine Rd, Otherburg, TX 67890",1978-11-30,High school friend 
