@@ -49,8 +49,8 @@ def index():
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
-    success_message = None
-    error_message = None
+    success_message = request.args.get('success_message')
+    error_message = request.args.get('error_message')
     
     # Get all contacts
     try:
@@ -189,6 +189,56 @@ def delete_contact(id):
 @app.route('/download/sample_csv')
 def download_sample():
     return send_from_directory('static', 'sample_contacts.csv')
+
+@app.route('/remove_duplicates', methods=['POST'])
+def remove_duplicates():
+    try:
+        # Get all contacts
+        all_contacts = Contact.query.all()
+        
+        # Create a dictionary to track unique contacts by email and cell
+        unique_emails = {}
+        unique_cells = {}
+        duplicates_removed = 0
+        
+        for contact in all_contacts:
+            # Check for email duplicates (if email exists)
+            if contact.email and contact.email.strip():
+                email_key = contact.email.lower().strip()
+                if email_key in unique_emails:
+                    # This is a duplicate, mark for deletion
+                    db.session.delete(contact)
+                    duplicates_removed += 1
+                    continue
+                else:
+                    unique_emails[email_key] = contact.id
+            
+            # If we get here and the contact has a cell number, check for cell duplicates
+            if contact.cell and contact.cell.strip():
+                # Normalize the cell number by removing non-digits
+                cell_key = ''.join(filter(str.isdigit, contact.cell))
+                if cell_key and cell_key in unique_cells:
+                    # This is a duplicate, mark for deletion
+                    db.session.delete(contact)
+                    duplicates_removed += 1
+                    continue
+                else:
+                    unique_cells[cell_key] = contact.id
+        
+        # Commit the changes to the database
+        db.session.commit()
+        
+        if duplicates_removed > 0:
+            success_message = f"Successfully removed {duplicates_removed} duplicate contact(s)."
+        else:
+            success_message = "No duplicate contacts were found."
+            
+        return redirect(url_for('dashboard', success_message=success_message))
+    
+    except Exception as e:
+        db.session.rollback()
+        error_message = f"Error removing duplicates: {str(e)}"
+        return redirect(url_for('dashboard', error_message=error_message))
 
 # Custom filter for formatting dates in templates
 @app.template_filter('date')

@@ -48,6 +48,9 @@
         </div>
         <div class="flex items-center">
             <span class="text-sm text-gray-500 mr-4">{{ contacts|length if contacts else 0 }} contacts</span>
+            <button id="removeDuplicatesBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
+                <i class="fas fa-broom mr-2"></i> Remove Duplicates
+            </button>
             <button id="openModal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
                 <i class="fas fa-upload mr-2"></i> Import Contacts
             </button>
@@ -178,6 +181,33 @@
                         {% endif %}
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remove Duplicates Confirmation Modal -->
+    <div id="removeDuplicatesModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-black opacity-50"></div>
+            <div class="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Remove Duplicate Contacts</h3>
+                    <button id="closeRemoveDuplicatesModal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="text-gray-600 mb-4">This will remove duplicate contacts from your database. Duplicates are identified by matching email addresses or phone numbers.</p>
+                    <p class="text-amber-600 font-medium">This action cannot be undone. Are you sure you want to continue?</p>
+                </div>
+
+                <form action="{{ url_for('remove_duplicates') }}" method="post" id="removeDuplicatesForm">
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="cancelRemoveDuplicates" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition duration-150">Remove Duplicates</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -333,6 +363,12 @@
     const selectedFileName = document.getElementById('selectedFileName');
     const contactSearch = document.getElementById('contactSearch');
     const contactRows = document.querySelectorAll('.contact-row');
+    
+    // Remove duplicates modal
+    const removeDuplicatesModal = document.getElementById('removeDuplicatesModal');
+    const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
+    const closeRemoveDuplicatesModal = document.getElementById('closeRemoveDuplicatesModal');
+    const cancelRemoveDuplicates = document.getElementById('cancelRemoveDuplicates');
     
     // Sorting functionality
     const sortableHeaders = document.querySelectorAll('th[data-sort]');
@@ -744,6 +780,31 @@
             if (!contactDetailModal.classList.contains('hidden')) {
                 closeContactDetailModal();
             }
+            
+            // Close remove duplicates modal if it's open
+            if (!removeDuplicatesModal.classList.contains('hidden')) {
+                closeRemoveDuplicatesModalFn();
+            }
+        }
+    });
+
+    // Open remove duplicates modal
+    removeDuplicatesBtn.addEventListener('click', () => {
+        removeDuplicatesModal.classList.remove('hidden');
+    });
+    
+    // Close remove duplicates modal functions
+    const closeRemoveDuplicatesModalFn = () => {
+        removeDuplicatesModal.classList.add('hidden');
+    };
+    
+    closeRemoveDuplicatesModal.addEventListener('click', closeRemoveDuplicatesModalFn);
+    cancelRemoveDuplicates.addEventListener('click', closeRemoveDuplicatesModalFn);
+    
+    // Click outside to close remove duplicates modal
+    removeDuplicatesModal.addEventListener('click', (e) => {
+        if (e.target === removeDuplicatesModal) {
+            closeRemoveDuplicatesModalFn();
         }
     });
 </script>
