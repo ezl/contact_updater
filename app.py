@@ -93,23 +93,24 @@ def dashboard():
                     
                     # Map CSV columns to database fields
                     field_mapping = {
-                        'First Name': 'firstName',
-                        'Last Name': 'lastName',
-                        'Email': 'email',
-                        'Phone': 'phone',
-                        'Address': 'address',
-                        'City': 'city',
-                        'State': 'state',
-                        'Zip': 'zipCode',
-                        'Country': 'country',
-                        'Company': 'company',
-                        'Job Title': 'jobTitle',
-                        'Notes': 'notes'
+                        'name': 'firstName',  # Assuming name contains first name or full name
+                        'cell_number': 'phone',
+                        'email': 'email',
+                        'mailing_address': 'address',
+                        'notes': 'notes'
                     }
+                    
+                    # Special handling for name field - split into first and last name if possible
+                    if 'name' in row and not pd.isna(row['name']):
+                        name_parts = row['name'].split(' ', 1)
+                        if len(name_parts) >= 1:
+                            contact_data['firstName'] = name_parts[0]
+                        if len(name_parts) >= 2:
+                            contact_data['lastName'] = name_parts[1]
                     
                     # Process each field if it exists in the CSV
                     for csv_field, db_field in field_mapping.items():
-                        if csv_field in row and not pd.isna(row[csv_field]):
+                        if csv_field != 'name' and csv_field in row and not pd.isna(row[csv_field]):
                             contact_data[db_field] = str(row[csv_field])
                     
                     # Create the contact record
