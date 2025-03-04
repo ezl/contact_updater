@@ -140,7 +140,7 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                                    <div class="text-sm text-gray-900">N/A</div>
+                                    <div class="text-sm text-gray-900">{{ contact.birthday if contact.birthday else 'N/A' }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
                                     <div class="text-sm text-gray-900">{{ contact.notes }}</div>
@@ -248,7 +248,43 @@
                 
                 <!-- Reserved space for future additional fields -->
                 <div id="additionalFields" class="mt-4">
-                    <!-- Additional fields will be added here in the future -->
+                    <h4 class="text-lg font-medium text-gray-800 mb-4">Additional Information</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="modal-field">
+                            <label class="modal-label">Birthday</label>
+                            <div id="detailBirthday" class="modal-value"></div>
+                        </div>
+                        <div class="modal-field">
+                            <label class="modal-label">Email Last Updated</label>
+                            <div id="detailEmailUpdated" class="modal-value"></div>
+                        </div>
+                        <div class="modal-field">
+                            <label class="modal-label">Cell Last Updated</label>
+                            <div id="detailCellUpdated" class="modal-value"></div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg font-medium text-gray-800 mb-4">Social Media</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="modal-field">
+                            <label class="modal-label">
+                                <i class="fab fa-facebook text-blue-600 mr-1"></i> Facebook
+                            </label>
+                            <div id="detailFacebook" class="modal-value"></div>
+                        </div>
+                        <div class="modal-field">
+                            <label class="modal-label">
+                                <i class="fab fa-instagram text-pink-600 mr-1"></i> Instagram
+                            </label>
+                            <div id="detailInstagram" class="modal-value"></div>
+                        </div>
+                        <div class="modal-field">
+                            <label class="modal-label">
+                                <i class="fab fa-twitter text-blue-400 mr-1"></i> Twitter
+                            </label>
+                            <div id="detailTwitter" class="modal-value"></div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="flex justify-end mt-6">
@@ -427,7 +463,13 @@
             notes: notesCell ? notesCell.textContent.trim() : '',
             // Keep mailing_address in the data model for the modal
             mailing_address: '',
-            dateAdded: ''
+            dateAdded: '',
+            // Add new fields
+            email_updated: '',
+            cell_updated: '',
+            facebook: '',
+            instagram: '',
+            twitter: ''
         };
     });
     
@@ -469,6 +511,33 @@
                 document.getElementById('detailAddress').textContent = contact.mailing_address || 'N/A';
                 document.getElementById('detailNotes').textContent = contact.notes || 'N/A';
                 document.getElementById('detailDateAdded').textContent = contact.dateAdded;
+                
+                // Populate new fields
+                document.getElementById('detailBirthday').textContent = contact.birthday || 'N/A';
+                document.getElementById('detailEmailUpdated').textContent = contact.email_updated || 'N/A';
+                document.getElementById('detailCellUpdated').textContent = contact.cell_updated || 'N/A';
+                
+                // Make social media links clickable
+                const detailFacebook = document.getElementById('detailFacebook');
+                if (contact.facebook && contact.facebook !== 'N/A') {
+                    detailFacebook.innerHTML = `<a href="${contact.facebook}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.facebook}</a>`;
+                } else {
+                    detailFacebook.textContent = 'N/A';
+                }
+                
+                const detailInstagram = document.getElementById('detailInstagram');
+                if (contact.instagram && contact.instagram !== 'N/A') {
+                    detailInstagram.innerHTML = `<a href="${contact.instagram}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.instagram}</a>`;
+                } else {
+                    detailInstagram.textContent = 'N/A';
+                }
+                
+                const detailTwitter = document.getElementById('detailTwitter');
+                if (contact.twitter && contact.twitter !== 'N/A') {
+                    detailTwitter.innerHTML = `<a href="${contact.twitter}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.twitter}</a>`;
+                } else {
+                    detailTwitter.textContent = 'N/A';
+                }
                 
                 // Update the delete form action with the correct contact ID
                 const deleteForm = document.querySelector('#contactDetailModal form');

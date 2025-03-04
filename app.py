@@ -27,6 +27,12 @@ class Contact(db.Model):
     email = db.Column(db.String(120))
     mailing_address = db.Column(db.String(300))
     notes = db.Column(db.Text)
+    birthday = db.Column(db.String(20))
+    email_updated = db.Column(db.DateTime, nullable=True)
+    cell_updated = db.Column(db.DateTime, nullable=True)
+    facebook = db.Column(db.String(200), nullable=True)
+    instagram = db.Column(db.String(200), nullable=True)
+    twitter = db.Column(db.String(200), nullable=True)
     dateAdded = db.Column(db.DateTime, default=datetime.utcnow)
     lastModified = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -94,14 +100,29 @@ def dashboard():
                         'cell': 'cell',
                         'email': 'email',
                         'mailing_address': 'mailing_address',
-                        'notes': 'notes'
+                        'notes': 'notes',
+                        'birthday': 'birthday',
+                        'email_updated': 'email_updated',
+                        'cell_updated': 'cell_updated',
+                        'facebook': 'facebook',
+                        'instagram': 'instagram',
+                        'twitter': 'twitter'
                     }
                     
                     # Process each field if it exists in the CSV
                     for csv_field, db_field in field_mapping.items():
                         if csv_field in row and not pd.isna(row[csv_field]):
-                            contact_data[db_field] = str(row[csv_field])
-                            print(f"Importing {csv_field}: {row[csv_field]}")
+                            # Handle date fields
+                            if csv_field in ['email_updated', 'cell_updated'] and row[csv_field]:
+                                try:
+                                    # Try to parse the date string
+                                    contact_data[db_field] = datetime.strptime(str(row[csv_field]), '%Y-%m-%d')
+                                except ValueError:
+                                    # If parsing fails, leave as None
+                                    pass
+                            else:
+                                contact_data[db_field] = str(row[csv_field])
+                                print(f"Importing {csv_field}: {row[csv_field]}")
                     
                     # Create the contact record
                     contact = Contact(**contact_data)

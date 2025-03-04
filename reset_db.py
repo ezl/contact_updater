@@ -5,6 +5,10 @@ Run this script to completely reset the database.
 """
 from app import app, db
 import os
+import sys
+
+# Check for --auto flag for non-interactive mode
+auto_mode = "--auto" in sys.argv
 
 # Flask-SQLAlchemy stores the database in the instance folder by default
 INSTANCE_DIR = 'instance'
@@ -12,8 +16,13 @@ DB_FILE = os.path.join(INSTANCE_DIR, 'sqlite3.db')
 DB_ABSOLUTE_PATH = os.path.abspath(DB_FILE)
 
 print(f"Database file: {DB_ABSOLUTE_PATH}")
-print("WARNING: This will delete all contacts data in the database!")
-confirmation = input("Type 'YES' to confirm: ")
+
+if not auto_mode:
+    print("WARNING: This will delete all contacts data in the database!")
+    confirmation = input("Type 'YES' to confirm: ")
+else:
+    # Auto mode bypasses confirmation
+    confirmation = "YES"
 
 if confirmation == "YES":
     with app.app_context():

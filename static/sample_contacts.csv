@@ -1,4 +1,7 @@
-name,cell,email,mailing_address,notes
-John Doe,(555) 123-4567,john.doe@example.com,"123 Main St, Anytown, CA 12345",College friend
-Jane Smith,(555) 987-6543,jane.smith@example.com,"456 Oak Ave, Someville, NY 54321",Work colleague
-Michael Johnson,(555) 567-8901,michael@example.com,"789 Pine Rd, Otherburg, TX 67890",High school friend 
+name,cell,email,mailing_address,notes,birthday,email_updated,cell_updated,facebook,instagram,twitter
+John Doe,(555) 123-4567,john.doe@example.com,"123 Main St, Anytown, CA 12345",College friend,1985-05-15,2023-12-01,2024-01-15,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
+Jane Smith,(555) 987-6543,jane.smith@example.com,"456 Oak Ave, Someville, NY 54321",Work colleague,1990-07-22,2024-02-10,2024-02-10,https://facebook.com/janesmith,https://instagram.com/janesmith,
+Michael Johnson,(555) 567-8901,michael@example.com,"789 Pine Rd, Otherburg, TX 67890",High school friend,1982-11-30,2023-10-05,,https://facebook.com/michaelj,,https://twitter.com/michaelj
+Sarah Williams,(555) 234-5678,sarah.w@example.com,"101 Maple Dr, Westcity, WA 98765",Gym buddy,1988-03-18,,,,,
+Robert Brown,(555) 345-6789,robert.brown@example.com,"202 Elm St, Eastville, FL 34567",Client,1975-09-12,2024-01-20,2023-11-15,,https://instagram.com/rbrown,https://twitter.com/rbrown
+Emily Davis,(555) 456-7890,emily.davis@example.com,"303 Cedar Ln, Northtown, IL 45678",Book club member,1992-12-05,2023-09-30,2024-02-28,https://facebook.com/emilyd,https://instagram.com/emilyd, 
