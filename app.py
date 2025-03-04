@@ -579,6 +579,37 @@ def format_birthday(value):
                 return value
     return 'N/A'
 
+@app.route('/get_contact/<int:contact_id>', methods=['GET'])
+def get_contact(contact_id):
+    try:
+        contact = Contact.query.get_or_404(contact_id)
+        
+        # Format dates for JSON serialization
+        date_added = contact.dateAdded.strftime('%Y-%m-%d %H:%M:%S') if contact.dateAdded else None
+        email_updated = contact.email_updated.strftime('%Y-%m-%d %H:%M:%S') if contact.email_updated else None
+        cell_updated = contact.cell_updated.strftime('%Y-%m-%d %H:%M:%S') if contact.cell_updated else None
+        
+        # Create a dictionary with all contact fields
+        contact_data = {
+            'id': contact.id,
+            'name': contact.name,
+            'cell': contact.cell,
+            'email': contact.email,
+            'mailing_address': contact.mailing_address,
+            'notes': contact.notes,
+            'birthday': contact.birthday,
+            'dateAdded': date_added,
+            'email_updated': email_updated,
+            'cell_updated': cell_updated,
+            'facebook': contact.facebook,
+            'instagram': contact.instagram,
+            'twitter': contact.twitter
+        }
+        
+        return jsonify(contact_data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Make sure uploads directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)

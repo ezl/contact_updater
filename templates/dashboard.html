@@ -919,115 +919,123 @@
     contactRows.forEach(row => {
         row.addEventListener('click', () => {
             const contactId = row.dataset.contactId;
-            const contact = contactData[contactId];
             
-            if (contact) {
-                // Set the contact details in the modal
-                document.getElementById('contactName').textContent = contact.name;
-                document.getElementById('contactInitial').textContent = contact.name ? contact.name[0].toUpperCase() : '';
-                
-                // Set up editable fields
-                setupEditableField('detailName', contact.name, contactId);
-                
-                // Make cell phone a clickable link or editable field
-                const detailCell = document.getElementById('detailCell');
-                if (contact.cell && contact.cell !== 'N/A') {
-                    detailCell.innerHTML = `<a href="tel:${contact.cell}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.cell}</a>`;
-                } else {
-                    detailCell.textContent = 'N/A';
-                }
-                setupEditableField('detailCell', contact.cell, contactId);
-                
-                // Make email a clickable link or editable field
-                const detailEmail = document.getElementById('detailEmail');
-                if (contact.email && contact.email !== 'N/A') {
-                    detailEmail.innerHTML = `<a href="mailto:${contact.email}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.email}</a>`;
-                } else {
-                    detailEmail.textContent = 'N/A';
-                }
-                setupEditableField('detailEmail', contact.email, contactId);
-                
-                // Set up other editable fields
-                setupEditableField('detailAddress', contact.mailing_address || 'N/A', contactId);
-                setupEditableField('detailNotes', contact.notes || 'N/A', contactId);
-                setupEditableField('detailDateAdded', contact.dateAdded || 'N/A', contactId);
-                
-                // Populate new fields
-                if (contact.birthday && contact.birthday !== 'N/A') {
-                    try {
-                        // Try to parse MM-DD format
-                        if (contact.birthday.includes('-') && contact.birthday.length === 5) {
-                            const [month, day] = contact.birthday.split('-').map(num => parseInt(num, 10));
-                            
-                            if (!isNaN(month) && !isNaN(day) && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-                                // Create a date object with a non-leap year
-                                const date = new Date(2001, month - 1, day);
-                                
-                                // Format the date to show 3-letter month abbreviation and day
-                                const formattedBirthday = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                                document.getElementById('detailBirthday').textContent = formattedBirthday;
-                                setupEditableField('detailBirthday', contact.birthday, contactId);
-                            } else {
-                                // Invalid numbers, display as is
+            // Fetch the full contact details from the server
+            fetch(`/get_contact/${contactId}`)
+                .then(response => response.json())
+                .then(contact => {
+                    if (contact) {
+                        // Set the contact details in the modal
+                        document.getElementById('contactName').textContent = contact.name;
+                        document.getElementById('contactInitial').textContent = contact.name ? contact.name[0].toUpperCase() : '';
+                        
+                        // Set up editable fields
+                        setupEditableField('detailName', contact.name, contactId);
+                        
+                        // Make cell phone a clickable link or editable field
+                        const detailCell = document.getElementById('detailCell');
+                        if (contact.cell && contact.cell !== 'N/A') {
+                            detailCell.innerHTML = `<a href="tel:${contact.cell}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.cell}</a>`;
+                        } else {
+                            detailCell.textContent = 'N/A';
+                        }
+                        setupEditableField('detailCell', contact.cell, contactId);
+                        
+                        // Make email a clickable link or editable field
+                        const detailEmail = document.getElementById('detailEmail');
+                        if (contact.email && contact.email !== 'N/A') {
+                            detailEmail.innerHTML = `<a href="mailto:${contact.email}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.email}</a>`;
+                        } else {
+                            detailEmail.textContent = 'N/A';
+                        }
+                        setupEditableField('detailEmail', contact.email, contactId);
+                        
+                        // Set up other editable fields
+                        setupEditableField('detailAddress', contact.mailing_address || 'N/A', contactId);
+                        setupEditableField('detailNotes', contact.notes || 'N/A', contactId);
+                        setupEditableField('detailDateAdded', contact.dateAdded || 'N/A', contactId);
+                        
+                        // Populate new fields
+                        if (contact.birthday && contact.birthday !== 'N/A') {
+                            try {
+                                // Try to parse MM-DD format
+                                if (contact.birthday.includes('-') && contact.birthday.length === 5) {
+                                    const [month, day] = contact.birthday.split('-').map(num => parseInt(num, 10));
+                                    
+                                    if (!isNaN(month) && !isNaN(day) && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                                        // Create a date object with a non-leap year
+                                        const date = new Date(2001, month - 1, day);
+                                        
+                                        // Format the date to show 3-letter month abbreviation and day
+                                        const formattedBirthday = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                                        document.getElementById('detailBirthday').textContent = formattedBirthday;
+                                        setupEditableField('detailBirthday', contact.birthday, contactId);
+                                    } else {
+                                        // Invalid numbers, display as is
+                                        document.getElementById('detailBirthday').textContent = contact.birthday;
+                                        setupEditableField('detailBirthday', contact.birthday, contactId);
+                                        console.log(`Invalid birthday value: ${contact.birthday}`);
+                                    }
+                                } else {
+                                    // Not in MM-DD format, display as is
+                                    document.getElementById('detailBirthday').textContent = contact.birthday;
+                                    setupEditableField('detailBirthday', contact.birthday, contactId);
+                                }
+                            } catch (e) {
+                                // If any error in parsing, show as is and log the error
+                                console.error(`Error formatting birthday: ${contact.birthday}`, e);
                                 document.getElementById('detailBirthday').textContent = contact.birthday;
                                 setupEditableField('detailBirthday', contact.birthday, contactId);
-                                console.log(`Invalid birthday value: ${contact.birthday}`);
                             }
                         } else {
-                            // Not in MM-DD format, display as is
-                            document.getElementById('detailBirthday').textContent = contact.birthday;
-                            setupEditableField('detailBirthday', contact.birthday, contactId);
+                            document.getElementById('detailBirthday').textContent = 'N/A';
+                            setupEditableField('detailBirthday', '', contactId);
                         }
-                    } catch (e) {
-                        // If any error in parsing, show as is and log the error
-                        console.error(`Error formatting birthday: ${contact.birthday}`, e);
-                        document.getElementById('detailBirthday').textContent = contact.birthday;
-                        setupEditableField('detailBirthday', contact.birthday, contactId);
+                        
+                        setupEditableField('detailEmailUpdated', contact.email_updated || 'N/A', contactId);
+                        setupEditableField('detailCellUpdated', contact.cell_updated || 'N/A', contactId);
+                        
+                        // Make social media links clickable and editable
+                        const detailFacebook = document.getElementById('detailFacebook');
+                        if (contact.facebook && contact.facebook !== 'N/A') {
+                            detailFacebook.innerHTML = `<a href="${contact.facebook}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.facebook}</a>`;
+                        } else {
+                            detailFacebook.textContent = 'N/A';
+                        }
+                        setupEditableField('detailFacebook', contact.facebook || '', contactId);
+                        
+                        const detailInstagram = document.getElementById('detailInstagram');
+                        if (contact.instagram && contact.instagram !== 'N/A') {
+                            detailInstagram.innerHTML = `<a href="${contact.instagram}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.instagram}</a>`;
+                        } else {
+                            detailInstagram.textContent = 'N/A';
+                        }
+                        setupEditableField('detailInstagram', contact.instagram || '', contactId);
+                        
+                        const detailTwitter = document.getElementById('detailTwitter');
+                        if (contact.twitter && contact.twitter !== 'N/A') {
+                            detailTwitter.innerHTML = `<a href="${contact.twitter}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.twitter}</a>`;
+                        } else {
+                            detailTwitter.textContent = 'N/A';
+                        }
+                        setupEditableField('detailTwitter', contact.twitter || '', contactId);
+                        
+                        // Update the delete form action with the correct contact ID
+                        const deleteForm = document.querySelector('#contactDetailModal form');
+                        deleteForm.action = `/delete_contact/${contactId}`;
+                        
+                        // Show the modal
+                        contactDetailModal.classList.remove('hidden');
+                        
+                        // Add selected class to the clicked row
+                        contactRows.forEach(r => r.classList.remove('selected'));
+                        row.classList.add('selected');
                     }
-                } else {
-                    document.getElementById('detailBirthday').textContent = 'N/A';
-                    setupEditableField('detailBirthday', '', contactId);
-                }
-                
-                setupEditableField('detailEmailUpdated', contact.email_updated || 'N/A', contactId);
-                setupEditableField('detailCellUpdated', contact.cell_updated || 'N/A', contactId);
-                
-                // Make social media links clickable and editable
-                const detailFacebook = document.getElementById('detailFacebook');
-                if (contact.facebook && contact.facebook !== 'N/A') {
-                    detailFacebook.innerHTML = `<a href="${contact.facebook}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.facebook}</a>`;
-                } else {
-                    detailFacebook.textContent = 'N/A';
-                }
-                setupEditableField('detailFacebook', contact.facebook || '', contactId);
-                
-                const detailInstagram = document.getElementById('detailInstagram');
-                if (contact.instagram && contact.instagram !== 'N/A') {
-                    detailInstagram.innerHTML = `<a href="${contact.instagram}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.instagram}</a>`;
-                } else {
-                    detailInstagram.textContent = 'N/A';
-                }
-                setupEditableField('detailInstagram', contact.instagram || '', contactId);
-                
-                const detailTwitter = document.getElementById('detailTwitter');
-                if (contact.twitter && contact.twitter !== 'N/A') {
-                    detailTwitter.innerHTML = `<a href="${contact.twitter}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.twitter}</a>`;
-                } else {
-                    detailTwitter.textContent = 'N/A';
-                }
-                setupEditableField('detailTwitter', contact.twitter || '', contactId);
-                
-                // Update the delete form action with the correct contact ID
-                const deleteForm = document.querySelector('#contactDetailModal form');
-                deleteForm.action = `/delete_contact/${contactId}`;
-                
-                // Show the modal
-                contactDetailModal.classList.remove('hidden');
-                
-                // Add selected class to the clicked row
-                contactRows.forEach(r => r.classList.remove('selected'));
-                row.classList.add('selected');
-            }
+                })
+                .catch(error => {
+                    console.error('Error fetching contact details:', error);
+                    alert('Failed to load contact details. Please try again.');
+                });
         });
     });
     
