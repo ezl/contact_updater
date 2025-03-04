@@ -753,7 +753,8 @@
 
     // Click outside to close
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+        // Check if click is on the modal background or the overlay
+        if (e.target === modal || e.target.classList.contains('fixed')) {
             closeModal();
         }
     });
@@ -1246,6 +1247,7 @@
     
     // Click outside to close contact detail modal
     contactDetailModal.addEventListener('click', (e) => {
+        // Check if click is on the modal background or the overlay
         if (e.target === contactDetailModal || e.target.classList.contains('fixed')) {
             closeContactDetailModal();
         }
@@ -1283,7 +1285,8 @@
     
     // Click outside to close add contact modal
     addContactModal.addEventListener('click', (e) => {
-        if (e.target === addContactModal) {
+        // Check if click is on the modal background or the overlay
+        if (e.target === addContactModal || e.target.classList.contains('fixed')) {
             closeAddContactModalFn();
         }
     });
@@ -1303,7 +1306,8 @@
     
     // Click outside to close delete all modal
     deleteAllModal.addEventListener('click', (e) => {
-        if (e.target === deleteAllModal) {
+        // Check if click is on the modal background or the overlay
+        if (e.target === deleteAllModal || e.target.classList.contains('fixed')) {
             closeDeleteAllModalFn();
         }
     });
@@ -1353,7 +1357,8 @@
     
     // Click outside to close remove duplicates modal
     removeDuplicatesModal.addEventListener('click', (e) => {
-        if (e.target === removeDuplicatesModal) {
+        // Check if click is on the modal background or the overlay
+        if (e.target === removeDuplicatesModal || e.target.classList.contains('fixed')) {
             closeRemoveDuplicatesModalFn();
         }
     });
