@@ -516,5 +516,20 @@
             });
         });
     }
+
+    // Close modals on Escape key press
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            // Close import modal if it's open
+            if (!modal.classList.contains('hidden')) {
+                closeModal();
+            }
+            
+            // Close contact detail modal if it's open
+            if (!contactDetailModal.classList.contains('hidden')) {
+                closeContactDetailModal();
+            }
+        }
+    });
 </script>
 {% endblock %} 
