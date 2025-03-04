@@ -84,10 +84,8 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cell</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mailing Address</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Birthday</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -111,26 +109,16 @@
                                     <div class="text-sm text-gray-900">{{ contact.email }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ contact.mailing_address }}</div>
+                                    <div class="text-sm text-gray-900">N/A</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">{{ contact.notes }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ contact.dateAdded|date }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <form action="{{ url_for('delete_contact', id=contact.id) }}" method="POST" class="inline">
-                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this contact?');">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                             {% endfor %}
                         {% else %}
                             <tr>
-                                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
+                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
                                     No contacts found. Import your contacts by clicking the "Import Contacts" button.
                                 </td>
                             </tr>
@@ -233,6 +221,11 @@
                 </div>
                 
                 <div class="flex justify-end mt-6">
+                    <form action="" method="POST" class="inline mr-2">
+                        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition duration-150" onclick="return confirm('Are you sure you want to delete this contact?');">
+                            <i class="fas fa-trash mr-1"></i> Delete Contact
+                        </button>
+                    </form>
                     <button type="button" id="closeDetailBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Close</button>
                 </div>
             </div>
@@ -368,9 +361,8 @@
         const nameCell = row.querySelector('td:nth-child(1)');
         const cellCell = row.querySelector('td:nth-child(2)');
         const emailCell = row.querySelector('td:nth-child(3)');
-        const addressCell = row.querySelector('td:nth-child(4)');
+        const birthdayCell = row.querySelector('td:nth-child(4)');
         const notesCell = row.querySelector('td:nth-child(5)');
-        const dateAddedCell = row.querySelector('td:nth-child(6)');
         
         // Extract just the name text, not including the initial circle
         const nameText = nameCell.querySelector('.ml-4 .text-sm').textContent.trim();
@@ -379,9 +371,11 @@
             name: nameText,
             cell: cellCell.textContent.trim(),
             email: emailCell.textContent.trim(),
-            mailing_address: addressCell.textContent.trim(),
+            birthday: birthdayCell.textContent.trim(),
             notes: notesCell.textContent.trim(),
-            dateAdded: dateAddedCell.textContent.trim()
+            // Keep mailing_address in the data model for the modal
+            mailing_address: '',
+            dateAdded: ''
         };
     });
     
@@ -401,6 +395,10 @@
                 document.getElementById('detailAddress').textContent = contact.mailing_address || 'N/A';
                 document.getElementById('detailNotes').textContent = contact.notes || 'N/A';
                 document.getElementById('detailDateAdded').textContent = contact.dateAdded;
+                
+                // Update the delete form action with the correct contact ID
+                const deleteForm = document.querySelector('#contactDetailModal form');
+                deleteForm.action = `/delete_contact/${contactId}`;
                 
                 // Show the modal
                 contactDetailModal.classList.remove('hidden');
