@@ -27,7 +27,7 @@ class Contact(db.Model):
     email = db.Column(db.String(120))
     mailing_address = db.Column(db.String(300))
     notes = db.Column(db.Text)
-    birthday = db.Column(db.String(20))
+    birthday = db.Column(db.String(5))  # Store as MM-DD format
     email_updated = db.Column(db.DateTime, nullable=True)
     cell_updated = db.Column(db.DateTime, nullable=True)
     facebook = db.Column(db.String(200), nullable=True)
@@ -120,6 +120,32 @@ def dashboard():
                                 except ValueError:
                                     # If parsing fails, leave as None
                                     pass
+                            # Special handling for birthday to store only month and day
+                            elif csv_field == 'birthday' and row[csv_field]:
+                                try:
+                                    # Check if it's in YYYY-MM-DD format
+                                    if len(str(row[csv_field])) > 5:
+                                        # Parse the full date and extract just month and day
+                                        full_date = datetime.strptime(str(row[csv_field]), '%Y-%m-%d')
+                                        contact_data[db_field] = full_date.strftime('%m-%d')
+                                    # Check if it's already in MM-DD format
+                                    elif len(str(row[csv_field])) == 5 and '-' in str(row[csv_field]):
+                                        # Validate that it's a proper MM-DD format
+                                        datetime.strptime(str(row[csv_field]), '%m-%d')
+                                        contact_data[db_field] = str(row[csv_field])
+                                    else:
+                                        # Try to parse in flexible format, but store as MM-DD
+                                        try:
+                                            date_obj = pd.to_datetime(str(row[csv_field]))
+                                            contact_data[db_field] = date_obj.strftime('%m-%d')
+                                        except:
+                                            # If all parsing fails, skip this field
+                                            print(f"Skipping invalid birthday format: {row[csv_field]}")
+                                except (ValueError, AttributeError) as e:
+                                    print(f"Error processing birthday: {e}")
+                                
+                                if db_field in contact_data:
+                                    print(f"Importing {csv_field}: {row[csv_field]} → {contact_data[db_field]} (MM-DD)")
                             else:
                                 contact_data[db_field] = str(row[csv_field])
                                 print(f"Importing {csv_field}: {row[csv_field]}")
@@ -170,6 +196,27 @@ def format_date(value):
     if value:
         return value.strftime('%Y-%m-%d')
     return ''
+
+# Custom filter to format birthday from MM-DD to Month Day
+@app.template_filter('formatBirthday')
+def format_birthday(value):
+    if value:
+        try:
+            # Parse the MM-DD string
+            date_obj = datetime.strptime(value, '%m-%d')
+            # Format to Month Day (e.g., "May 15")
+            return date_obj.strftime('%B %d')
+        except ValueError:
+            try:
+                # Try alternate format (for backward compatibility)
+                if len(value) > 5 and '-' in value:
+                    date_obj = datetime.strptime(value, '%Y-%m-%d')
+                    return date_obj.strftime('%B %d')
+                return value
+            except:
+                # Return as is if all parsing fails
+                return value
+    return 'N/A'
 
 if __name__ == '__main__':
     # Make sure uploads directory exists

@@ -140,7 +140,13 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                                    <div class="text-sm text-gray-900">{{ contact.birthday if contact.birthday else 'N/A' }}</div>
+                                    <div class="text-sm text-gray-900" data-raw-birthday="{{ contact.birthday }}">
+                                        {% if contact.birthday %}
+                                            {{ contact.birthday | formatBirthday }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
                                     <div class="text-sm text-gray-900">{{ contact.notes }}</div>
@@ -455,11 +461,22 @@
             emailText = emailLink.href.replace('mailto:', '');
         }
         
+        // Get raw birthday value from data attribute
+        let birthdayValue = 'N/A';
+        if (birthdayCell) {
+            const birthdayDiv = birthdayCell.querySelector('div[data-raw-birthday]');
+            if (birthdayDiv && birthdayDiv.dataset.rawBirthday) {
+                birthdayValue = birthdayDiv.dataset.rawBirthday;
+            } else {
+                birthdayValue = birthdayCell.textContent.trim();
+            }
+        }
+        
         contactData[id] = {
             name: nameText,
             cell: cellText,
             email: emailText,
-            birthday: birthdayCell ? birthdayCell.textContent.trim() : 'N/A',
+            birthday: birthdayValue,
             notes: notesCell ? notesCell.textContent.trim() : '',
             // Keep mailing_address in the data model for the modal
             mailing_address: '',
@@ -513,7 +530,36 @@
                 document.getElementById('detailDateAdded').textContent = contact.dateAdded;
                 
                 // Populate new fields
-                document.getElementById('detailBirthday').textContent = contact.birthday || 'N/A';
+                if (contact.birthday && contact.birthday !== 'N/A') {
+                    try {
+                        // Try to parse MM-DD format
+                        if (contact.birthday.includes('-') && contact.birthday.length === 5) {
+                            const [month, day] = contact.birthday.split('-').map(num => parseInt(num, 10));
+                            
+                            if (!isNaN(month) && !isNaN(day) && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                                // Create a date object with a non-leap year
+                                const date = new Date(2001, month - 1, day);
+                                
+                                // Format the date to show month name and day
+                                const formattedBirthday = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                                document.getElementById('detailBirthday').textContent = formattedBirthday;
+                            } else {
+                                // Invalid numbers, display as is
+                                document.getElementById('detailBirthday').textContent = contact.birthday;
+                                console.log(`Invalid birthday value: ${contact.birthday}`);
+                            }
+                        } else {
+                            // Not in MM-DD format, display as is
+                            document.getElementById('detailBirthday').textContent = contact.birthday;
+                        }
+                    } catch (e) {
+                        // If any error in parsing, show as is and log the error
+                        console.error(`Error formatting birthday: ${contact.birthday}`, e);
+                        document.getElementById('detailBirthday').textContent = contact.birthday;
+                    }
+                } else {
+                    document.getElementById('detailBirthday').textContent = 'N/A';
+                }
                 document.getElementById('detailEmailUpdated').textContent = contact.email_updated || 'N/A';
                 document.getElementById('detailCellUpdated').textContent = contact.cell_updated || 'N/A';
                 
