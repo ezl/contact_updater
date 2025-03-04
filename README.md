@@ -1,50 +1,45 @@
-# Client Joy
+# Client Magic
 
-A Flask application for managing contact information with CSV import/export capabilities.
-
-## Database Management
-
-The application uses SQLite for data storage. The database file is named `sqlite3.db` and is created in the root directory of the project.
-
-### Database Scripts
-
-Several scripts are provided to manage the database:
-
-- `init_db.py`: Initialize the database by creating all required tables (if they don't exist)
-- `reset_db.py`: Reset the database by dropping all tables and recreating them (WARNING: This deletes all data!)
-- `check_db.py`: Check the database status, including existence, size, and number of contacts
-
-### How to Use
-
-1. **Initialize the database** (first-time setup):
-   ```
-   python init_db.py
-   ```
-
-2. **Check database status**:
-   ```
-   python check_db.py
-   ```
-
-3. **Reset the database** (will delete all data):
-   ```
-   python reset_db.py
-   ```
-   You'll be required to type 'YES' to confirm the deletion.
-
-## Running the Application
-
-To start the application:
-
-```
-python app.py
-```
-
-The server will start at http://127.0.0.1:5000
+A web application for managing contact information. Import contacts from CSV files, view, edit, and manage your contacts in one place.
 
 ## Features
 
+The application uses SQLite for data storage. The database file is named `sqlite3.db` and is created in the root directory of the project.
+
 - Import contacts from CSV files
-- View and manage contacts in a dashboard
-- Delete individual contacts
-- Download a sample CSV template
+- View all contacts in a table
+- Edit contact information
+- Delete contacts
+- Remove duplicate contacts
+- Search contacts
+- View contact details
+- Download all contacts as CSV
+
+## Installation
+
+1. Clone the repository
+2. Create a virtual environment: `python -m venv venv`
+3. Activate the virtual environment:
+   - Windows: `venv\Scripts\activate`
+   - macOS/Linux: `source venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
+5. Initialize the database: `python init_db.py`
+6. Run the application: `python app.py`
+7. Open your browser and navigate to `http://127.0.0.1:5000`
+
+## Usage
+
+1. Navigate to the dashboard
+2. Import contacts from a CSV file
+3. View and manage your contacts
+4. Click on a contact to view details
+5. Edit contact information by clicking on the fields in the detail view
+
+## File Structure
+
+- `app.py`: Main application file
+- `init_db.py`: Database initialization script
+- `reset_db.py`: Database reset script
+- `templates/`: HTML templates
+- `static/`: Static files (CSS, JS, images)
+- `uploads/`: Temporary storage for uploaded files

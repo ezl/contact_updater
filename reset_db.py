@@ -1,6 +1,7 @@
 """
-Database reset script for Client Joy application.
-WARNING: This script will delete all data in the database!
+Database reset script for Client Magic application.
+This script drops all tables and recreates them, effectively resetting the database.
+WARNING: This will delete all data in the database!
 Run this script to completely reset the database.
 """
 from app import app, db

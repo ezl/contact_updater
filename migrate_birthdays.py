@@ -1,5 +1,5 @@
 """
-Birthday format migration script for Client Joy application.
+Birthday format migration script for Client Magic application.
 This script updates any existing birthday entries to ensure they are in MM-DD format.
 """
 from app import app, db, Contact
