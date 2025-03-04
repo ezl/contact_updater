@@ -1,5 +1,5 @@
 """
-Database initialization script for Contact Updater application.
+Database initialization script for Client Joy application.
 Run this script to create the database tables if they don't exist.
 """
 from app import app, db

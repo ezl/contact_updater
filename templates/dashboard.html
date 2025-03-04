@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Contact Updater - Dashboard{% endblock %}
+{% block title %}Client Joy - Dashboard{% endblock %}
 
 {% block styles %}
 .dropzone-border {
@@ -37,19 +37,35 @@
 .sortable-header:hover {
     @apply bg-gray-100;
 }
+/* Date picker styles */
+.flatpickr-calendar {
+    @apply bg-white border border-gray-200 rounded-md shadow-lg;
+}
+.flatpickr-day.selected {
+    @apply bg-green-500 border-green-500;
+}
+.flatpickr-day.today {
+    @apply border-green-300;
+}
+.flatpickr-day:hover {
+    @apply bg-green-100;
+}
 {% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-6 py-8">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div class="mb-4 md:mb-0">
-            <h1 class="text-3xl font-bold text-gray-800">Contact Dashboard</h1>
+            <h1 class="text-3xl font-bold text-gray-800">Client Joy Dashboard</h1>
             <p class="text-gray-600">Manage and import your contacts</p>
         </div>
         <div class="flex items-center">
             <span class="text-sm text-gray-500 mr-4">{{ contacts|length if contacts else 0 }} contacts</span>
             <button id="removeDuplicatesBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
                 <i class="fas fa-broom mr-2"></i> Remove Duplicates
+            </button>
+            <button id="addContactBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
+                <i class="fas fa-user-plus mr-2"></i> Add Contact
             </button>
             <button id="openModal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
                 <i class="fas fa-upload mr-2"></i> Import Contacts
@@ -212,6 +228,84 @@
         </div>
     </div>
 
+    <!-- Add Contact Modal -->
+    <div id="addContactModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-black opacity-50"></div>
+            <div class="relative bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Add New Contact</h3>
+                    <button id="closeAddContactModal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form action="{{ url_for('add_contact') }}" method="post" id="addContactForm">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="form-group">
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                            <input type="text" id="name" name="name" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="cell" class="block text-sm font-medium text-gray-700 mb-1">Cell Phone</label>
+                            <input type="tel" id="cell" name="cell" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="email" name="email" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="birthday" class="block text-sm font-medium text-gray-700 mb-1">Birthday (MM-DD)</label>
+                            <input type="text" id="birthday" name="birthday" placeholder="MM-DD" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <p class="text-xs text-gray-500 mt-1">Format: Month-Day (e.g., 05-15 for May 15)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="mailing_address" class="block text-sm font-medium text-gray-700 mb-1">Mailing Address</label>
+                        <input type="text" id="mailing_address" name="mailing_address" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                    </div>
+                    
+                    <div class="form-group mb-4">
+                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                        <textarea id="notes" name="notes" rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="form-group">
+                            <label for="facebook" class="block text-sm font-medium text-gray-700 mb-1">
+                                <i class="fab fa-facebook text-blue-600 mr-1"></i> Facebook
+                            </label>
+                            <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/username" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="instagram" class="block text-sm font-medium text-gray-700 mb-1">
+                                <i class="fab fa-instagram text-pink-600 mr-1"></i> Instagram
+                            </label>
+                            <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/username" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="twitter" class="block text-sm font-medium text-gray-700 mb-1">
+                                <i class="fab fa-twitter text-blue-400 mr-1"></i> Twitter
+                            </label>
+                            <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/username" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="cancelAddContact" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-150">Add Contact</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Import Modal -->
     <div id="importModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-4">
@@ -352,6 +446,10 @@
     </div>
 </div>
 
+<!-- Add this before the closing </body> tag or in the head section -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 <script>
     // File upload modal
     const modal = document.getElementById('importModal');
@@ -369,6 +467,12 @@
     const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
     const closeRemoveDuplicatesModal = document.getElementById('closeRemoveDuplicatesModal');
     const cancelRemoveDuplicates = document.getElementById('cancelRemoveDuplicates');
+    
+    // Add contact modal
+    const addContactModal = document.getElementById('addContactModal');
+    const addContactBtn = document.getElementById('addContactBtn');
+    const closeAddContactModal = document.getElementById('closeAddContactModal');
+    const cancelAddContact = document.getElementById('cancelAddContact');
     
     // Sorting functionality
     const sortableHeaders = document.querySelectorAll('th[data-sort]');
@@ -768,6 +872,27 @@
         });
     }
 
+    // Open add contact modal
+    addContactBtn.addEventListener('click', () => {
+        addContactModal.classList.remove('hidden');
+    });
+    
+    // Close add contact modal functions
+    const closeAddContactModalFn = () => {
+        addContactModal.classList.add('hidden');
+        document.getElementById('addContactForm').reset();
+    };
+    
+    closeAddContactModal.addEventListener('click', closeAddContactModalFn);
+    cancelAddContact.addEventListener('click', closeAddContactModalFn);
+    
+    // Click outside to close add contact modal
+    addContactModal.addEventListener('click', (e) => {
+        if (e.target === addContactModal) {
+            closeAddContactModalFn();
+        }
+    });
+
     // Close modals on Escape key press
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -784,6 +909,11 @@
             // Close remove duplicates modal if it's open
             if (!removeDuplicatesModal.classList.contains('hidden')) {
                 closeRemoveDuplicatesModalFn();
+            }
+            
+            // Close add contact modal if it's open
+            if (!addContactModal.classList.contains('hidden')) {
+                closeAddContactModalFn();
             }
         }
     });
@@ -805,6 +935,20 @@
     removeDuplicatesModal.addEventListener('click', (e) => {
         if (e.target === removeDuplicatesModal) {
             closeRemoveDuplicatesModalFn();
+        }
+    });
+
+    // Initialize date picker for birthday field
+    flatpickr("#birthday", {
+        dateFormat: "m-d",
+        altFormat: "F j",
+        altInput: true,
+        allowInput: true,
+        monthSelectorType: "static",
+        disableMobile: true,
+        onReady: function(selectedDates, dateStr, instance) {
+            // Add a placeholder to the alt input
+            instance.altInput.placeholder = "Select a date";
         }
     });
 </script>

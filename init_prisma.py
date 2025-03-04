@@ -25,7 +25,7 @@ def run_command(cmd, description=None):
     return result.returncode == 0
 
 def main():
-    print("===== Initializing Prisma for Contact Updater =====")
+    print("===== Initializing Prisma for Client Joy =====")
     
     # Get working directory
     work_dir = os.getcwd()

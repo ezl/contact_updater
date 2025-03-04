@@ -1,4 +1,4 @@
-# Contact Updater
+# Client Joy
 
 A Flask application for managing contact information with CSV import/export capabilities.
 

@@ -1,5 +1,5 @@
 """
-Database check script for Contact Updater application.
+Database check script for Client Joy application.
 Run this script to verify the database is set up correctly and display information about it.
 """
 from app import app, db, Contact

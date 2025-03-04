@@ -240,6 +240,55 @@ def remove_duplicates():
         error_message = f"Error removing duplicates: {str(e)}"
         return redirect(url_for('dashboard', error_message=error_message))
 
+@app.route('/add_contact', methods=['POST'])
+def add_contact():
+    try:
+        # Extract contact data from form
+        contact_data = {
+            'name': request.form.get('name', ''),
+            'cell': request.form.get('cell', ''),
+            'email': request.form.get('email', ''),
+            'mailing_address': request.form.get('mailing_address', ''),
+            'notes': request.form.get('notes', ''),
+            'facebook': request.form.get('facebook', ''),
+            'instagram': request.form.get('instagram', ''),
+            'twitter': request.form.get('twitter', '')
+        }
+        
+        # Handle birthday field - ensure it's in MM-DD format
+        birthday = request.form.get('birthday', '')
+        if birthday:
+            try:
+                # Try to parse the date in various formats
+                date_obj = datetime.strptime(birthday, '%Y-%m-%d')
+                contact_data['birthday'] = date_obj.strftime('%m-%d')
+            except ValueError:
+                try:
+                    # Try MM-DD format
+                    datetime.strptime(birthday, '%m-%d')
+                    contact_data['birthday'] = birthday
+                except ValueError:
+                    try:
+                        # Try flexible parsing
+                        date_obj = pd.to_datetime(birthday)
+                        contact_data['birthday'] = date_obj.strftime('%m-%d')
+                    except:
+                        # If all parsing fails, don't include the birthday
+                        pass
+        
+        # Create and save the new contact
+        new_contact = Contact(**contact_data)
+        db.session.add(new_contact)
+        db.session.commit()
+        
+        success_message = "Contact added successfully!"
+        return redirect(url_for('dashboard', success_message=success_message))
+    
+    except Exception as e:
+        db.session.rollback()
+        error_message = f"Error adding contact: {str(e)}"
+        return redirect(url_for('dashboard', error_message=error_message))
+
 # Custom filter for formatting dates in templates
 @app.template_filter('date')
 def format_date(value):

@@ -1,5 +1,5 @@
 """
-Database reset script for Contact Updater application.
+Database reset script for Client Joy application.
 WARNING: This script will delete all data in the database!
 Run this script to completely reset the database.
 """
