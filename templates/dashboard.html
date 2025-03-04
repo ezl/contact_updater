@@ -1139,6 +1139,15 @@
             // Focus the input
             inputElement.focus();
             
+            // Handle Escape key to exit editing mode without closing modal
+            inputElement.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.stopPropagation(); // Prevent the event from bubbling up to document
+                    freshElement.innerHTML = originalContent;
+                    freshElement.classList.remove('editing');
+                }
+            });
+            
             // Cancel button event
             cancelButton.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -1330,6 +1339,14 @@
     // Close modals on Escape key press
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
+            // Check if any field is currently being edited
+            const isEditing = document.querySelector('.modal-value.editing') !== null;
+            
+            // If a field is being edited, let the field's own Escape handler take care of it
+            if (isEditing) {
+                return;
+            }
+            
             // Close import modal if it's open
             if (!modal.classList.contains('hidden')) {
                 closeModal();
