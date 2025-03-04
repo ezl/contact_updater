@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Client Magic - Home{% endblock %}
+{% block title %}Client Magic - Client Appreciation Made Easy{% endblock %}
 
 {% block styles %}
 @keyframes float {
@@ -11,48 +11,221 @@
 .float-animation {
     animation: float 4s ease-in-out infinite;
 }
+.gradient-text {
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, #4f46e5, #06b6d4);
+}
+.feature-card {
+    transition: all 0.3s ease;
+}
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+.testimonial-card {
+    transition: all 0.3s ease;
+}
+.testimonial-card:hover {
+    transform: scale(1.02);
+}
 {% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
 <section class="min-h-screen flex items-center bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
-    <div class="container mx-auto px-6 py-16 max-w-4xl text-center">
-        <h1 class="text-5xl md:text-6xl font-bold mb-8 leading-tight">Client Magic</h1>
-        <p class="text-xl opacity-90 mb-10 max-w-2xl mx-auto">Easily manage and organize your contact information in one place. Import contacts from CSV files and keep track of important details.</p>
-        <a href="/dashboard" class="bg-white text-indigo-600 hover:bg-indigo-50 transition duration-300 px-10 py-4 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1">Go to Dashboard</a>
+    <div class="container mx-auto px-6 py-16 max-w-6xl">
+        <div class="flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 text-center md:text-left mb-12 md:mb-0">
+                <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">Client Appreciation <span class="text-yellow-300">Simplified</span></h1>
+                <p class="text-xl opacity-90 mb-10 max-w-2xl">The ultimate platform for real estate professionals to strengthen client relationships through thoughtful, timely gifts and personalized communication.</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <a href="/dashboard" class="bg-white text-indigo-600 hover:bg-indigo-50 transition duration-300 px-8 py-4 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center">Get Started</a>
+                    <a href="#features" class="bg-transparent border-2 border-white text-white hover:bg-white/10 transition duration-300 px-8 py-4 rounded-full text-lg font-medium text-center">Learn More</a>
+                </div>
+            </div>
+            <div class="md:w-1/2 float-animation">
+                <img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="Gift box with ribbon" class="rounded-xl shadow-2xl max-w-full h-auto">
+            </div>
+        </div>
     </div>
 </section>
 
 <!-- Features Section -->
-<section class="py-20">
+<section id="features" class="py-20 bg-gray-50">
     <div class="container mx-auto px-6">
         <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold text-gray-800 mb-3">Features</h2>
-            <p class="text-lg text-gray-600 max-w-xl mx-auto">Simplify your contact management with these powerful features</p>
+            <h2 class="text-4xl font-bold text-gray-800 mb-3">Why Real Estate Agents <span class="gradient-text">Love Us</span></h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Strengthen client relationships and generate more referrals with our powerful client appreciation platform</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
             <!-- Feature 1 -->
-            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 hover:-translate-y-2">
-                <div class="text-5xl mb-6 text-indigo-600">📋</div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3">CSV Import</h3>
-                <p class="text-gray-600">Easily import contact information from CSV files without manual data entry.</p>
+            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 feature-card">
+                <div class="text-5xl mb-6 text-indigo-600">🎁</div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Automated Gift Sending</h3>
+                <p class="text-gray-600">Never miss an important date. Schedule gifts for birthdays, home purchase anniversaries, and holidays with ease.</p>
             </div>
 
             <!-- Feature 2 -->
-            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 hover:-translate-y-2">
-                <div class="text-5xl mb-6 text-indigo-600">📱</div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3">Complete Contact Info</h3>
-                <p class="text-gray-600">Store names, phone numbers, emails, addresses, birthdays, and notes for each contact.</p>
+            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 feature-card">
+                <div class="text-5xl mb-6 text-indigo-600">📋</div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Batch Contact Updates</h3>
+                <p class="text-gray-600">Efficiently verify and update client contact information in bulk to ensure your database stays current.</p>
             </div>
 
             <!-- Feature 3 -->
-            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 hover:-translate-y-2">
+            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 feature-card">
+                <div class="text-5xl mb-6 text-indigo-600">🏠</div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Address Verification</h3>
+                <p class="text-gray-600">Confirm client addresses before sending gifts to ensure successful delivery every time.</p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 feature-card">
+                <div class="text-5xl mb-6 text-indigo-600">🎯</div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Client Gift Selection</h3>
+                <p class="text-gray-600">Let clients choose their preferred gifts or delivery times for a personalized experience they'll appreciate.</p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 feature-card">
+                <div class="text-5xl mb-6 text-indigo-600">💰</div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Budget Management</h3>
+                <p class="text-gray-600">Set price ranges for different client tiers and track your client appreciation spending throughout the year.</p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 feature-card">
                 <div class="text-5xl mb-6 text-indigo-600">🔄</div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3">Always Up-to-Date</h3>
-                <p class="text-gray-600">Keep your contact information organized and current in one central location.</p>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Smart Reminders</h3>
+                <p class="text-gray-600">Get notifications for upcoming birthdays and important dates so you can plan your client outreach effectively.</p>
             </div>
         </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-20">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-3">How It <span class="gradient-text">Works</span></h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Three simple steps to transform your client relationships</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
+            <!-- Step 1 -->
+            <div class="bg-white rounded-xl shadow-md p-8 md:w-1/3">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold mb-6">1</div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Import Your Contacts</h3>
+                <p class="text-gray-600">Upload your client database or add contacts manually. We'll organize everything for you.</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-white rounded-xl shadow-md p-8 md:w-1/3">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold mb-6">2</div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Set Up Gift Campaigns</h3>
+                <p class="text-gray-600">Create automated gift campaigns for birthdays, anniversaries, or holidays with your preferred budget.</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-white rounded-xl shadow-md p-8 md:w-1/3">
+                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold mb-6">3</div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Watch Relationships Grow</h3>
+                <p class="text-gray-600">Strengthen client loyalty and generate more referrals through consistent, thoughtful appreciation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-800 mb-3">What Real Estate Pros Are <span class="gradient-text">Saying</span></h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Join hundreds of successful agents who've transformed their client relationships</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Testimonial 1 -->
+            <div class="bg-white p-8 rounded-xl shadow-md testimonial-card">
+                <div class="flex items-center mb-4">
+                    <div class="text-yellow-400 flex">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">"Client Magic has completely transformed how I stay in touch with past clients. The automated gift sending for closing anniversaries has generated so many referrals!"</p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-indigo-800 font-semibold">JD</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Jennifer Davis</h4>
+                        <p class="text-sm text-gray-500">Luxury Home Specialist</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial 2 -->
+            <div class="bg-white p-8 rounded-xl shadow-md testimonial-card">
+                <div class="flex items-center mb-4">
+                    <div class="text-yellow-400 flex">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">"The address verification feature alone is worth the investment. No more returned packages or wasted gifts! My clients love the personalized touch."</p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-indigo-800 font-semibold">MR</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Michael Rodriguez</h4>
+                        <p class="text-sm text-gray-500">Team Leader, Rodriguez Realty</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial 3 -->
+            <div class="bg-white p-8 rounded-xl shadow-md testimonial-card">
+                <div class="flex items-center mb-4">
+                    <div class="text-yellow-400 flex">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                <p class="text-gray-600 mb-6">"I used to spend hours managing client gifts and cards. Client Magic has given me back that time while making my client appreciation more consistent."</p>
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-indigo-800 font-semibold">SP</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Sarah Parker</h4>
+                        <p class="text-sm text-gray-500">First-Time Homebuyer Specialist</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
+    <div class="container mx-auto px-6 text-center">
+        <h2 class="text-4xl font-bold mb-6">Ready to Transform Your Client Relationships?</h2>
+        <p class="text-xl opacity-90 mb-10 max-w-3xl mx-auto">Join successful real estate professionals who are generating more referrals through consistent, thoughtful client appreciation.</p>
+        <a href="/dashboard" class="bg-white text-indigo-600 hover:bg-indigo-50 transition duration-300 px-10 py-4 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-block">Get Started Today</a>
     </div>
 </section>
 {% endblock %} 
