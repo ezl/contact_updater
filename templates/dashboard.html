@@ -9,6 +9,24 @@
 .dropzone-active {
     @apply border-indigo-500 bg-indigo-50;
 }
+.contact-row {
+    @apply cursor-pointer transition duration-200;
+}
+.contact-row:hover {
+    @apply bg-gray-50;
+}
+.contact-row.selected {
+    @apply bg-indigo-50;
+}
+.modal-field {
+    @apply mb-4;
+}
+.modal-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+}
+.modal-value {
+    @apply block w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-gray-800;
+}
 {% endblock %}
 
 {% block content %}
@@ -74,7 +92,7 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         {% if contacts and contacts|length > 0 %}
                             {% for contact in contacts %}
-                            <tr class="contact-row">
+                            <tr class="contact-row" data-contact-id="{{ contact.id }}">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
@@ -158,6 +176,64 @@
                         <button type="submit" id="submitUpload" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-150">Upload</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Detail Modal -->
+    <div id="contactDetailModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-black opacity-50"></div>
+            <div class="relative bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center">
+                        <div class="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                            <span id="contactInitial" class="text-indigo-800 text-xl font-semibold"></span>
+                        </div>
+                        <h3 id="contactName" class="text-2xl font-semibold text-gray-800"></h3>
+                    </div>
+                    <button id="closeDetailModal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div class="modal-field">
+                        <label class="modal-label">Name</label>
+                        <div id="detailName" class="modal-value"></div>
+                    </div>
+                    <div class="modal-field">
+                        <label class="modal-label">Cell</label>
+                        <div id="detailCell" class="modal-value"></div>
+                    </div>
+                    <div class="modal-field">
+                        <label class="modal-label">Email</label>
+                        <div id="detailEmail" class="modal-value"></div>
+                    </div>
+                    <div class="modal-field">
+                        <label class="modal-label">Date Added</label>
+                        <div id="detailDateAdded" class="modal-value"></div>
+                    </div>
+                </div>
+                
+                <div class="modal-field">
+                    <label class="modal-label">Mailing Address</label>
+                    <div id="detailAddress" class="modal-value"></div>
+                </div>
+                
+                <div class="modal-field">
+                    <label class="modal-label">Notes</label>
+                    <div id="detailNotes" class="modal-value min-h-[100px]"></div>
+                </div>
+                
+                <!-- Reserved space for future additional fields -->
+                <div id="additionalFields" class="mt-4">
+                    <!-- Additional fields will be added here in the future -->
+                </div>
+                
+                <div class="flex justify-end mt-6">
+                    <button type="button" id="closeDetailBtn" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -278,6 +354,79 @@
             reader.readAsText(file);
         }
     }
+
+    // Contact row click handling
+    const contactDetailModal = document.getElementById('contactDetailModal');
+    const closeDetailModal = document.getElementById('closeDetailModal');
+    const closeDetailBtn = document.getElementById('closeDetailBtn');
+    
+    // Initialize contact data from the DOM
+    const contactData = {};
+    contactRows.forEach(row => {
+        const id = row.dataset.contactId;
+        const nameCell = row.querySelector('td:nth-child(1)');
+        const cellCell = row.querySelector('td:nth-child(2)');
+        const emailCell = row.querySelector('td:nth-child(3)');
+        const addressCell = row.querySelector('td:nth-child(4)');
+        const notesCell = row.querySelector('td:nth-child(5)');
+        const dateAddedCell = row.querySelector('td:nth-child(6)');
+        
+        // Extract just the name text, not including the initial circle
+        const nameText = nameCell.querySelector('.ml-4 .text-sm').textContent.trim();
+        
+        contactData[id] = {
+            name: nameText,
+            cell: cellCell.textContent.trim(),
+            email: emailCell.textContent.trim(),
+            mailing_address: addressCell.textContent.trim(),
+            notes: notesCell.textContent.trim(),
+            dateAdded: dateAddedCell.textContent.trim()
+        };
+    });
+    
+    // Open contact detail modal when clicking on a row
+    contactRows.forEach(row => {
+        row.addEventListener('click', () => {
+            const contactId = row.dataset.contactId;
+            const contact = contactData[contactId];
+            
+            if (contact) {
+                // Set the contact details in the modal
+                document.getElementById('contactName').textContent = contact.name;
+                document.getElementById('contactInitial').textContent = contact.name ? contact.name[0].toUpperCase() : '';
+                document.getElementById('detailName').textContent = contact.name;
+                document.getElementById('detailCell').textContent = contact.cell || 'N/A';
+                document.getElementById('detailEmail').textContent = contact.email || 'N/A';
+                document.getElementById('detailAddress').textContent = contact.mailing_address || 'N/A';
+                document.getElementById('detailNotes').textContent = contact.notes || 'N/A';
+                document.getElementById('detailDateAdded').textContent = contact.dateAdded;
+                
+                // Show the modal
+                contactDetailModal.classList.remove('hidden');
+                
+                // Add selected class to the clicked row
+                contactRows.forEach(r => r.classList.remove('selected'));
+                row.classList.add('selected');
+            }
+        });
+    });
+    
+    // Close contact detail modal functions
+    const closeContactDetailModal = () => {
+        contactDetailModal.classList.add('hidden');
+        // Remove selected class from all rows
+        contactRows.forEach(row => row.classList.remove('selected'));
+    };
+    
+    closeDetailModal.addEventListener('click', closeContactDetailModal);
+    closeDetailBtn.addEventListener('click', closeContactDetailModal);
+    
+    // Click outside to close contact detail modal
+    contactDetailModal.addEventListener('click', (e) => {
+        if (e.target === contactDetailModal || e.target.classList.contains('fixed')) {
+            closeContactDetailModal();
+        }
+    });
 
     // Search contacts functionality
     if (contactSearch) {
