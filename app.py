@@ -240,6 +240,26 @@ def remove_duplicates():
         error_message = f"Error removing duplicates: {str(e)}"
         return redirect(url_for('dashboard', error_message=error_message))
 
+@app.route('/delete_all_contacts', methods=['POST'])
+def delete_all_contacts():
+    try:
+        # Get the count of contacts before deletion
+        contact_count = Contact.query.count()
+        
+        # Delete all contacts
+        Contact.query.delete()
+        
+        # Commit the changes to the database
+        db.session.commit()
+        
+        success_message = f"Successfully deleted all {contact_count} contacts from the database."
+        return redirect(url_for('dashboard', success_message=success_message))
+    
+    except Exception as e:
+        db.session.rollback()
+        error_message = f"Error deleting all contacts: {str(e)}"
+        return redirect(url_for('dashboard', error_message=error_message))
+
 @app.route('/add_contact', methods=['POST'])
 def add_contact():
     try:

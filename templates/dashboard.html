@@ -96,6 +96,9 @@
         </div>
         <div class="flex items-center">
             <span class="text-sm text-gray-500 mr-4">{{ contacts|length if contacts else 0 }} contacts</span>
+            <button id="deleteAllBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
+                <i class="fas fa-trash-alt mr-2"></i> Delete All
+            </button>
             <button id="removeDuplicatesBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center mr-3">
                 <i class="fas fa-broom mr-2"></i> Remove Duplicates
             </button>
@@ -479,6 +482,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete All Records Confirmation Modal -->
+    <div id="deleteAllModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-black opacity-50"></div>
+            <div class="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Delete All Contacts</h3>
+                    <button id="closeDeleteAllModal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="text-gray-600 mb-4">This will permanently delete ALL contacts from your database.</p>
+                    <p class="text-red-600 font-medium">This action cannot be undone. Are you sure you want to continue?</p>
+                </div>
+
+                <form action="{{ url_for('delete_all_contacts') }}" method="post" id="deleteAllForm">
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="cancelDeleteAll" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-150">Delete All</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Add this before the closing </body> tag or in the head section -->
@@ -504,6 +534,12 @@
     const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
     const closeRemoveDuplicatesModal = document.getElementById('closeRemoveDuplicatesModal');
     const cancelRemoveDuplicates = document.getElementById('cancelRemoveDuplicates');
+    
+    // Delete all records modal
+    const deleteAllModal = document.getElementById('deleteAllModal');
+    const deleteAllBtn = document.getElementById('deleteAllBtn');
+    const closeDeleteAllModal = document.getElementById('closeDeleteAllModal');
+    const cancelDeleteAll = document.getElementById('cancelDeleteAll');
     
     // Add contact modal
     const addContactModal = document.getElementById('addContactModal');
@@ -930,6 +966,26 @@
         }
     });
 
+    // Open delete all modal
+    deleteAllBtn.addEventListener('click', () => {
+        deleteAllModal.classList.remove('hidden');
+    });
+    
+    // Close delete all modal functions
+    const closeDeleteAllModalFn = () => {
+        deleteAllModal.classList.add('hidden');
+    };
+    
+    closeDeleteAllModal.addEventListener('click', closeDeleteAllModalFn);
+    cancelDeleteAll.addEventListener('click', closeDeleteAllModalFn);
+    
+    // Click outside to close delete all modal
+    deleteAllModal.addEventListener('click', (e) => {
+        if (e.target === deleteAllModal) {
+            closeDeleteAllModalFn();
+        }
+    });
+
     // Close modals on Escape key press
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -946,6 +1002,11 @@
             // Close remove duplicates modal if it's open
             if (!removeDuplicatesModal.classList.contains('hidden')) {
                 closeRemoveDuplicatesModalFn();
+            }
+            
+            // Close delete all modal if it's open
+            if (!deleteAllModal.classList.contains('hidden')) {
+                closeDeleteAllModalFn();
             }
             
             // Close add contact modal if it's open
