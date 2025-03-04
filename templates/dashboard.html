@@ -103,10 +103,26 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ contact.cell }}</div>
+                                    <div class="text-sm text-gray-900">
+                                        {% if contact.cell %}
+                                        <a href="tel:{{ contact.cell }}" class="text-indigo-600 hover:text-indigo-800 hover:underline">
+                                            {{ contact.cell }}
+                                        </a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ contact.email }}</div>
+                                    <div class="text-sm text-gray-900">
+                                        {% if contact.email %}
+                                        <a href="mailto:{{ contact.email }}" class="text-indigo-600 hover:text-indigo-800 hover:underline">
+                                            {{ contact.email }}
+                                        </a>
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">N/A</div>
@@ -379,6 +395,13 @@
         };
     });
     
+    // Prevent link clicks from triggering row click
+    document.querySelectorAll('.contact-row a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+    });
+    
     // Open contact detail modal when clicking on a row
     contactRows.forEach(row => {
         row.addEventListener('click', () => {
@@ -390,8 +413,23 @@
                 document.getElementById('contactName').textContent = contact.name;
                 document.getElementById('contactInitial').textContent = contact.name ? contact.name[0].toUpperCase() : '';
                 document.getElementById('detailName').textContent = contact.name;
-                document.getElementById('detailCell').textContent = contact.cell || 'N/A';
-                document.getElementById('detailEmail').textContent = contact.email || 'N/A';
+                
+                // Make cell phone a clickable link
+                const detailCell = document.getElementById('detailCell');
+                if (contact.cell && contact.cell !== 'N/A') {
+                    detailCell.innerHTML = `<a href="tel:${contact.cell}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.cell}</a>`;
+                } else {
+                    detailCell.textContent = 'N/A';
+                }
+                
+                // Make email a clickable link
+                const detailEmail = document.getElementById('detailEmail');
+                if (contact.email && contact.email !== 'N/A') {
+                    detailEmail.innerHTML = `<a href="mailto:${contact.email}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.email}</a>`;
+                } else {
+                    detailEmail.textContent = 'N/A';
+                }
+                
                 document.getElementById('detailAddress').textContent = contact.mailing_address || 'N/A';
                 document.getElementById('detailNotes').textContent = contact.notes || 'N/A';
                 document.getElementById('detailDateAdded').textContent = contact.dateAdded;
