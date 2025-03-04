@@ -63,10 +63,10 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium bg-indigo-100 text-indigo-800 uppercase tracking-wider">Cell</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mailing Address</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added</th>
                             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
@@ -78,31 +78,24 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                            <span class="text-indigo-800 font-semibold">{{ contact.firstName[0]|upper if contact.firstName else '' }}{{ contact.lastName[0]|upper if contact.lastName else '' }}</span>
+                                            <span class="text-indigo-800 font-semibold">{{ contact.name[0]|upper if contact.name else '' }}</span>
                                         </div>
                                         <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ contact.firstName if contact.firstName else '' }} {{ contact.lastName if contact.lastName else '' }}</div>
-                                            <div class="text-sm text-gray-500">{{ contact.jobTitle if contact.jobTitle else '' }}</div>
+                                            <div class="text-sm font-medium text-gray-900">{{ contact.name }}</div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ contact.email if contact.email else '' }}</div>
+                                <td class="px-6 py-4 whitespace-nowrap bg-indigo-50">
+                                    <div class="text-sm font-medium text-indigo-800">{{ contact.cell }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ contact.phone if contact.phone else '' }}</div>
+                                    <div class="text-sm text-gray-900">{{ contact.email }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ contact.company if contact.company else '' }}</div>
+                                    <div class="text-sm text-gray-900">{{ contact.mailing_address }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {% if contact.city or contact.state or contact.country %}
-                                            {{ contact.city if contact.city else '' }}{% if contact.city and contact.state %}, {% endif %}
-                                            {{ contact.state if contact.state else '' }}{% if (contact.city or contact.state) and contact.country %}, {% endif %}
-                                            {{ contact.country if contact.country else '' }}
-                                        {% endif %}
-                                    </div>
+                                    <div class="text-sm text-gray-900">{{ contact.notes }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ contact.dateAdded|date }}
@@ -210,6 +203,22 @@
         if (fileInput.files.length > 0) {
             selectedFileName.textContent = fileInput.files[0].name;
             dropzone.classList.add('dropzone-active');
+            
+            // Read and log the first 3 rows of the CSV
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const csvContent = e.target.result;
+                const rows = csvContent.split('\n');
+                
+                console.log('CSV File Contents (First 3 rows):');
+                for (let i = 0; i < Math.min(3, rows.length); i++) {
+                    console.log(`Row ${i+1}: ${rows[i]}`);
+                }
+            };
+            
+            reader.readAsText(file);
         } else {
             selectedFileName.textContent = '';
             dropzone.classList.remove('dropzone-active');
@@ -251,6 +260,22 @@
         
         if (files.length > 0) {
             selectedFileName.textContent = files[0].name;
+            
+            // Read and log the first 3 rows of the CSV
+            const file = files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const csvContent = e.target.result;
+                const rows = csvContent.split('\n');
+                
+                console.log('CSV File Contents (First 3 rows):');
+                for (let i = 0; i < Math.min(3, rows.length); i++) {
+                    console.log(`Row ${i+1}: ${rows[i]}`);
+                }
+            };
+            
+            reader.readAsText(file);
         }
     }
 

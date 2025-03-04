@@ -22,23 +22,18 @@ db = SQLAlchemy(app)
 # Define Contact model
 class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    firstName = db.Column(db.String(100))
-    lastName = db.Column(db.String(100))
+    name = db.Column(db.String(200))
+    cell = db.Column(db.String(20))
     email = db.Column(db.String(120))
-    phone = db.Column(db.String(20))
-    address = db.Column(db.String(200))
-    city = db.Column(db.String(100))
-    state = db.Column(db.String(100))
-    zipCode = db.Column(db.String(20))
-    country = db.Column(db.String(100))
-    company = db.Column(db.String(100))
-    jobTitle = db.Column(db.String(100))
+    mailing_address = db.Column(db.String(300))
     notes = db.Column(db.Text)
     dateAdded = db.Column(db.DateTime, default=datetime.utcnow)
     lastModified = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 # Create tables
 with app.app_context():
+    # Drop the existing table to recreate with the new schema
+    db.drop_all()
     db.create_all()
 
 def allowed_file(filename):
@@ -56,7 +51,7 @@ def dashboard():
     
     # Get all contacts
     try:
-        contacts = Contact.query.order_by(Contact.lastName).all()
+        contacts = Contact.query.order_by(Contact.name).all()
     except Exception as e:
         error_message = f"Error loading contacts: {str(e)}"
         contacts = []
@@ -85,6 +80,11 @@ def dashboard():
                 # Read the CSV file
                 df = pd.read_csv(file)
                 
+                # Log the first 3 rows of the CSV
+                print("======= CSV DATA (FIRST 3 ROWS) =======")
+                print(df.head(3))
+                print("========================================")
+                
                 # Process each row in the CSV
                 rows_processed = 0
                 for _, row in df.iterrows():
@@ -93,25 +93,18 @@ def dashboard():
                     
                     # Map CSV columns to database fields
                     field_mapping = {
-                        'name': 'firstName',  # Assuming name contains first name or full name
-                        'cell_number': 'phone',
+                        'name': 'name',
+                        'cell': 'cell',
                         'email': 'email',
-                        'mailing_address': 'address',
+                        'mailing_address': 'mailing_address',
                         'notes': 'notes'
                     }
                     
-                    # Special handling for name field - split into first and last name if possible
-                    if 'name' in row and not pd.isna(row['name']):
-                        name_parts = row['name'].split(' ', 1)
-                        if len(name_parts) >= 1:
-                            contact_data['firstName'] = name_parts[0]
-                        if len(name_parts) >= 2:
-                            contact_data['lastName'] = name_parts[1]
-                    
                     # Process each field if it exists in the CSV
                     for csv_field, db_field in field_mapping.items():
-                        if csv_field != 'name' and csv_field in row and not pd.isna(row[csv_field]):
+                        if csv_field in row and not pd.isna(row[csv_field]):
                             contact_data[db_field] = str(row[csv_field])
+                            print(f"Importing {csv_field}: {row[csv_field]}")
                     
                     # Create the contact record
                     contact = Contact(**contact_data)
@@ -124,7 +117,7 @@ def dashboard():
                 success_message = f"Successfully processed {rows_processed} contacts from the CSV file."
                 
                 # Refresh contacts list
-                contacts = Contact.query.order_by(Contact.lastName).all()
+                contacts = Contact.query.order_by(Contact.name).all()
             except Exception as e:
                 db.session.rollback()
                 error_message = f"Error processing CSV file: {str(e)}"
