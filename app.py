@@ -1,7 +1,8 @@
-from flask import Flask, render_template, send_from_directory, request, flash, redirect, url_for, jsonify
+from flask import Flask, render_template, send_from_directory, request, flash, redirect, url_for, jsonify, session
 import os
 import pandas as pd
-from datetime import datetime
+import json
+from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 
@@ -15,6 +16,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'csv'}
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite3.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UNDO_EXPIRATION_MINUTES'] = 30  # How long undo actions are available
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
@@ -36,6 +38,15 @@ class Contact(db.Model):
     dateAdded = db.Column(db.DateTime, default=datetime.utcnow)
     lastModified = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+# Define DeletedContact model to store deleted contacts for undo functionality
+class DeletedContact(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    original_id = db.Column(db.Integer)  # Original ID of the contact
+    contact_data = db.Column(db.Text)  # JSON string of contact data
+    deletion_type = db.Column(db.String(20))  # 'single', 'all', or 'duplicate'
+    deleted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    operation_id = db.Column(db.String(50))  # Group ID for batch operations
+
 # Database setup is now handled by separate scripts
 # See init_db.py to create tables and reset_db.py to reset the database
 
@@ -51,6 +62,8 @@ def index():
 def dashboard():
     success_message = request.args.get('success_message')
     error_message = request.args.get('error_message')
+    undo_action = request.args.get('undo_action')
+    undo_id = request.args.get('undo_id')
     
     # Get all contacts
     try:
@@ -171,20 +184,71 @@ def dashboard():
     return render_template('dashboard.html', 
                           contacts=contacts, 
                           success_message=success_message,
-                          error_message=error_message)
+                          error_message=error_message,
+                          undo_action=undo_action,
+                          undo_id=undo_id)
+
+# Helper function to serialize a contact to JSON
+def serialize_contact(contact):
+    contact_dict = {
+        'original_id': contact.id,
+        'name': contact.name,
+        'cell': contact.cell,
+        'email': contact.email,
+        'mailing_address': contact.mailing_address,
+        'notes': contact.notes,
+        'birthday': contact.birthday,
+        'facebook': contact.facebook,
+        'instagram': contact.instagram,
+        'twitter': contact.twitter
+    }
+    
+    # Handle datetime objects
+    if contact.email_updated:
+        contact_dict['email_updated'] = contact.email_updated.isoformat()
+    if contact.cell_updated:
+        contact_dict['cell_updated'] = contact.cell_updated.isoformat()
+    if contact.dateAdded:
+        contact_dict['dateAdded'] = contact.dateAdded.isoformat()
+    if contact.lastModified:
+        contact_dict['lastModified'] = contact.lastModified.isoformat()
+    
+    return contact_dict
 
 @app.route('/delete_contact/<int:id>', methods=['POST'])
 def delete_contact(id):
     try:
+        # Get the contact
         contact = Contact.query.get_or_404(id)
+        
+        # Store the contact data for potential undo
+        contact_data = serialize_contact(contact)
+        
+        # Create a DeletedContact record
+        deleted_contact = DeletedContact(
+            original_id=contact.id,
+            contact_data=json.dumps(contact_data),
+            deletion_type='single',
+            operation_id=str(datetime.utcnow().timestamp())
+        )
+        db.session.add(deleted_contact)
+        
+        # Delete the contact
         db.session.delete(contact)
         db.session.commit()
-        flash('Contact deleted successfully!', 'success')
+        
+        # Create success message with undo option
+        success_message = "Contact deleted successfully!"
+        
+        # Redirect with undo parameters
+        return redirect(url_for('dashboard', 
+                               success_message=success_message,
+                               undo_action='single',
+                               undo_id=deleted_contact.id))
     except Exception as e:
         db.session.rollback()
-        flash(f'Error deleting contact: {str(e)}', 'error')
-    
-    return redirect(url_for('dashboard'))
+        error_message = f"Error deleting contact: {str(e)}"
+        return redirect(url_for('dashboard', error_message=error_message))
 
 @app.route('/download/sample_csv')
 def download_sample():
@@ -201,12 +265,25 @@ def remove_duplicates():
         unique_cells = {}
         duplicates_removed = 0
         
+        # Create an operation ID for this batch deletion
+        operation_id = str(datetime.utcnow().timestamp())
+        
         for contact in all_contacts:
             # Check for email duplicates (if email exists)
             if contact.email and contact.email.strip():
                 email_key = contact.email.lower().strip()
                 if email_key in unique_emails:
-                    # This is a duplicate, mark for deletion
+                    # This is a duplicate, store for potential undo
+                    contact_data = serialize_contact(contact)
+                    deleted_contact = DeletedContact(
+                        original_id=contact.id,
+                        contact_data=json.dumps(contact_data),
+                        deletion_type='duplicate',
+                        operation_id=operation_id
+                    )
+                    db.session.add(deleted_contact)
+                    
+                    # Mark for deletion
                     db.session.delete(contact)
                     duplicates_removed += 1
                     continue
@@ -218,7 +295,17 @@ def remove_duplicates():
                 # Normalize the cell number by removing non-digits
                 cell_key = ''.join(filter(str.isdigit, contact.cell))
                 if cell_key and cell_key in unique_cells:
-                    # This is a duplicate, mark for deletion
+                    # This is a duplicate, store for potential undo
+                    contact_data = serialize_contact(contact)
+                    deleted_contact = DeletedContact(
+                        original_id=contact.id,
+                        contact_data=json.dumps(contact_data),
+                        deletion_type='duplicate',
+                        operation_id=operation_id
+                    )
+                    db.session.add(deleted_contact)
+                    
+                    # Mark for deletion
                     db.session.delete(contact)
                     duplicates_removed += 1
                     continue
@@ -230,10 +317,13 @@ def remove_duplicates():
         
         if duplicates_removed > 0:
             success_message = f"Successfully removed {duplicates_removed} duplicate contact(s)."
+            return redirect(url_for('dashboard', 
+                                   success_message=success_message,
+                                   undo_action='duplicates',
+                                   undo_id=operation_id))
         else:
             success_message = "No duplicate contacts were found."
-            
-        return redirect(url_for('dashboard', success_message=success_message))
+            return redirect(url_for('dashboard', success_message=success_message))
     
     except Exception as e:
         db.session.rollback()
@@ -243,22 +333,133 @@ def remove_duplicates():
 @app.route('/delete_all_contacts', methods=['POST'])
 def delete_all_contacts():
     try:
-        # Get the count of contacts before deletion
-        contact_count = Contact.query.count()
+        # Get all contacts
+        contacts = Contact.query.all()
+        contact_count = len(contacts)
         
-        # Delete all contacts
-        Contact.query.delete()
-        
-        # Commit the changes to the database
-        db.session.commit()
-        
-        success_message = f"Successfully deleted all {contact_count} contacts from the database."
-        return redirect(url_for('dashboard', success_message=success_message))
+        if contact_count > 0:
+            # Create an operation ID for this batch deletion
+            operation_id = str(datetime.utcnow().timestamp())
+            
+            # Store all contacts for potential undo
+            for contact in contacts:
+                contact_data = serialize_contact(contact)
+                deleted_contact = DeletedContact(
+                    original_id=contact.id,
+                    contact_data=json.dumps(contact_data),
+                    deletion_type='all',
+                    operation_id=operation_id
+                )
+                db.session.add(deleted_contact)
+            
+            # Delete all contacts
+            Contact.query.delete()
+            
+            # Commit the changes to the database
+            db.session.commit()
+            
+            success_message = f"Successfully deleted all {contact_count} contacts from the database."
+            return redirect(url_for('dashboard', 
+                                   success_message=success_message,
+                                   undo_action='all',
+                                   undo_id=operation_id))
+        else:
+            success_message = "No contacts to delete."
+            return redirect(url_for('dashboard', success_message=success_message))
     
     except Exception as e:
         db.session.rollback()
         error_message = f"Error deleting all contacts: {str(e)}"
         return redirect(url_for('dashboard', error_message=error_message))
+
+# Add routes for undoing deletions
+@app.route('/undo_delete/<string:action>/<string:id>', methods=['POST'])
+def undo_delete(action, id):
+    try:
+        if action == 'single':
+            # Restore a single deleted contact
+            deleted_contact = DeletedContact.query.get_or_404(id)
+            contact_data = json.loads(deleted_contact.contact_data)
+            
+            # Remove fields that shouldn't be directly set
+            original_id = contact_data.pop('original_id', None)
+            contact_data.pop('dateAdded', None)
+            contact_data.pop('lastModified', None)
+            
+            # Convert ISO format dates back to datetime objects
+            if 'email_updated' in contact_data and contact_data['email_updated']:
+                contact_data['email_updated'] = datetime.fromisoformat(contact_data['email_updated'])
+            if 'cell_updated' in contact_data and contact_data['cell_updated']:
+                contact_data['cell_updated'] = datetime.fromisoformat(contact_data['cell_updated'])
+            
+            # Create a new contact with the original data
+            new_contact = Contact(**contact_data)
+            db.session.add(new_contact)
+            
+            # Delete the DeletedContact record
+            db.session.delete(deleted_contact)
+            db.session.commit()
+            
+            success_message = "Contact restored successfully!"
+            
+        elif action in ['all', 'duplicates']:
+            # Restore all contacts from a batch operation
+            deleted_contacts = DeletedContact.query.filter_by(operation_id=id).all()
+            
+            if not deleted_contacts:
+                return redirect(url_for('dashboard', error_message="No contacts found to restore."))
+            
+            # Restore each contact
+            restored_count = 0
+            for deleted_contact in deleted_contacts:
+                contact_data = json.loads(deleted_contact.contact_data)
+                
+                # Remove fields that shouldn't be directly set
+                original_id = contact_data.pop('original_id', None)
+                contact_data.pop('dateAdded', None)
+                contact_data.pop('lastModified', None)
+                
+                # Convert ISO format dates back to datetime objects
+                if 'email_updated' in contact_data and contact_data['email_updated']:
+                    contact_data['email_updated'] = datetime.fromisoformat(contact_data['email_updated'])
+                if 'cell_updated' in contact_data and contact_data['cell_updated']:
+                    contact_data['cell_updated'] = datetime.fromisoformat(contact_data['cell_updated'])
+                
+                # Create a new contact with the original data
+                new_contact = Contact(**contact_data)
+                db.session.add(new_contact)
+                
+                # Delete the DeletedContact record
+                db.session.delete(deleted_contact)
+                restored_count += 1
+            
+            db.session.commit()
+            
+            action_type = "all contacts" if action == 'all' else "duplicate contacts"
+            success_message = f"Successfully restored {restored_count} {action_type}!"
+            
+        else:
+            return redirect(url_for('dashboard', error_message="Invalid undo action."))
+        
+        return redirect(url_for('dashboard', success_message=success_message))
+    
+    except Exception as e:
+        db.session.rollback()
+        error_message = f"Error restoring contact(s): {str(e)}"
+        return redirect(url_for('dashboard', error_message=error_message))
+
+# Cleanup expired deleted contacts
+@app.before_request
+def cleanup_deleted_contacts():
+    try:
+        # Calculate the expiration time
+        expiration_time = datetime.utcnow() - timedelta(minutes=app.config['UNDO_EXPIRATION_MINUTES'])
+        
+        # Delete expired records
+        DeletedContact.query.filter(DeletedContact.deleted_at < expiration_time).delete()
+        db.session.commit()
+    except:
+        db.session.rollback()
 
 @app.route('/add_contact', methods=['POST'])
 def add_contact():
@@ -381,4 +582,9 @@ def format_birthday(value):
 if __name__ == '__main__':
     # Make sure uploads directory exists
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    
+    # Create tables if they don't exist
+    with app.app_context():
+        db.create_all()
+        
     app.run(debug=True) 
