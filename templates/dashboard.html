@@ -35,148 +35,188 @@
         </div>
     </div>
     {% endif %}
+    
+    {% if error_message %}
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span>{{ error_message }}</span>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Contacts Table Card -->
     <div class="bg-white rounded-xl shadow-md overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
             <h2 class="font-semibold text-lg text-gray-800">All Contacts</h2>
             <div class="relative max-w-xs">
-                <input type="text" placeholder="Search contacts..." class="py-2 pl-3 pr-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="contactSearch" placeholder="Search contacts..." class="py-2 pl-3 pr-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                 <button class="absolute inset-y-0 right-0 px-3 flex items-center bg-gray-100 rounded-r-md border-l-0 border border-gray-300">
                     <i class="fas fa-search text-gray-500"></i>
                 </button>
             </div>
         </div>
         <div>
-            {% if not contacts %}
-            <!-- If no contacts, show empty state -->
-            <div class="py-16 px-4 text-center">
-                <div class="text-gray-300 text-6xl mb-6">
-                    <i class="fas fa-address-book"></i>
-                </div>
-                <h3 class="text-xl font-medium text-gray-700 mb-2">No contacts yet</h3>
-                <p class="text-gray-500 mb-6">Import your contacts to get started</p>
-                <button id="openModalFromEmpty" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150">
-                    <i class="fas fa-upload mr-2"></i> Import Contacts
-                </button>
-            </div>
-            {% else %}
-            <!-- Table to display contacts -->
+            <!-- Table -->
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Birthday</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Added</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        {% for contact in contacts %}
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ contact.name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ contact.cell_number }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ contact.email }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ contact.mailing_address }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ contact.birthday|date }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ contact.notes }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <button class="text-indigo-600 hover:text-indigo-900 mr-2">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-600 hover:text-red-900">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        {% if contacts and contacts|length > 0 %}
+                            {% for contact in contacts %}
+                            <tr class="contact-row">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                            <span class="text-indigo-800 font-semibold">{{ contact.firstName[0]|upper if contact.firstName else '' }}{{ contact.lastName[0]|upper if contact.lastName else '' }}</span>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">{{ contact.firstName if contact.firstName else '' }} {{ contact.lastName if contact.lastName else '' }}</div>
+                                            <div class="text-sm text-gray-500">{{ contact.jobTitle if contact.jobTitle else '' }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ contact.email if contact.email else '' }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ contact.phone if contact.phone else '' }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">{{ contact.company if contact.company else '' }}</div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900">
+                                        {% if contact.city or contact.state or contact.country %}
+                                            {{ contact.city if contact.city else '' }}{% if contact.city and contact.state %}, {% endif %}
+                                            {{ contact.state if contact.state else '' }}{% if (contact.city or contact.state) and contact.country %}, {% endif %}
+                                            {{ contact.country if contact.country else '' }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ contact.dateAdded|date }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <form action="{{ url_for('delete_contact', id=contact.id) }}" method="POST" class="inline">
+                                        <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this contact?');">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">
+                                    No contacts found. Import your contacts by clicking the "Import Contacts" button.
+                                </td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
-            {% endif %}
         </div>
     </div>
-</div>
 
-<!-- Import Modal -->
-<div id="uploadModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-lg font-medium text-gray-900">Import Contacts</h3>
-            <button id="closeModal" class="text-gray-400 hover:text-gray-500">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-        <div class="p-6">
-            <form action="/dashboard" method="post" enctype="multipart/form-data" id="uploadForm">
-                <div id="dropzone" class="dropzone-border py-12 px-4 rounded-lg text-center cursor-pointer mb-6 transition-all">
-                    <div class="text-5xl text-indigo-500 mb-4">
-                        <i class="fas fa-file-csv"></i>
-                    </div>
-                    <h4 class="text-lg font-medium text-gray-700 mb-2">Drag & Drop CSV File</h4>
-                    <p class="text-gray-500 text-sm">or click to browse files</p>
-                    <input type="file" name="file" id="fileInput" accept=".csv" class="hidden">
-                    <div class="mt-4 selected-file"></div>
+    <!-- Import Modal -->
+    <div id="importModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-black opacity-50"></div>
+            <div class="relative bg-white rounded-lg max-w-lg w-full p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Import Contacts</h3>
+                    <button id="closeModal" class="text-gray-400 hover:text-gray-500">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <p class="text-sm text-gray-500 mb-6">
-                    Make sure your CSV has columns for: name, cell_number, email, mailing_address, birthday, notes
-                    <br>
-                    <a href="/download/sample_csv" class="text-indigo-600 hover:text-indigo-700">Download sample CSV template</a>
-                </p>
-                <button type="submit" id="uploadButton" disabled class="w-full py-3 bg-indigo-600 text-white rounded-md shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center">
-                    <i class="fas fa-upload mr-2"></i> Upload Contacts
-                </button>
-            </form>
+                
+                <div class="mb-6">
+                    <p class="text-gray-600 mb-4">Upload a CSV file containing your contacts. Your CSV should include columns for contact information.</p>
+                    <a href="{{ url_for('download_sample') }}" class="text-indigo-600 hover:text-indigo-500 text-sm flex items-center mb-4">
+                        <i class="fas fa-download mr-1"></i> Download sample CSV template
+                    </a>
+                </div>
+
+                <form action="{{ url_for('dashboard') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                    <div id="dropzone" class="dropzone-border p-6 mb-4 rounded-md flex flex-col items-center justify-center cursor-pointer">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                        <p class="text-gray-600 mb-1">Drag & drop your CSV file here</p>
+                        <p class="text-gray-500 text-sm">or</p>
+                        <label for="csv_file" class="mt-2 inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md cursor-pointer transition duration-150">
+                            <span>Select file</span>
+                        </label>
+                        <input type="file" id="csv_file" name="csv_file" accept=".csv" class="hidden" />
+                        <p id="selectedFileName" class="text-sm text-gray-500 mt-2"></p>
+                    </div>
+
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="cancelUpload" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
+                        <button type="submit" id="submitUpload" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-150">Upload</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
 <script>
-    // Modal controls
-    document.getElementById('openModal').addEventListener('click', openModal);
-    document.getElementById('openModalFromEmpty')?.addEventListener('click', openModal);
-    document.getElementById('closeModal').addEventListener('click', closeModal);
-    
-    function openModal() {
-        document.getElementById('uploadModal').classList.remove('hidden');
-    }
-    
-    function closeModal() {
-        document.getElementById('uploadModal').classList.add('hidden');
-    }
-    
-    // Close on background click
-    document.getElementById('uploadModal').addEventListener('click', function(e) {
-        if (e.target === this) {
+    // File upload modal
+    const modal = document.getElementById('importModal');
+    const openBtn = document.getElementById('openModal');
+    const closeBtn = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelUpload');
+    const fileInput = document.getElementById('csv_file');
+    const dropzone = document.getElementById('dropzone');
+    const selectedFileName = document.getElementById('selectedFileName');
+    const contactSearch = document.getElementById('contactSearch');
+    const contactRows = document.querySelectorAll('.contact-row');
+
+    // Open modal
+    openBtn.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+    });
+
+    // Close modal functions
+    const closeModal = () => {
+        modal.classList.add('hidden');
+        fileInput.value = '';
+        selectedFileName.textContent = '';
+        dropzone.classList.remove('dropzone-active');
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // Click outside to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
             closeModal();
         }
     });
 
-    // File dropzone
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('fileInput');
-    const selectedFile = document.querySelector('.selected-file');
-    const uploadButton = document.getElementById('uploadButton');
-
-    // Handle click to browse files
-    dropzone.addEventListener('click', () => {
-        fileInput.click();
-    });
-
     // Handle file selection
-    fileInput.addEventListener('change', () => {
-        updateSelectedFile();
+    fileInput.addEventListener('change', (e) => {
+        if (fileInput.files.length > 0) {
+            selectedFileName.textContent = fileInput.files[0].name;
+            dropzone.classList.add('dropzone-active');
+        } else {
+            selectedFileName.textContent = '';
+            dropzone.classList.remove('dropzone-active');
+        }
     });
 
-    // Handle drag and drop events
+    // Drag and drop handling
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropzone.addEventListener(eventName, preventDefaults, false);
     });
@@ -208,29 +248,26 @@
         const dt = e.dataTransfer;
         const files = dt.files;
         fileInput.files = files;
-        updateSelectedFile();
-    }
-
-    function updateSelectedFile() {
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            selectedFile.innerHTML = `
-                <div class="bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 rounded-md flex items-center">
-                    <i class="fas fa-file-alt mr-2"></i> ${file.name} (${formatFileSize(file.size)})
-                </div>`;
-            uploadButton.disabled = false;
-        } else {
-            selectedFile.innerHTML = '';
-            uploadButton.disabled = true;
+        
+        if (files.length > 0) {
+            selectedFileName.textContent = files[0].name;
         }
     }
 
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    // Search contacts functionality
+    if (contactSearch) {
+        contactSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            contactRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     }
 </script>
 {% endblock %} 
