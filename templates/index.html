@@ -30,16 +30,34 @@
 .testimonial-card:hover {
     transform: scale(1.02);
 }
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0) translateX(-50%);
+    }
+    40% {
+        transform: translateY(-20px) translateX(-50%);
+    }
+    60% {
+        transform: translateY(-10px) translateX(-50%);
+    }
+}
 {% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<section class="min-h-screen flex items-center bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
-    <div class="container mx-auto px-6 py-16 max-w-6xl">
+<section class="min-h-[85vh] flex items-center bg-gradient-to-r from-indigo-600 to-blue-500 text-white relative">
+    <div class="container mx-auto px-6 py-12 max-w-6xl">
         <div class="flex flex-col md:flex-row items-center">
             <div class="md:w-1/2 text-center md:text-left mb-12 md:mb-0">
-                <h1 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">Client Appreciation <span class="text-yellow-300">Simplified</span></h1>
-                <p class="text-xl opacity-90 mb-10 max-w-2xl">The ultimate platform for real estate professionals to strengthen client relationships through thoughtful, timely gifts and personalized communication.</p>
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">Client Appreciation For Real Estate Agents <span class="text-yellow-300">On Autopilot</span></h1>
+                <p class="text-xl opacity-90 mb-10 max-w-2xl">Automatically send small gifts or notes to your clients on birthdays, anniversaries, or holidays.</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                     <a href="/dashboard" class="bg-white text-indigo-600 hover:bg-indigo-50 transition duration-300 px-8 py-4 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center">Get Started</a>
                     <a href="#features" class="bg-transparent border-2 border-white text-white hover:bg-white/10 transition duration-300 px-8 py-4 rounded-full text-lg font-medium text-center">Learn More</a>
@@ -49,6 +67,9 @@
                 <img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1740&q=80" alt="Gift box with ribbon" class="rounded-xl shadow-2xl max-w-full h-auto">
             </div>
         </div>
+    </div>
+    <div class="scroll-indicator text-white">
+        <i class="fas fa-chevron-down text-2xl"></i>
     </div>
 </section>
 
