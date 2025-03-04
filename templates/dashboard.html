@@ -50,9 +50,44 @@
 .flatpickr-day:hover {
     @apply bg-green-100;
 }
+/* Global dropzone styles */
+.global-dropzone {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(79, 70, 229, 0.2);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+.global-dropzone-active {
+    display: flex !important;
+}
+.global-dropzone-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    pointer-events: none;
+}
 {% endblock %}
 
 {% block content %}
+<!-- Global Dropzone Overlay -->
+<div id="globalDropzone" class="global-dropzone">
+    <div class="global-dropzone-content">
+        <i class="fas fa-cloud-upload-alt text-6xl text-indigo-600 mb-4"></i>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Drop to Upload</h3>
+        <p class="text-gray-600">Release your CSV file to automatically import contacts</p>
+    </div>
+</div>
+
 <div class="container mx-auto px-6 py-8">
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div class="mb-4 md:mb-0">
@@ -461,6 +496,8 @@
     const selectedFileName = document.getElementById('selectedFileName');
     const contactSearch = document.getElementById('contactSearch');
     const contactRows = document.querySelectorAll('.contact-row');
+    const globalDropzone = document.getElementById('globalDropzone');
+    const uploadForm = document.getElementById('uploadForm');
     
     // Remove duplicates modal
     const removeDuplicatesModal = document.getElementById('removeDuplicatesModal');
@@ -951,5 +988,80 @@
             instance.altInput.placeholder = "Select a date";
         }
     });
+
+    // Global dropzone functionality
+    // Remove existing event listeners to avoid duplicates
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.removeEventListener(eventName, preventDefaults, false);
+    });
+    
+    // Add event listeners to the document
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // Counter to track drag enter/leave events
+    let dragCounter = 0;
+
+    // Show global dropzone when dragging over the document
+    document.addEventListener('dragenter', function(e) {
+        dragCounter++;
+        globalDropzone.classList.add('global-dropzone-active');
+        console.log('Drag enter - showing dropzone', dragCounter);
+    });
+
+    // Hide global dropzone when leaving the document
+    document.addEventListener('dragleave', function(e) {
+        dragCounter--;
+        if (dragCounter === 0) {
+            globalDropzone.classList.remove('global-dropzone-active');
+            console.log('Drag leave - hiding dropzone', dragCounter);
+        }
+    });
+
+    // Keep dropzone visible during dragover
+    document.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        if (!globalDropzone.classList.contains('global-dropzone-active')) {
+            globalDropzone.classList.add('global-dropzone-active');
+            console.log('Drag over - showing dropzone');
+        }
+    });
+
+    // Handle file drop anywhere on the document
+    document.addEventListener('drop', function(e) {
+        dragCounter = 0;
+        globalDropzone.classList.remove('global-dropzone-active');
+        console.log('Drop - hiding dropzone');
+        
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0 && isCSVFileFromList(files)) {
+            // Set the file input value
+            fileInput.files = files;
+            
+            // Show the file name in the modal
+            selectedFileName.textContent = files[0].name;
+            
+            // Automatically submit the form
+            uploadForm.submit();
+        }
+    });
+
+    // Helper function to check if file list contains a CSV file
+    function isCSVFileFromList(files) {
+        for (let i = 0; i < files.length; i++) {
+            if (files[i].name.toLowerCase().endsWith('.csv')) {
+                return true;
+            }
+        }
+        return false;
+    }
 </script>
 {% endblock %} 
