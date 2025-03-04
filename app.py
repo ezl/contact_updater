@@ -204,14 +204,14 @@ def format_birthday(value):
         try:
             # Parse the MM-DD string
             date_obj = datetime.strptime(value, '%m-%d')
-            # Format to Month Day (e.g., "May 15")
-            return date_obj.strftime('%B %d')
+            # Format to Month Day with 3-letter abbreviation (e.g., "May 15")
+            return date_obj.strftime('%b %d')
         except ValueError:
             try:
                 # Try alternate format (for backward compatibility)
                 if len(value) > 5 and '-' in value:
                     date_obj = datetime.strptime(value, '%Y-%m-%d')
-                    return date_obj.strftime('%B %d')
+                    return date_obj.strftime('%b %d')
                 return value
             except:
                 # Return as is if all parsing fails
