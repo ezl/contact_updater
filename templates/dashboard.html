@@ -1068,24 +1068,10 @@
             }
         }
         
-        // Store the original content before replacing the element
-        const originalHTML = element.innerHTML;
-        
-        // Clear any existing event listeners
-        element.replaceWith(element.cloneNode(true));
-        
-        // Get the fresh element reference
-        const freshElement = document.getElementById(elementId);
-        
-        // Restore the original content
-        if (originalHTML && originalHTML.trim() !== '') {
-            freshElement.innerHTML = originalHTML;
-        }
-        
         // Add click event to make field editable
-        freshElement.addEventListener('click', function(e) {
+        element.addEventListener('click', function(e) {
             // Don't make the field editable if it's already in edit mode
-            if (freshElement.classList.contains('editing')) {
+            if (element.classList.contains('editing')) {
                 return;
             }
             
@@ -1094,8 +1080,22 @@
                 return;
             }
             
+            // Close any other fields that are currently being edited
+            document.querySelectorAll('.modal-value.editing').forEach(field => {
+                if (field !== element) {
+                    // Get the original content from the data attribute if available
+                    const originalContent = field.getAttribute('data-original-content');
+                    if (originalContent) {
+                        field.innerHTML = originalContent;
+                    }
+                    field.classList.remove('editing');
+                }
+            });
+            
             // Store the original content
-            const originalContent = freshElement.innerHTML;
+            const originalContent = element.innerHTML;
+            // Store the original content as a data attribute for potential recovery
+            element.setAttribute('data-original-content', originalContent);
             const originalValue = value === 'N/A' ? '' : value;
             
             // Create input element based on field type
@@ -1131,10 +1131,10 @@
             actionsDiv.appendChild(saveButton);
             
             // Clear the element and add the input
-            freshElement.innerHTML = '';
-            freshElement.appendChild(inputElement);
-            freshElement.appendChild(actionsDiv);
-            freshElement.classList.add('editing');
+            element.innerHTML = '';
+            element.appendChild(inputElement);
+            element.appendChild(actionsDiv);
+            element.classList.add('editing');
             
             // Focus the input
             inputElement.focus();
@@ -1144,8 +1144,8 @@
                 // Escape key to exit editing mode without closing modal
                 if (e.key === 'Escape') {
                     e.stopPropagation(); // Prevent the event from bubbling up to document
-                    freshElement.innerHTML = originalContent;
-                    freshElement.classList.remove('editing');
+                    element.innerHTML = originalContent;
+                    element.classList.remove('editing');
                 }
                 
                 // Ctrl/Cmd+Enter to save for both input fields and textareas
@@ -1163,11 +1163,37 @@
                 }
             });
             
+            // Handle blur event on the input element
+            inputElement.addEventListener('blur', function(e) {
+                // Use setTimeout to allow the click event to be processed first
+                // This ensures we can check what element was clicked
+                setTimeout(() => {
+                    // If we're clicking on a button within the same editable field, don't exit edit mode
+                    if (document.activeElement && element.contains(document.activeElement)) {
+                        return;
+                    }
+                    
+                    // If we're clicking on an input or button in another editable field,
+                    // exit editing mode for this field
+                    const clickedElement = document.activeElement;
+                    const isClickingAnotherField = clickedElement && 
+                        (clickedElement.tagName === 'INPUT' || 
+                         clickedElement.tagName === 'TEXTAREA' ||
+                         clickedElement.tagName === 'BUTTON' ||
+                         clickedElement.classList.contains('modal-value'));
+                    
+                    if (isClickingAnotherField) {
+                        element.innerHTML = originalContent;
+                        element.classList.remove('editing');
+                    }
+                }, 0);
+            });
+            
             // Cancel button event
             cancelButton.addEventListener('click', function(e) {
                 e.stopPropagation();
-                freshElement.innerHTML = originalContent;
-                freshElement.classList.remove('editing');
+                element.innerHTML = originalContent;
+                element.classList.remove('editing');
             });
             
             // Save button event
@@ -1191,15 +1217,15 @@
                     if (data.success) {
                         // Update the display value
                         if (newValue === '') {
-                            freshElement.textContent = 'N/A';
+                            element.textContent = 'N/A';
                         } else if (fieldName === 'email') {
-                            freshElement.innerHTML = `<a href="mailto:${newValue}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
+                            element.innerHTML = `<a href="mailto:${newValue}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
                         } else if (fieldName === 'cell') {
-                            freshElement.innerHTML = `<a href="tel:${newValue}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
+                            element.innerHTML = `<a href="tel:${newValue}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
                         } else if (fieldName === 'facebook' || fieldName === 'instagram' || fieldName === 'twitter') {
-                            freshElement.innerHTML = `<a href="${newValue}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
+                            element.innerHTML = `<a href="${newValue}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
                         } else {
-                            freshElement.textContent = newValue;
+                            element.textContent = newValue;
                         }
                         
                         // Update the contact data
@@ -1222,52 +1248,40 @@
                         // Also update the row in the table if visible
                         const row = document.querySelector(`.contact-row[data-contact-id="${contactId}"]`);
                         if (row) {
-                            if (fieldName === 'name') {
-                                const nameElement = row.querySelector('.text-sm.font-medium.text-gray-900');
-                                if (nameElement) {
-                                    nameElement.textContent = newValue;
-                                }
-                                const initialElement = row.querySelector('.text-indigo-800.font-semibold');
-                                if (initialElement) {
-                                    initialElement.textContent = newValue ? newValue[0].toUpperCase() : '';
-                                }
-                            } else if (fieldName === 'email') {
-                                const emailLink = row.querySelector('td:nth-child(3) a');
-                                if (emailLink) {
-                                    emailLink.href = `mailto:${newValue}`;
-                                    emailLink.querySelector('span.hidden.md\\:inline').textContent = newValue;
-                                }
-                            } else if (fieldName === 'cell') {
-                                const cellLink = row.querySelector('td:nth-child(2) a');
-                                if (cellLink) {
-                                    cellLink.href = `tel:${newValue}`;
-                                    cellLink.querySelector('span.hidden.md\\:inline').textContent = newValue;
-                                }
+                            const cell = row.querySelector(`.contact-${fieldName}`);
+                            if (cell) {
+                                cell.textContent = newValue;
                             }
                         }
                     } else {
                         alert('Failed to update: ' + (data.message || 'Unknown error'));
-                        freshElement.innerHTML = originalContent;
+                        element.innerHTML = originalContent;
                     }
                     
-                    freshElement.classList.remove('editing');
+                    element.classList.remove('editing');
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     alert('An error occurred while updating the contact.');
-                    freshElement.innerHTML = originalContent;
-                    freshElement.classList.remove('editing');
+                    element.innerHTML = originalContent;
+                    element.classList.remove('editing');
                 });
             });
             
-            // Handle clicks outside the editing area
+            // Set up a one-time click outside handler
             document.addEventListener('click', function handleOutsideClick(e) {
-                if (!freshElement.contains(e.target)) {
-                    freshElement.innerHTML = originalContent;
-                    freshElement.classList.remove('editing');
+                // If clicking outside the current editable field
+                if (!element.contains(e.target)) {
+                    // Check if clicking on another editable field or its child elements
+                    const isClickingAnotherField = e.target.classList.contains('modal-value') || 
+                                                e.target.closest('.modal-value') !== null;
+                    
+                    // Exit editing mode for this field
+                    element.innerHTML = originalContent;
+                    element.classList.remove('editing');
                     document.removeEventListener('click', handleOutsideClick);
                 }
-            });
+            }, { once: true });
             
             // Prevent the click from bubbling up
             e.stopPropagation();
