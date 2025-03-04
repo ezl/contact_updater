@@ -31,6 +31,12 @@
 .mobile-icon {
     @apply w-8 h-8 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600;
 }
+.sortable-header {
+    @apply cursor-pointer transition-colors duration-150;
+}
+.sortable-header:hover {
+    @apply bg-gray-100;
+}
 {% endblock %}
 
 {% block content %}
@@ -84,10 +90,20 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th scope="col" class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer sortable-header" data-sort="name">
+                                Name
+                                <span class="sort-icon ml-1 inline-block">
+                                    <i class="fas fa-sort text-gray-400"></i>
+                                </span>
+                            </th>
                             <th scope="col" class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cell</th>
                             <th scope="col" class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Birthday</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell cursor-pointer sortable-header" data-sort="birthday">
+                                Birthday
+                                <span class="sort-icon ml-1 inline-block">
+                                    <i class="fas fa-sort text-gray-400"></i>
+                                </span>
+                            </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Notes</th>
                         </tr>
                     </thead>
@@ -317,6 +333,90 @@
     const selectedFileName = document.getElementById('selectedFileName');
     const contactSearch = document.getElementById('contactSearch');
     const contactRows = document.querySelectorAll('.contact-row');
+    
+    // Sorting functionality
+    const sortableHeaders = document.querySelectorAll('th[data-sort]');
+    let currentSort = {
+        column: null,
+        direction: 'asc'
+    };
+    
+    // Function to sort table rows
+    function sortTable(column) {
+        const tbody = document.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr.contact-row'));
+        
+        // If clicking the same column, toggle direction
+        if (currentSort.column === column) {
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.column = column;
+            currentSort.direction = 'asc';
+        }
+        
+        // Update sort icons
+        sortableHeaders.forEach(header => {
+            const icon = header.querySelector('.sort-icon i');
+            if (header.dataset.sort === column) {
+                icon.className = currentSort.direction === 'asc' 
+                    ? 'fas fa-sort-up text-indigo-600' 
+                    : 'fas fa-sort-down text-indigo-600';
+            } else {
+                icon.className = 'fas fa-sort text-gray-400';
+            }
+        });
+        
+        // Sort the rows
+        const sortedRows = rows.sort((a, b) => {
+            let aValue, bValue;
+            
+            if (column === 'name') {
+                // Get the name text directly from the div that contains it
+                const aNameCell = a.querySelector('td:nth-child(1)');
+                const bNameCell = b.querySelector('td:nth-child(1)');
+                
+                // Find the div with the name text
+                const aNameDiv = aNameCell.querySelector('.text-sm.font-medium.text-gray-900');
+                const bNameDiv = bNameCell.querySelector('.text-sm.font-medium.text-gray-900');
+                
+                aValue = aNameDiv ? aNameDiv.textContent.trim().toLowerCase() : aNameCell.textContent.trim().toLowerCase();
+                bValue = bNameDiv ? bNameDiv.textContent.trim().toLowerCase() : bNameCell.textContent.trim().toLowerCase();
+            } else if (column === 'birthday') {
+                // Get raw birthday values from data attributes
+                const aBirthdayCell = a.querySelector('td:nth-child(4) div[data-raw-birthday]');
+                const bBirthdayCell = b.querySelector('td:nth-child(4) div[data-raw-birthday]');
+                
+                aValue = aBirthdayCell ? aBirthdayCell.dataset.rawBirthday : '';
+                bValue = bBirthdayCell ? bBirthdayCell.dataset.rawBirthday : '';
+                
+                // Handle empty values for proper sorting
+                if (!aValue || aValue === 'N/A') aValue = '13-32'; // A date that doesn't exist, for sorting last
+                if (!bValue || bValue === 'N/A') bValue = '13-32';
+            }
+            
+            // Compare the values
+            if (aValue < bValue) {
+                return currentSort.direction === 'asc' ? -1 : 1;
+            }
+            if (aValue > bValue) {
+                return currentSort.direction === 'asc' ? 1 : -1;
+            }
+            return 0;
+        });
+        
+        // Reorder the rows in the DOM
+        sortedRows.forEach(row => {
+            tbody.appendChild(row);
+        });
+    }
+    
+    // Add click event listeners to sortable headers
+    sortableHeaders.forEach(header => {
+        header.addEventListener('click', () => {
+            const column = header.dataset.sort;
+            sortTable(column);
+        });
+    });
 
     // Open modal
     openBtn.addEventListener('click', () => {
