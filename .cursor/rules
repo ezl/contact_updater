@@ -1,0 +1,43 @@
+// This file configures rules for the Cursor IDE
+{
+  "ai": {
+    // Configure AI behavior
+    "autocomplete": {
+      "enabled": true,
+      // Disable autocomplete for large files to improve performance
+      "disableForLargeFiles": true
+    },
+    "chat": {
+      // Include files from .gitignore in chat context
+      "includeIgnoredFilesInContext": false
+    }
+  },
+  "editor": {
+    // Configure editor behavior
+    "formatOnSave": true,
+    "tabSize": 2,
+    "insertSpaces": true,
+    "detectIndentation": true,
+    "rulers": [80, 100]
+  },
+  "project": {
+    // Files patterns to exclude from search and context
+    "excludePatterns": [
+      "node_modules",
+      "dist",
+      "build",
+      ".git",
+      "*.min.js",
+      "*.map"
+    ],
+    // Directories to prioritize in context
+    "priorityPaths": [
+      "src",
+      "app"
+    ],
+    // Files that should never be modified by AI
+    "doNotModify": [
+      "README.md"
+    ]
+  }
+} 
