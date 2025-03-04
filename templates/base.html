@@ -16,21 +16,23 @@
 </head>
 <body class="font-sans bg-gray-50 text-gray-800">
     <!-- Navigation -->
-    <nav class="bg-gradient-to-r from-indigo-600 to-blue-500 shadow-md">
+    <nav class="bg-white shadow-md border-b border-gray-200">
         <div class="container mx-auto px-6 py-3">
             <div class="flex items-center justify-between">
-                <a class="text-white font-bold text-xl" href="/">Client Magic</a>
+                <a class="text-gray-800 font-bold text-xl" href="/">
+                    <span class="text-forest-green" style="color: #2d6a4f;">Client</span> <span class="text-yellow-600">Magic</span>
+                </a>
                 <div class="hidden md:flex items-center space-x-1">
-                    <a href="/" class="text-white {% if request.path == '/' %}bg-indigo-700{% else %}opacity-80 hover:opacity-100{% endif %} px-3 py-2 rounded-md text-sm font-medium">
+                    <a href="/" class="{% if request.path == '/' %}bg-forest-green text-white{% else %}text-gray-700 hover:text-forest-green hover:bg-gray-100{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200" style="{% if request.path == '/' %}background-color: #2d6a4f;{% endif %}">
                         <i class="fas fa-home mr-1"></i> Home
                     </a>
-                    <a href="/dashboard" class="{% if request.path == '/dashboard' %}bg-white text-indigo-600{% else %}text-white opacity-80 hover:opacity-100{% endif %} px-3 py-2 rounded-md text-sm font-medium">
+                    <a href="/dashboard" class="{% if request.path == '/dashboard' %}bg-forest-green text-white{% else %}text-gray-700 hover:text-forest-green hover:bg-gray-100{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200" style="{% if request.path == '/dashboard' %}background-color: #2d6a4f;{% endif %}">
                         <i class="fas fa-th-large mr-1"></i> Dashboard
                     </a>
                 </div>
                 <!-- Mobile menu button -->
                 <div class="md:hidden flex items-center">
-                    <button class="mobile-menu-button focus:outline-none text-white">
+                    <button class="mobile-menu-button focus:outline-none text-gray-700">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -39,10 +41,10 @@
             </div>
             <!-- Mobile menu, hidden by default -->
             <div class="hidden md:hidden mobile-menu mt-2 py-2">
-                <a href="/" class="block text-white {% if request.path == '/' %}bg-indigo-700{% else %}opacity-80 hover:opacity-100{% endif %} px-3 py-2 rounded-md text-base font-medium">
+                <a href="/" class="block {% if request.path == '/' %}bg-forest-green text-white{% else %}text-gray-700 hover:text-forest-green hover:bg-gray-100{% endif %} px-3 py-2 rounded-md text-base font-medium transition-colors duration-200" style="{% if request.path == '/' %}background-color: #2d6a4f;{% endif %}">
                     <i class="fas fa-home mr-1"></i> Home
                 </a>
-                <a href="/dashboard" class="block text-white {% if request.path == '/dashboard' %}bg-indigo-700{% else %}opacity-80 hover:opacity-100{% endif %} px-3 py-2 rounded-md text-base font-medium">
+                <a href="/dashboard" class="block {% if request.path == '/dashboard' %}bg-forest-green text-white{% else %}text-gray-700 hover:text-forest-green hover:bg-gray-100{% endif %} px-3 py-2 rounded-md text-base font-medium transition-colors duration-200" style="{% if request.path == '/dashboard' %}background-color: #2d6a4f;{% endif %}">
                     <i class="fas fa-th-large mr-1"></i> Dashboard
                 </a>
             </div>
