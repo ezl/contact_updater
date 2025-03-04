@@ -1139,12 +1139,27 @@
             // Focus the input
             inputElement.focus();
             
-            // Handle Escape key to exit editing mode without closing modal
+            // Handle keyboard shortcuts for saving and canceling
             inputElement.addEventListener('keydown', function(e) {
+                // Escape key to exit editing mode without closing modal
                 if (e.key === 'Escape') {
                     e.stopPropagation(); // Prevent the event from bubbling up to document
                     freshElement.innerHTML = originalContent;
                     freshElement.classList.remove('editing');
+                }
+                
+                // Ctrl/Cmd+Enter to save for both input fields and textareas
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    saveButton.click(); // Trigger the save button click event
+                }
+                
+                // Enter key to save for input fields only (not for textareas)
+                if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && inputElement.tagName !== 'TEXTAREA') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    saveButton.click(); // Trigger the save button click event
                 }
             });
             
