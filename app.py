@@ -1,4 +1,4 @@
-from flask import Flask, render_template, send_from_directory, request, flash, redirect, url_for
+from flask import Flask, render_template, send_from_directory, request, flash, redirect, url_for, jsonify
 import os
 import pandas as pd
 from datetime import datetime
@@ -308,6 +308,47 @@ def add_contact():
         db.session.rollback()
         error_message = f"Error adding contact: {str(e)}"
         return redirect(url_for('dashboard', error_message=error_message))
+
+@app.route('/update_contact/<int:id>', methods=['POST'])
+def update_contact(id):
+    try:
+        # Get the contact
+        contact = Contact.query.get_or_404(id)
+        
+        # Get the data from the request
+        data = request.json
+        field = data.get('field')
+        value = data.get('value')
+        
+        # Validate the field
+        allowed_fields = ['name', 'cell', 'email', 'mailing_address', 'notes', 
+                          'birthday', 'facebook', 'instagram', 'twitter']
+        
+        if field not in allowed_fields:
+            return jsonify({'success': False, 'message': 'Invalid field'}), 400
+        
+        # Update the field
+        setattr(contact, field, value)
+        
+        # Update timestamp fields if applicable
+        if field == 'email':
+            contact.email_updated = datetime.utcnow()
+        elif field == 'cell':
+            contact.cell_updated = datetime.utcnow()
+        
+        # Save the changes
+        db.session.commit()
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Contact updated successfully',
+            'field': field,
+            'value': value
+        })
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 # Custom filter for formatting dates in templates
 @app.template_filter('date')
