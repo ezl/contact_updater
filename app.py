@@ -432,9 +432,9 @@ def undo_delete(action, id):
             db.session.delete(deleted_contact)
             db.session.commit()
             
-            success_message = "Client restored successfully!"
+            success_message = "Contact restored successfully!"
             
-        elif action in ['all', 'duplicates']:
+        elif action in ['all', 'duplicates', 'bulk']:
             # Restore all contacts from a batch operation
             deleted_contacts = DeletedContact.query.filter_by(operation_id=id).all()
             
@@ -467,7 +467,7 @@ def undo_delete(action, id):
             
             db.session.commit()
             
-            action_type = "all contacts" if action == 'all' else "duplicate contacts"
+            action_type = "all contacts" if action == 'all' else "duplicate contacts" if action == 'duplicates' else "bulk deleted contacts"
             success_message = f"Successfully restored {restored_count} {action_type}!"
             
         else:
@@ -799,6 +799,58 @@ def get_holidays_for_month(month, year):
         holidays.append({'name': "New Year's Eve", 'date': f"12-31-{year}"})
     
     return holidays
+
+@app.route('/bulk_delete_contacts', methods=['POST'])
+def bulk_delete_contacts():
+    try:
+        # Get the list of contact IDs to delete
+        contact_ids = request.form.getlist('contact_ids')
+        
+        if not contact_ids:
+            flash('No contacts selected for deletion.', 'error')
+            return redirect(url_for('dashboard'))
+        
+        # Generate a unique operation ID for this bulk deletion
+        operation_id = str(datetime.utcnow().timestamp())
+        deleted_count = 0
+        
+        for contact_id in contact_ids:
+            try:
+                contact_id = int(contact_id)
+                contact = Contact.query.get(contact_id)
+                
+                if contact:
+                    # Store the contact data for potential undo
+                    contact_data = serialize_contact(contact)
+                    
+                    # Create a DeletedContact record
+                    deleted_contact = DeletedContact(
+                        original_id=contact.id,
+                        contact_data=json.dumps(contact_data),
+                        deletion_type='bulk',
+                        operation_id=operation_id
+                    )
+                    db.session.add(deleted_contact)
+                    
+                    # Delete the contact
+                    db.session.delete(contact)
+                    deleted_count += 1
+            except Exception as e:
+                app.logger.error(f"Error deleting contact {contact_id}: {str(e)}")
+                continue
+        
+        db.session.commit()
+        
+        success_message = f"{deleted_count} contact(s) deleted successfully!"
+        return redirect(url_for('dashboard', 
+                               success_message=success_message,
+                               undo_action='bulk',
+                               undo_id=operation_id))
+    except Exception as e:
+        db.session.rollback()
+        error_message = f"Error deleting contacts: {str(e)}"
+        flash(error_message, 'error')
+        return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
     # Make sure uploads directory exists

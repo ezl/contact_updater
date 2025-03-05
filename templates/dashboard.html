@@ -589,7 +589,12 @@
         // Contact row click event
         const contactRows = document.querySelectorAll('.contact-row');
         contactRows.forEach(row => {
-            row.addEventListener('click', function() {
+            row.addEventListener('click', function(e) {
+                // Skip if the click was on or inside a checkbox
+                if (e.target.closest('.contact-checkbox') || e.target.classList.contains('contact-checkbox')) {
+                    return;
+                }
+                
                 const contactId = this.getAttribute('data-contact-id');
                 openContactDetailModal(contactId);
             });
@@ -610,77 +615,40 @@
                     document.getElementById('contactName').textContent = data.name || '';
                     document.getElementById('contactInitial').textContent = data.name ? data.name[0].toUpperCase() : '';
                     
-                    // Set the delete form action
-                    const deleteForm = document.getElementById('deleteContactForm');
-                    if (deleteForm) {
-                        deleteForm.action = `/delete_contact/${contactId}`;
-                        console.log('Delete form action set to:', deleteForm.action);
-                        
-                        // Add a direct event listener to the delete button
-                        const deleteButton = deleteForm.querySelector('button[type="submit"]');
-                        if (deleteButton) {
-                            // Remove any existing listeners
-                            const newDeleteButton = deleteButton.cloneNode(true);
-                            deleteButton.parentNode.replaceChild(newDeleteButton, deleteButton);
+                    // Store the contact ID for editing
+                    contactDetailModal.setAttribute('data-contact-id', contactId);
+                    
+                    // Show the modal first, so the client_actions component is rendered
+                    openModal('contactDetailModal');
+                    
+                    // Set the delete form action - do this after modal is opened
+                    setTimeout(() => {
+                        const deleteForm = document.getElementById('deleteContactForm');
+                        if (deleteForm) {
+                            deleteForm.action = `/delete_contact/${contactId}`;
+                            console.log('Delete form action set to:', deleteForm.action);
                             
-                            // Add new listener
-                            newDeleteButton.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                console.log('Delete button clicked for contact:', contactId);
+                            // Add a direct event listener to the delete button
+                            const deleteButton = deleteForm.querySelector('button[type="submit"]');
+                            if (deleteButton) {
+                                // Remove any existing listeners
+                                const newDeleteButton = deleteButton.cloneNode(true);
+                                deleteButton.parentNode.replaceChild(newDeleteButton, deleteButton);
                                 
-                                if (confirm('Are you sure you want to delete this contact?')) {
-                                    console.log('Deleting contact:', contactId);
-                                    console.log('Form action:', deleteForm.action);
-                                    
-                                    // Use the form's action directly
-                                    const formAction = deleteForm.action;
-                                    console.log('Using form action:', formAction);
-                                    
-                                    // Create FormData from the form
-                                    const formData = new FormData(deleteForm);
-                                    
-                                    // Submit the form programmatically
-                                    fetch(formAction, {
-                                        method: 'POST',
-                                        headers: {
-                                            'X-Requested-With': 'XMLHttpRequest'
-                                        },
-                                        body: formData
-                                    })
-                                    .then(response => {
-                                        console.log('Delete response status:', response.status);
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        console.log('Delete response data:', data);
-                                        if (data.success) {
-                                            // Close the modal
-                                            closeModal('contactDetailModal');
-                                            
-                                            // Remove the row from the table if it exists
-                                            const row = document.querySelector(`.contact-row[data-contact-id="${contactId}"]`);
-                                            if (row) {
-                                                row.remove();
-                                            }
-                                            
-                                            // Show success message
-                                            alert('Contact deleted successfully');
-                                        } else {
-                                            alert('Error deleting contact: ' + data.message);
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error deleting contact:', error);
-                                        alert('Error deleting contact. Please try again.');
-                                    });
-                                }
-                            });
+                                // Add new listener
+                                newDeleteButton.addEventListener('click', function(e) {
+                                    if (!confirm('Are you sure you want to delete this contact?')) {
+                                        e.preventDefault();
+                                    }
+                                    // Let the form submit normally to get the redirect with undo parameters
+                                });
+                            } else {
+                                console.error('Delete button not found in the form');
+                            }
                         } else {
-                            console.error('Delete button not found in the form');
+                            console.error('Delete form not found in the modal');
                         }
-                    } else {
-                        console.error('Delete form not found in the modal');
-                    }
+                    }, 100); // Short delay to ensure modal is fully rendered
                     
                     // Populate all fields
                     document.getElementById('detailName').textContent = data.name || '';
@@ -709,12 +677,6 @@
                     document.getElementById('detailFacebook').textContent = data.facebook || '';
                     document.getElementById('detailInstagram').textContent = data.instagram || '';
                     document.getElementById('detailTwitter').textContent = data.twitter || '';
-                    
-                    // Store the contact ID for editing
-                    contactDetailModal.setAttribute('data-contact-id', contactId);
-                    
-                    // Show the modal
-                    openModal('contactDetailModal');
                 })
                 .catch(error => {
                     console.error('Error fetching contact details:', error);
@@ -1384,6 +1346,146 @@
             };
             return months[monthName.toLowerCase().substring(0, 3)] || 0;
         }
+
+        // Checkbox and bulk actions functionality
+        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+        const contactCheckboxes = document.querySelectorAll('.contact-checkbox');
+        const bulkActionButtons = document.getElementById('bulkActionButtons');
+        const selectedCountElement = document.getElementById('selectedCount');
+        
+        // Function to update the selected count and toggle bulk action buttons
+        function updateSelectedState() {
+            const selectedCheckboxes = document.querySelectorAll('.contact-checkbox:checked');
+            const selectedCount = selectedCheckboxes.length;
+            
+            if (selectedCount > 0) {
+                bulkActionButtons.classList.remove('hidden');
+                if (selectedCountElement) {
+                    selectedCountElement.textContent = selectedCount;
+                }
+            } else {
+                bulkActionButtons.classList.add('hidden');
+            }
+            
+            // Update "select all" checkbox state
+            if (selectedCount === contactCheckboxes.length && selectedCount > 0) {
+                selectAllCheckbox.checked = true;
+                selectAllCheckbox.indeterminate = false;
+            } else if (selectedCount > 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = true;
+            } else {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            }
+        }
+        
+        // Add event listeners to all contact checkboxes
+        contactCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateSelectedState);
+        });
+        
+        // Handle "select all" checkbox
+        selectAllCheckbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            
+            contactCheckboxes.forEach(checkbox => {
+                checkbox.checked = isChecked;
+            });
+            
+            updateSelectedState();
+        });
+        
+        // Set up bulk action button event listeners
+        document.getElementById('bulkConfirmAddress')?.addEventListener('click', function() {
+            const selectedIds = Array.from(document.querySelectorAll('.contact-checkbox:checked'))
+                .map(checkbox => checkbox.getAttribute('data-contact-id'));
+            console.log('Request address confirmation for:', selectedIds);
+        });
+        
+        document.getElementById('bulkEnrichData')?.addEventListener('click', function() {
+            const selectedIds = Array.from(document.querySelectorAll('.contact-checkbox:checked'))
+                .map(checkbox => checkbox.getAttribute('data-contact-id'));
+            console.log('Enrich client data for:', selectedIds);
+        });
+        
+        document.getElementById('bulkSendGift')?.addEventListener('click', function() {
+            const selectedIds = Array.from(document.querySelectorAll('.contact-checkbox:checked'))
+                .map(checkbox => checkbox.getAttribute('data-contact-id'));
+            console.log('Send gift to:', selectedIds);
+        });
+        
+        document.getElementById('bulkSendMessage')?.addEventListener('click', function() {
+            const selectedIds = Array.from(document.querySelectorAll('.contact-checkbox:checked'))
+                .map(checkbox => checkbox.getAttribute('data-contact-id'));
+            console.log('Send message to:', selectedIds);
+        });
+        
+        document.getElementById('bulkDelete')?.addEventListener('click', function() {
+            const selectedIds = Array.from(document.querySelectorAll('.contact-checkbox:checked'))
+                .map(checkbox => checkbox.getAttribute('data-contact-id'));
+            
+            if (selectedIds.length === 0) {
+                alert('No contacts selected for deletion.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete ${selectedIds.length} selected contact(s)?`)) {
+                // Create a form to submit the selected IDs
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/bulk_delete_contacts';
+                
+                // Add CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrf_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+                
+                // Add selected IDs
+                selectedIds.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'contact_ids';
+                    input.value = id;
+                    form.appendChild(input);
+                });
+                
+                // Append form to body and submit
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+        
+        // Make sure row clicks don't trigger when clicking on checkboxes
+        contactCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+        
+        // Set up single client action button event listeners in the contact detail modal
+        document.getElementById('singleConfirmAddress')?.addEventListener('click', function() {
+            const contactId = document.getElementById('deleteContactForm')?.action.split('/').pop();
+            console.log('Request address confirmation for client:', contactId);
+        });
+        
+        document.getElementById('singleEnrichData')?.addEventListener('click', function() {
+            const contactId = document.getElementById('deleteContactForm')?.action.split('/').pop();
+            console.log('Enrich data for client:', contactId);
+        });
+        
+        document.getElementById('singleSendGift')?.addEventListener('click', function() {
+            const contactId = document.getElementById('deleteContactForm')?.action.split('/').pop();
+            console.log('Send gift to client:', contactId);
+        });
+        
+        document.getElementById('singleSendMessage')?.addEventListener('click', function() {
+            const contactId = document.getElementById('deleteContactForm')?.action.split('/').pop();
+            console.log('Send message to client:', contactId);
+        });
     });
 </script>
 {% endblock %} 

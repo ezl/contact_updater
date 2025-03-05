@@ -1,36 +1,45 @@
 <!-- Search Bar with Action Buttons -->
-<div class="flex justify-between items-center mb-4">
-    <div class="relative flex-grow mr-4">
-        <input type="text" id="searchInput" placeholder="Search contacts..." class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
-        <button class="absolute left-0 top-0 mt-2 ml-3">
-            <i class="fas fa-search text-gray-500"></i>
-        </button>
+<div class="flex flex-col mb-4">
+    <!-- Bulk Action Buttons - Hidden by default -->
+    <div id="bulkActionButtons" class="hidden">
+        {% from "components/client_actions.html" import client_actions %}
+        {{ client_actions(mode='bulk', selected_count=0) }}
     </div>
-    
-    <!-- Add Client Button -->
-    <button id="addContactBtn" class="px-4 py-2 bg-forest-green text-white rounded-md hover:bg-forest-green-dark transition duration-150 mr-2">
-        <i class="fas fa-plus mr-1 md:mr-1"></i> <span class="hidden md:inline">Add Client</span>
-    </button>
-    
-    <!-- Kebab Menu Dropdown -->
-    <div class="relative inline-block text-left">
-        <button id="kebabMenuBtn" class="w-10 h-10 flex items-center justify-center bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition duration-150">
-            <i class="fas fa-ellipsis-v"></i>
+
+    <!-- Regular Search and Action Buttons -->
+    <div class="flex justify-between items-center">
+        <div class="relative flex-grow mr-4">
+            <input type="text" id="searchInput" placeholder="Search contacts..." class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
+            <button class="absolute left-0 top-0 mt-2 ml-3">
+                <i class="fas fa-search text-gray-500"></i>
+            </button>
+        </div>
+        
+        <!-- Add Client Button -->
+        <button id="addClientBtn" class="px-4 py-2 bg-forest-green text-white rounded-md hover:bg-forest-green-dark transition duration-150">
+            <i class="fas fa-plus mr-1"></i> Add Client
         </button>
-        <div id="kebabDropdown" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="kebabMenuBtn">
-                <button id="importBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150" role="menuitem">
-                    <i class="fas fa-file-import mr-2"></i> Import CSV
-                </button>
-                <button id="exportBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150" role="menuitem">
-                    <i class="fas fa-file-export mr-2"></i> Export Data
-                </button>
-                <button id="removeDuplicatesBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150" role="menuitem">
-                    <i class="fas fa-users mr-2"></i> Remove Duplicates
-                </button>
-                <button id="deleteAllBtn" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-100 text-red-600 transition duration-150" role="menuitem">
-                    <i class="fas fa-trash-alt mr-2"></i> Delete All
-                </button>
+        
+        <!-- Kebab Menu -->
+        <div class="relative ml-2">
+            <button id="kebabMenuBtn" class="p-2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+            <div id="kebabMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <div class="py-1">
+                    <a href="#" id="importCSVBtn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-file-import mr-2"></i> Import CSV
+                    </a>
+                    <a href="/download_all_contacts" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-file-export mr-2"></i> Export Data
+                    </a>
+                    <a href="#" id="removeDuplicatesBtn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <i class="fas fa-clone mr-2"></i> Remove Duplicates
+                    </a>
+                    <a href="#" id="deleteAllBtn" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                        <i class="fas fa-trash-alt mr-2"></i> Delete All
+                    </a>
+                </div>
             </div>
         </div>
     </div>

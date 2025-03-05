@@ -1,0 +1,47 @@
+<!-- Client Actions Component -->
+{% macro client_actions(mode='single', contact_id=None, selected_count=0, csrf_token=None) %}
+    <div class="{% if mode == 'bulk' %}mb-4 p-3 bg-gray-50 rounded-md border border-gray-200 shadow-sm{% else %}mb-3 p-3 bg-gray-50 rounded-lg border border-gray-100{% endif %}">
+        {% if mode == 'bulk' %}
+        <div class="flex flex-wrap items-center justify-between">
+            <div class="flex items-center mb-2 md:mb-0">
+                <span class="text-sm font-medium text-gray-700 mr-2">
+                    <span id="selectedCount">{{ selected_count }}</span> clients selected
+                </span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+        {% else %}
+        <h4 class="text-base font-medium text-forest-green mb-2">
+            <i class="fas fa-tasks mr-1"></i> Client Actions
+        </h4>
+        <div class="flex flex-wrap gap-2">
+        {% endif %}
+            <button id="{{ mode }}ConfirmAddress" class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition duration-150">
+                <i class="fas fa-map-marker-alt mr-1"></i> Request Address Confirmation
+            </button>
+            <button id="{{ mode }}EnrichData" class="px-3 py-1.5 bg-purple-600 text-white text-sm rounded hover:bg-purple-700 transition duration-150">
+                <i class="fas fa-database mr-1"></i> Enrich Client Data
+            </button>
+            <button id="{{ mode }}SendGift" class="px-3 py-1.5 bg-amber-600 text-white text-sm rounded hover:bg-amber-700 transition duration-150">
+                <i class="fas fa-gift mr-1"></i> Send Gift
+            </button>
+            <button id="{{ mode }}SendMessage" class="px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition duration-150">
+                <i class="fas fa-comment mr-1"></i> Send Message
+            </button>
+            {% if mode == 'single' %}
+            <form method="POST" action="#" id="deleteContactForm" class="inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="px-3 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition duration-150">
+                    <i class="fas fa-trash-alt mr-1"></i> Delete
+                </button>
+            </form>
+            {% else %}
+            <button id="{{ mode }}Delete" class="px-3 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition duration-150">
+                <i class="fas fa-trash-alt mr-1"></i> Delete
+            </button>
+            {% endif %}
+        </div>
+        {% if mode == 'bulk' %}
+        </div>
+        {% endif %}
+    </div>
+{% endmacro %} 
