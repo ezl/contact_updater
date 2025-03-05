@@ -1,0 +1,121 @@
+:root {
+  /* Primary Colors */
+  --forest-green: #2d6a4f;
+  --forest-green-dark: #1b4332;
+  --forest-green-light: #40916c;
+  --forest-green-lighter: #52b788;
+  --forest-green-100: #d8f3dc;
+  
+  /* Accent Colors */
+  --gold: #facc15;
+  --gold-dark: #eab308;
+  --gold-light: #fde68a;
+  
+  /* Text Colors */
+  --text-on-green: #ffffff;
+  --text-on-light: #1f2937;
+  --text-muted: #6b7280;
+  
+  /* UI Colors */
+  --success: #22c55e;
+  --success-light: #dcfce7;
+  --warning: #f59e0b;
+  --warning-light: #fef3c7;
+  --danger: #ef4444;
+  --danger-light: #fee2e2;
+  --info: #3b82f6;
+  --info-light: #dbeafe;
+}
+
+/* Utility classes for colors */
+.bg-forest-green {
+  background-color: var(--forest-green);
+}
+
+.bg-forest-green-dark {
+  background-color: var(--forest-green-dark);
+}
+
+.bg-forest-green-light {
+  background-color: var(--forest-green-light);
+}
+
+.bg-forest-green-lighter {
+  background-color: var(--forest-green-lighter);
+}
+
+.bg-forest-green-100 {
+  background-color: var(--forest-green-100);
+}
+
+.bg-gold {
+  background-color: var(--gold);
+}
+
+.bg-gold-dark {
+  background-color: var(--gold-dark);
+}
+
+.bg-gold-light {
+  background-color: var(--gold-light);
+}
+
+.text-forest-green {
+  color: var(--forest-green);
+}
+
+.text-forest-green-dark {
+  color: var(--forest-green-dark);
+}
+
+.text-forest-green-light {
+  color: var(--forest-green-light);
+}
+
+.text-gold {
+  color: var(--gold);
+}
+
+.text-gold-dark {
+  color: var(--gold-dark);
+}
+
+.border-forest-green {
+  border-color: var(--forest-green);
+}
+
+.border-gold {
+  border-color: var(--gold);
+}
+
+/* Gradient backgrounds */
+.bg-gradient-forest {
+  background-image: linear-gradient(to right, var(--forest-green), var(--forest-green-light));
+}
+
+/* Hover states */
+.hover-bg-forest-green:hover {
+  background-color: var(--forest-green);
+}
+
+.hover-bg-forest-green-dark:hover {
+  background-color: var(--forest-green-dark);
+}
+
+.hover-bg-gold:hover {
+  background-color: var(--gold);
+}
+
+.hover-text-forest-green:hover {
+  color: var(--forest-green);
+}
+
+.hover-text-gold:hover {
+  color: var(--gold);
+}
+
+/* Focus states for form elements */
+.focus-forest-green:focus {
+  border-color: var(--forest-green);
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.2);
+} 

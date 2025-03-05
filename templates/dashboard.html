@@ -8,18 +8,18 @@
     border: 2px dashed #d1d5db; /* border-gray-300 */
 }
 .dropzone-active {
-    border-color: #6366f1; /* border-indigo-500 */
-    background-color: #eef2ff; /* bg-indigo-50 */
+    border-color: var(--forest-green); /* Changed from indigo */
+    background-color: var(--forest-green-100); /* Changed from indigo-50 */
 }
 .contact-row {
     cursor: pointer !important;
     transition: background-color 0.2s ease;
 }
 .contact-row:hover {
-    background-color: #EEF2FF !important; /* indigo-50 equivalent */
+    background-color: var(--forest-green-100) !important; /* Changed from indigo-50 */
 }
 .contact-row.selected {
-    background-color: #EEF2FF !important; /* indigo-50 equivalent */
+    background-color: var(--forest-green-100) !important; /* Changed from indigo-50 */
 }
 .modal-field {
     margin-bottom: 1rem; /* mb-4 */
@@ -62,7 +62,7 @@
 }
 .edit-save-btn {
     padding: 0.25rem 0.75rem;
-    background-color: #22c55e; /* bg-green-500 */
+    background-color: var(--forest-green); /* Changed from green-500 */
     color: white;
     border-radius: 0.25rem;
     font-size: 0.75rem;
@@ -70,7 +70,7 @@
     transition: background-color 0.15s;
 }
 .edit-save-btn:hover {
-    background-color: #16a34a; /* bg-green-600 */
+    background-color: var(--forest-green-dark); /* Changed from green-600 */
 }
 .edit-cancel-btn {
     padding: 0.25rem 0.75rem;
@@ -87,8 +87,8 @@
 .edit-success {
     margin-top: 0.5rem;
     padding: 0.375rem;
-    background-color: #dcfce7; /* bg-green-100 */
-    color: #16a34a; /* text-green-600 */
+    background-color: var(--success-light); /* Changed from green-100 */
+    color: var(--success); /* Changed from green-600 */
     border-radius: 0.25rem;
     font-size: 0.75rem;
     text-align: center;
@@ -105,8 +105,8 @@
     align-items: center;
     justify-content: center;
     border-radius: 9999px; /* rounded-full */
-    background-color: #eef2ff; /* bg-indigo-100 */
-    color: #4f46e5; /* text-indigo-600 */
+    background-color: var(--forest-green-100); /* Changed from indigo-100 */
+    color: var(--forest-green); /* Changed from indigo-600 */
 }
 .sortable-header {
     cursor: pointer;
@@ -123,14 +123,14 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
 }
 .flatpickr-day.selected {
-    background-color: #22c55e; /* bg-green-500 */
-    border-color: #22c55e; /* border-green-500 */
+    background-color: var(--forest-green); /* Changed from green-500 */
+    border-color: var(--forest-green); /* Changed from green-500 */
 }
 .flatpickr-day.today {
-    border-color: #86efac; /* border-green-300 */
+    border-color: var(--forest-green-light); /* Changed from green-300 */
 }
 .flatpickr-day:hover {
-    background-color: #dcfce7; /* bg-green-100 */
+    background-color: var(--forest-green-100); /* Changed from green-100 */
 }
 /* Global dropzone styles */
 .global-dropzone {
@@ -140,7 +140,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(79, 70, 229, 0.2);
+    background-color: rgba(45, 106, 79, 0.2); /* Changed from indigo */
     z-index: 9999;
     justify-content: center;
     align-items: center;
@@ -164,7 +164,7 @@
 <!-- Global Dropzone Overlay -->
 <div id="globalDropzone" class="global-dropzone">
     <div class="global-dropzone-content">
-        <i class="fas fa-cloud-upload-alt text-6xl text-indigo-600 mb-4"></i>
+        <i class="fas fa-cloud-upload-alt text-6xl text-forest-green mb-4"></i>
         <h3 class="text-2xl font-bold text-gray-800 mb-2">Drop to Upload</h3>
         <p class="text-gray-600">Release your CSV file to automatically import contacts</p>
     </div>
@@ -183,26 +183,26 @@
     
     <!-- Action buttons row -->
     <div class="flex flex-wrap items-center gap-3 mb-8">
-        <a href="{{ url_for('download_all_contacts') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+        <a href="{{ url_for('download_all_contacts') }}" class="bg-forest-green hover:bg-forest-green-dark text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
             <i class="fas fa-download mr-2"></i> Download All
         </a>
-        <button id="deleteAllBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+        <button id="deleteAllBtn" class="bg-danger hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
             <i class="fas fa-trash-alt mr-2"></i> Delete All
         </button>
-        <button id="removeDuplicatesBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+        <button id="removeDuplicatesBtn" class="bg-warning hover:bg-amber-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
             <i class="fas fa-broom mr-2"></i> Remove Duplicates
         </button>
-        <button id="addContactBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+        <button id="addContactBtn" class="bg-forest-green hover:bg-forest-green-dark text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
             <i class="fas fa-user-plus mr-2"></i> Add Contact
         </button>
-        <button id="openModal" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
+        <button id="openModal" class="bg-forest-green hover:bg-forest-green-dark text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
             <i class="fas fa-upload mr-2"></i> Import Contacts
         </button>
     </div>
 
     <!-- Alerts for feedback -->
     {% if success_message %}
-    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
+    <div class="bg-success-light border-l-4 border-success text-success p-4 mb-6 rounded-md" role="alert">
         <div class="flex items-center justify-between">
             <div class="flex items-center">
                 <i class="fas fa-check-circle mr-2"></i>
@@ -210,7 +210,7 @@
             </div>
             {% if undo_action and undo_id %}
             <form action="{{ url_for('undo_delete', action=undo_action, id=undo_id) }}" method="post" class="ml-4">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-md text-sm flex items-center">
+                <button type="submit" class="bg-forest-green hover:bg-forest-green-dark text-white px-3 py-1 rounded-md text-sm flex items-center">
                     <i class="fas fa-undo mr-1"></i> Undo
                 </button>
             </form>
@@ -220,7 +220,7 @@
     {% endif %}
     
     {% if error_message %}
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+    <div class="bg-danger-light border-l-4 border-danger text-danger p-4 mb-6 rounded-md" role="alert">
         <div class="flex items-center">
             <i class="fas fa-exclamation-circle mr-2"></i>
             <span>{{ error_message }}</span>
@@ -233,7 +233,7 @@
         <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
             <h2 class="font-semibold text-lg text-gray-800">All Contacts</h2>
             <div class="relative max-w-xs">
-                <input type="text" id="contactSearch" placeholder="Search contacts..." class="py-2 pl-3 pr-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <input type="text" id="contactSearch" placeholder="Search contacts..." class="py-2 pl-3 pr-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                 <button class="absolute inset-y-0 right-0 px-3 flex items-center bg-gray-100 rounded-r-md border-l-0 border border-gray-300">
                     <i class="fas fa-search text-gray-500"></i>
                 </button>
@@ -268,8 +268,8 @@
                             <tr class="contact-row" data-contact-id="{{ contact.id }}">
                                 <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center hidden md:flex">
-                                            <span class="text-indigo-800 font-semibold">{{ contact.name[0]|upper if contact.name else '' }}</span>
+                                        <div class="flex-shrink-0 h-10 w-10 bg-forest-green-100 rounded-full flex items-center justify-center hidden md:flex">
+                                            <span class="text-forest-green font-semibold">{{ contact.name[0]|upper if contact.name else '' }}</span>
                                         </div>
                                         <div class="ml-0 md:ml-4">
                                             <div class="text-sm font-medium text-gray-900">{{ contact.name }}</div>
@@ -279,7 +279,7 @@
                                 <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
                                         {% if contact.cell %}
-                                        <a href="tel:{{ contact.cell }}" class="text-indigo-600 hover:text-indigo-800 hover:underline">
+                                        <a href="tel:{{ contact.cell }}" class="text-forest-green hover:text-forest-green-dark hover:underline">
                                             <span class="hidden md:inline">{{ contact.cell }}</span>
                                             <span class="mobile-icon md:hidden">
                                                 <i class="fas fa-phone"></i>
@@ -296,7 +296,7 @@
                                 <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap">
                                     <div class="text-sm text-gray-900">
                                         {% if contact.email %}
-                                        <a href="mailto:{{ contact.email }}" class="text-indigo-600 hover:text-indigo-800 hover:underline">
+                                        <a href="mailto:{{ contact.email }}" class="text-forest-green hover:text-forest-green-dark hover:underline">
                                             <span class="hidden md:inline">{{ contact.email }}</span>
                                             <span class="mobile-icon md:hidden">
                                                 <i class="fas fa-envelope"></i>
@@ -356,7 +356,7 @@
                 <form action="{{ url_for('remove_duplicates') }}" method="post" id="removeDuplicatesForm">
                     <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
                         <button type="button" id="cancelRemoveDuplicates" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-700 transition duration-150">Remove Duplicates</button>
+                        <button type="submit" class="px-4 py-2 bg-warning text-white rounded-md hover:bg-amber-700 transition duration-150">Remove Duplicates</button>
                     </div>
                 </form>
             </div>
@@ -379,34 +379,34 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                         <div class="form-group">
                             <label for="name" class="modal-label">Name *</label>
-                            <input type="text" id="name" name="name" required class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <input type="text" id="name" name="name" required class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                         </div>
                         
                         <div class="form-group">
                             <label for="cell" class="modal-label">Cell Phone</label>
-                            <input type="tel" id="cell" name="cell" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <input type="tel" id="cell" name="cell" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                         </div>
                         
                         <div class="form-group">
                             <label for="email" class="modal-label">Email</label>
-                            <input type="email" id="email" name="email" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <input type="email" id="email" name="email" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                         </div>
                         
                         <div class="form-group">
                             <label for="birthday" class="modal-label">Birthday (MM-DD)</label>
-                            <input type="text" id="birthday" name="birthday" placeholder="MM-DD" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                            <input type="text" id="birthday" name="birthday" placeholder="MM-DD" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                             <p class="text-xs text-gray-500 mt-1">Format: Month-Day (e.g., 05-15 for May 15)</p>
                         </div>
                     </div>
                     
                     <div class="form-group mb-5">
                         <label for="mailing_address" class="modal-label">Mailing Address</label>
-                        <input type="text" id="mailing_address" name="mailing_address" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                        <input type="text" id="mailing_address" name="mailing_address" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                     </div>
                     
                     <div class="form-group mb-6">
                         <label for="notes" class="modal-label">Notes</label>
-                        <textarea id="notes" name="notes" rows="3" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"></textarea>
+                        <textarea id="notes" name="notes" rows="3" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green"></textarea>
                     </div>
                     
                     <div class="mt-6 pt-4 border-t border-gray-100">
@@ -416,28 +416,28 @@
                                 <label for="facebook" class="modal-label">
                                     <i class="fab fa-facebook text-blue-600 mr-1"></i> Facebook
                                 </label>
-                                <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                             </div>
                             
                             <div class="form-group">
                                 <label for="instagram" class="modal-label">
                                     <i class="fab fa-instagram text-pink-600 mr-1"></i> Instagram
                                 </label>
-                                <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                             </div>
                             
                             <div class="form-group">
                                 <label for="twitter" class="modal-label">
                                     <i class="fab fa-twitter text-blue-400 mr-1"></i> Twitter
                                 </label>
-                                <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
                             </div>
                         </div>
                     </div>
                     
                     <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
                         <button type="button" id="cancelAddContact" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-150">Add Contact</button>
+                        <button type="submit" class="px-4 py-2 bg-forest-green text-white rounded-md hover:bg-forest-green-dark transition duration-150">Add Contact</button>
                     </div>
                 </form>
             </div>
@@ -458,7 +458,7 @@
                 
                 <div class="mb-6">
                     <p class="text-gray-600 mb-4">Upload a CSV file containing your contacts. Your CSV should include columns for contact information.</p>
-                    <a href="{{ url_for('download_sample') }}" class="text-indigo-600 hover:text-indigo-500 text-sm flex items-center mb-4">
+                    <a href="{{ url_for('download_sample') }}" class="text-forest-green hover:text-forest-green-dark text-sm flex items-center mb-4">
                         <i class="fas fa-download mr-1"></i> Download sample CSV template
                     </a>
                 </div>
@@ -468,7 +468,7 @@
                         <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
                         <p class="text-gray-600 mb-1">Drag & drop your CSV file here</p>
                         <p class="text-gray-500 text-sm">or</p>
-                        <label for="csv_file" class="mt-2 inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md cursor-pointer transition duration-150">
+                        <label for="csv_file" class="mt-2 inline-flex items-center px-4 py-2 bg-forest-green hover:bg-forest-green-dark text-white rounded-md cursor-pointer transition duration-150">
                             <span>Select file</span>
                         </label>
                         <input type="file" id="csv_file" name="csv_file" accept=".csv" class="hidden" />
@@ -477,7 +477,7 @@
 
                     <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
                         <button type="button" id="cancelUpload" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
-                        <button type="submit" id="submitUpload" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition duration-150">Upload</button>
+                        <button type="submit" id="submitUpload" class="px-4 py-2 bg-forest-green text-white rounded-md hover:bg-forest-green-dark transition duration-150">Upload</button>
                     </div>
                 </form>
             </div>
@@ -491,8 +491,8 @@
             <div class="relative bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl">
                 <div class="flex justify-between items-center mb-6">
                     <div class="flex items-center">
-                        <div class="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
-                            <span id="contactInitial" class="text-indigo-800 text-xl font-semibold"></span>
+                        <div class="h-12 w-12 bg-forest-green-100 rounded-full flex items-center justify-center mr-4">
+                            <span id="contactInitial" class="text-forest-green text-xl font-semibold"></span>
                         </div>
                         <h3 id="contactName" class="text-2xl font-semibold text-gray-800"></h3>
                     </div>
@@ -585,7 +585,7 @@
                 
                 <div class="flex justify-end mt-8 pt-4 border-t border-gray-100">
                     <form action="" method="POST" class="inline mr-2">
-                        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition duration-150">
+                        <button type="submit" class="px-4 py-2 bg-danger hover:bg-red-700 text-white rounded-md transition duration-150">
                             <i class="fas fa-trash mr-1"></i> Delete Contact
                         </button>
                     </form>
@@ -614,7 +614,7 @@
                 <form action="{{ url_for('delete_all_contacts') }}" method="post" id="deleteAllForm">
                     <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
                         <button type="button" id="cancelDeleteAll" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-150">Delete All</button>
+                        <button type="submit" class="px-4 py-2 bg-danger text-white rounded-md hover:bg-red-700 transition duration-150">Delete All</button>
                     </div>
                 </form>
             </div>
@@ -683,8 +683,8 @@
             const icon = header.querySelector('.sort-icon i');
             if (header.dataset.sort === column) {
                 icon.className = currentSort.direction === 'asc' 
-                    ? 'fas fa-sort-up text-indigo-600' 
-                    : 'fas fa-sort-down text-indigo-600';
+                    ? 'fas fa-sort-up text-forest-green' 
+                    : 'fas fa-sort-down text-forest-green';
             } else {
                 icon.className = 'fas fa-sort text-gray-400';
             }
@@ -942,7 +942,7 @@
                         // Make cell phone a clickable link or editable field
                         const detailCell = document.getElementById('detailCell');
                         if (contact.cell && contact.cell !== 'N/A') {
-                            detailCell.innerHTML = `<a href="tel:${contact.cell}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.cell}</a>`;
+                            detailCell.innerHTML = `<a href="tel:${contact.cell}" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.cell}</a>`;
                         } else {
                             detailCell.textContent = 'N/A';
                         }
@@ -951,7 +951,7 @@
                         // Make email a clickable link or editable field
                         const detailEmail = document.getElementById('detailEmail');
                         if (contact.email && contact.email !== 'N/A') {
-                            detailEmail.innerHTML = `<a href="mailto:${contact.email}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.email}</a>`;
+                            detailEmail.innerHTML = `<a href="mailto:${contact.email}" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.email}</a>`;
                         } else {
                             detailEmail.textContent = 'N/A';
                         }
@@ -1005,7 +1005,7 @@
                         // Make social media links clickable and editable
                         const detailFacebook = document.getElementById('detailFacebook');
                         if (contact.facebook && contact.facebook !== 'N/A') {
-                            detailFacebook.innerHTML = `<a href="${contact.facebook}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.facebook}</a>`;
+                            detailFacebook.innerHTML = `<a href="${contact.facebook}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.facebook}</a>`;
                         } else {
                             detailFacebook.textContent = 'N/A';
                         }
@@ -1013,7 +1013,7 @@
                         
                         const detailInstagram = document.getElementById('detailInstagram');
                         if (contact.instagram && contact.instagram !== 'N/A') {
-                            detailInstagram.innerHTML = `<a href="${contact.instagram}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.instagram}</a>`;
+                            detailInstagram.innerHTML = `<a href="${contact.instagram}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.instagram}</a>`;
                         } else {
                             detailInstagram.textContent = 'N/A';
                         }
@@ -1021,7 +1021,7 @@
                         
                         const detailTwitter = document.getElementById('detailTwitter');
                         if (contact.twitter && contact.twitter !== 'N/A') {
-                            detailTwitter.innerHTML = `<a href="${contact.twitter}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${contact.twitter}</a>`;
+                            detailTwitter.innerHTML = `<a href="${contact.twitter}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.twitter}</a>`;
                         } else {
                             detailTwitter.textContent = 'N/A';
                         }
@@ -1058,11 +1058,11 @@
             if (!value || value === 'N/A') {
                 element.textContent = 'N/A';
             } else if (fieldName === 'email') {
-                element.innerHTML = `<a href="mailto:${value}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${value}</a>`;
+                element.innerHTML = `<a href="mailto:${value}" class="text-forest-green hover:text-forest-green-dark hover:underline">${value}</a>`;
             } else if (fieldName === 'cell') {
-                element.innerHTML = `<a href="tel:${value}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${value}</a>`;
+                element.innerHTML = `<a href="tel:${value}" class="text-forest-green hover:text-forest-green-dark hover:underline">${value}</a>`;
             } else if (fieldName === 'facebook' || fieldName === 'instagram' || fieldName === 'twitter') {
-                element.innerHTML = `<a href="${value}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${value}</a>`;
+                element.innerHTML = `<a href="${value}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${value}</a>`;
             } else {
                 element.textContent = value;
             }
@@ -1112,7 +1112,7 @@
             
             // Set input properties
             inputElement.value = originalValue;
-            inputElement.className = 'w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
+            inputElement.className = 'w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green';
             
             // Create action buttons
             const actionsDiv = document.createElement('div');
@@ -1219,11 +1219,11 @@
                         if (newValue === '') {
                             element.textContent = 'N/A';
                         } else if (fieldName === 'email') {
-                            element.innerHTML = `<a href="mailto:${newValue}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
+                            element.innerHTML = `<a href="mailto:${newValue}" class="text-forest-green hover:text-forest-green-dark hover:underline">${newValue}</a>`;
                         } else if (fieldName === 'cell') {
-                            element.innerHTML = `<a href="tel:${newValue}" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
+                            element.innerHTML = `<a href="tel:${newValue}" class="text-forest-green hover:text-forest-green-dark hover:underline">${newValue}</a>`;
                         } else if (fieldName === 'facebook' || fieldName === 'instagram' || fieldName === 'twitter') {
-                            element.innerHTML = `<a href="${newValue}" target="_blank" class="text-indigo-600 hover:text-indigo-800 hover:underline">${newValue}</a>`;
+                            element.innerHTML = `<a href="${newValue}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${newValue}</a>`;
                         } else {
                             element.textContent = newValue;
                         }
