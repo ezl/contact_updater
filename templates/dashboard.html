@@ -703,6 +703,9 @@
                     const cellUpdatedText = data.cell_updated ? `Updated: ${formatDate(data.cell_updated)}` : '';
                     document.getElementById('detailCellUpdated').textContent = cellUpdatedText;
                     
+                    const addressUpdatedText = data.mailing_address_updated ? `Updated: ${formatDate(data.mailing_address_updated)}` : '';
+                    document.getElementById('detailAddressUpdated').textContent = addressUpdatedText;
+                    
                     document.getElementById('detailFacebook').textContent = data.facebook || '';
                     document.getElementById('detailInstagram').textContent = data.instagram || '';
                     document.getElementById('detailTwitter').textContent = data.twitter || '';
@@ -722,7 +725,17 @@
         function formatDate(dateString) {
             if (!dateString) return '';
             const date = new Date(dateString);
-            return date.toLocaleDateString();
+            
+            // Format: Month Day, Year at Hour:Minute AM/PM
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            
+            return date.toLocaleString(undefined, options);
         }
 
         // Format birthday for display (MMM DD format)
@@ -1016,6 +1029,20 @@
                     // Update the field with the new value
                     field.textContent = displayValue;
                     field.classList.remove('editing');
+                    
+                    // Update timestamp display if provided in the response
+                    if (data.updated_timestamp && data.updated_field) {
+                        const formattedDate = formatDate(data.updated_timestamp);
+                        const updatedText = `Updated: ${formattedDate}`;
+                        
+                        if (data.updated_field === 'email') {
+                            document.getElementById('detailEmailUpdated').textContent = updatedText;
+                        } else if (data.updated_field === 'cell') {
+                            document.getElementById('detailCellUpdated').textContent = updatedText;
+                        } else if (data.updated_field === 'mailing_address') {
+                            document.getElementById('detailAddressUpdated').textContent = updatedText;
+                        }
+                    }
                     
                     // Show success indicator
                     const successIndicator = field.closest('.modal-field').querySelector('.success-indicator');
@@ -1311,7 +1338,7 @@
                         document.body.removeChild(loadingToast);
                         
                         // Redirect to dashboard with success message
-                        window.location.href = '/dashboard?success_message=Successfully imported contacts from CSV file.';
+                        window.location.href = '/dashboard?success_message=Successfully imported clients from CSV file.';
                     })
                     .catch(error => {
                         // Remove loading indicator

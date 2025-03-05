@@ -1,10 +1,31 @@
 name,cell,email,mailing_address,notes,birthday,facebook,instagram,twitter
+Aaa,,,,,,,,
+Emily Davis,(555) 456-7890,emily.davis@example.cod,"303 Cedar Ln, Northtown, IL 45678",Book club member,12-05,https://facebook.com/emilyd,https://instagram.com/emilyd, 
 Emily Davis,(555) 456-7890,emily.davis@example.com,"303 Cedar Ln, Northtown, IL 45678",Book club member,12-05,https://facebook.com/emilyd,https://instagram.com/emilyd, 
-Emily Davis,(555) 456-7891,emily.davis@example.net,"303 Cedar Ln, Northtown, IL 45673",Book club member 1,Dec 22,https://facebook.com/emilyd,https://instagram.com/emilyd, 
-Eric,,,,,,,,
+Emily Davis,(555) 456-7890,emily.davis@example.com,"303 Cedar Ln, Northtown, IL 45673",Book club member,12-05,https://facebook.com/emilyd,https://instagram.com/emilyd, 
 Jane Smith,(555) 987-6543,jane.smith@example.com,"456 Oak Ave, Someville, NY 54321",Work colleague,07-22,https://facebook.com/janesmith,https://instagram.com/janesmith,
+Jane Smith,(555) 987-6543,jane.smith@example.com,"456 Oak Ave, Someville, NY 54321",Work colleague,07-22,https://facebook.com/janesmith,https://instagram.com/janesmith,
+Jane Smith,(555) 987-6543,jane.smith@example.com,"456 Oak Ave, Someville, NY 54321",Work colleague,07-22,https://facebook.com/janesmith,https://instagram.com/janesmith,
+Jane Smith,(555) 987-6543,jane.smith@example.com,"456 Oak Ave, Someville, NY 54321",Work colleague,07-22,https://facebook.com/janesmith,https://instagram.com/janesmith,
+Jane Smith,(555) 987-6543,jane.smith@example.com,"456 Oak Ave, Someville, NY 54321",Work colleague,07-22,https://facebook.com/janesmith,https://instagram.com/janesmith,
+John Doe,(555) 123-4567,john.doe@example.com,"123 Main St, Anytown, CA 12345",College friend,,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
+John Doe,(555) 123-4567,john.doe@example.com,"123 Main St, Anytown, CA 12345",College friend,05-15,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
+John Doe,(555) 123-4567,john.doe@example.com,"123 Main St, Anytown, CA 12345",College friend,05-15,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
+John Doe,(555) 123-4567,john.doe@example.com,"123 Main St, Anytown, CA 12345",College friend,05-15,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
 John Doe,(555) 123-4567,john.doe@example.com,"123 Main St, Anytown, CA 12345",College friend,05-15,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
 Michael Johnson,(555) 567-8901,michael@example.com,"789 Pine Rd, Otherburg, TX 67890",High school friend,11-30,https://facebook.com/michaelj,,https://twitter.com/michaelj
-Pavel,,,,,,,,
+Michael Johnson,(555) 567-8901,michael@example.com,"789 Pine Rd, Otherburg, TX 67890",High school friend,11-30,https://facebook.com/michaelj,,https://twitter.com/michaelj
+Michael Johnson,(555) 567-8901,michael@example.com,"789 Pine Rd, Otherburg, TX 67890",High school friend,11-30,https://facebook.com/michaelj,,https://twitter.com/michaelj
+Michael Johnson,(555) 567-8901,michael@example.com,"789 Pine Rd, Otherburg, TX 67890",High school friend,11-30,https://facebook.com/michaelj,,https://twitter.com/michaelj
+Michael Johnson,(555) 567-8901,michael@example.com,"789 Pine Rd, Otherburg, TX 67890",High school friend,11-30,https://facebook.com/michaelj,,https://twitter.com/michaelj
+Robert Brown,(555) 345-6789,robert.brown@example.com,"202 Elm St, Eastville, FL 34567",Client,09-12,,https://instagram.com/rbrown,https://twitter.com/rbrown
+Robert Brown,(555) 345-6789,robert.brown@example.com,"202 Elm St, Eastville, FL 34567",Client,09-12,,https://instagram.com/rbrown,https://twitter.com/rbrown
+Robert Brown,(555) 345-6789,robert.brown@example.com,"202 Elm St, Eastville, FL 34567",Client,09-12,,https://instagram.com/rbrown,https://twitter.com/rbrown
+Robert Brown,(555) 345-6789,robert.brown@example.com,"202 Elm St, Eastville, FL 34567",Client,09-12,,https://instagram.com/rbrown,https://twitter.com/rbrown
 Robert Brown,(555) 345-6789,robert.brown@example.com,"202 Elm St, Eastville, FL 34567",Client,09-12,,https://instagram.com/rbrown,https://twitter.com/rbrown
 Sarah Williams,(555) 234-5678,sarah.w@example.com,"101 Maple Dr, Westcity, WA 98765",Gym buddy,03-18,,,
+Sarah Williams,(555) 234-5678,sarah.w@example.com,"101 Maple Dr, Westcity, WA 98765",Gym buddy,03-18,,,
+Sarah Williams,(555) 234-5678,sarah.w@example.com,"101 Maple Dr, Westcity, WA 98765",Gym buddy,03-18,,,
+Sarah Williams,(555) 234-5678,sarah.w@example.com,"101 Maple Dr, Westcity, WA 98765",Gym buddy,03-18,,,
+Sarah Williams,(555) 234-5678,sarah.w@example.com,"101 Maple Dr, Westcity, WA 98765",Gym buddy,03-18,,,
+asdfds,,,,,,,,

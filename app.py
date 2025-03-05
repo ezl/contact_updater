@@ -49,6 +49,7 @@ class Contact(db.Model):
     birthday = db.Column(db.String(5))  # Store as MM-DD format
     email_updated = db.Column(db.DateTime, nullable=True)
     cell_updated = db.Column(db.DateTime, nullable=True)
+    mailing_address_updated = db.Column(db.DateTime, nullable=True)
     facebook = db.Column(db.String(200), nullable=True)
     instagram = db.Column(db.String(200), nullable=True)
     twitter = db.Column(db.String(200), nullable=True)
@@ -188,7 +189,7 @@ def dashboard():
                 # Commit all changes to the database
                 db.session.commit()
                 
-                success_message = f"Successfully processed {rows_processed} contacts from the CSV file."
+                success_message = f"Successfully processed {rows_processed} clients from the CSV file."
                 
                 # Refresh contacts list
                 contacts = Contact.query.order_by(Contact.name).all()
@@ -258,11 +259,11 @@ def delete_contact(id):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({
                 'success': True,
-                'message': 'Contact deleted successfully!'
+                'message': 'Client deleted successfully!'
             })
         
         # For regular form submissions, redirect with undo parameters
-        success_message = "Contact deleted successfully!"
+        success_message = "Client deleted successfully!"
         return redirect(url_for('dashboard', 
                                success_message=success_message,
                                undo_action='single',
@@ -346,13 +347,13 @@ def remove_duplicates():
         db.session.commit()
         
         if duplicates_removed > 0:
-            success_message = f"Successfully removed {duplicates_removed} duplicate contact(s)."
+            success_message = f"Successfully removed {duplicates_removed} duplicate client(s)."
             return redirect(url_for('dashboard', 
                                    success_message=success_message,
                                    undo_action='duplicates',
                                    undo_id=operation_id))
         else:
-            success_message = "No duplicate contacts were found."
+            success_message = "No duplicate clients were found."
             return redirect(url_for('dashboard', success_message=success_message))
     
     except Exception as e:
@@ -388,13 +389,13 @@ def delete_all_contacts():
             # Commit the changes to the database
             db.session.commit()
             
-            success_message = f"Successfully deleted all {contact_count} contacts from the database."
+            success_message = f"Successfully deleted all {contact_count} clients from the database."
             return redirect(url_for('dashboard', 
                                    success_message=success_message,
                                    undo_action='all',
                                    undo_id=operation_id))
         else:
-            success_message = "No contacts to delete."
+            success_message = "No clients to delete."
             return redirect(url_for('dashboard', success_message=success_message))
     
     except Exception as e:
@@ -430,7 +431,7 @@ def undo_delete(action, id):
             db.session.delete(deleted_contact)
             db.session.commit()
             
-            success_message = "Contact restored successfully!"
+            success_message = "Client restored successfully!"
             
         elif action in ['all', 'duplicates']:
             # Restore all contacts from a batch operation
@@ -529,6 +530,16 @@ def add_contact():
         
         # Create and save the new contact
         new_contact = Contact(**contact_data)
+        
+        # Set update timestamps for fields that have values
+        now = datetime.utcnow()
+        if contact_data['email']:
+            new_contact.email_updated = now
+        if contact_data['cell']:
+            new_contact.cell_updated = now
+        if contact_data['mailing_address']:
+            new_contact.mailing_address_updated = now
+            
         db.session.add(new_contact)
         db.session.commit()
         
@@ -562,20 +573,33 @@ def update_contact(id):
         setattr(contact, field, value)
         
         # Update timestamp fields if applicable
+        updated_timestamp = None
         if field == 'email':
             contact.email_updated = datetime.utcnow()
+            updated_timestamp = contact.email_updated
         elif field == 'cell':
             contact.cell_updated = datetime.utcnow()
+            updated_timestamp = contact.cell_updated
+        elif field == 'mailing_address':
+            contact.mailing_address_updated = datetime.utcnow()
+            updated_timestamp = contact.mailing_address_updated
         
         # Save the changes
         db.session.commit()
         
-        return jsonify({
+        response_data = {
             'success': True, 
-            'message': 'Contact updated successfully',
+            'message': 'Client updated successfully',
             'field': field,
             'value': value
-        })
+        }
+        
+        # Add the updated timestamp to the response if applicable
+        if updated_timestamp:
+            response_data['updated_timestamp'] = updated_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            response_data['updated_field'] = field
+        
+        return jsonify(response_data)
     
     except Exception as e:
         db.session.rollback()
@@ -618,6 +642,7 @@ def get_contact(contact_id):
         date_added = contact.dateAdded.strftime('%Y-%m-%d %H:%M:%S') if contact.dateAdded else None
         email_updated = contact.email_updated.strftime('%Y-%m-%d %H:%M:%S') if contact.email_updated else None
         cell_updated = contact.cell_updated.strftime('%Y-%m-%d %H:%M:%S') if contact.cell_updated else None
+        mailing_address_updated = contact.mailing_address_updated.strftime('%Y-%m-%d %H:%M:%S') if contact.mailing_address_updated else None
         
         # Create a dictionary with all contact fields
         contact_data = {
@@ -631,6 +656,7 @@ def get_contact(contact_id):
             'dateAdded': date_added,
             'email_updated': email_updated,
             'cell_updated': cell_updated,
+            'mailing_address_updated': mailing_address_updated,
             'facebook': contact.facebook,
             'instagram': contact.instagram,
             'twitter': contact.twitter
