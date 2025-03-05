@@ -1,0 +1,162 @@
+/* 
+ * Client Magic - Table Styles
+ * Contains styles for tables and data display
+ */
+
+/* Base table styles */
+.table-container {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.table {
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table header */
+.table-header {
+  background-color: var(--gray-50, #f9fafb);
+}
+
+.table-header th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gray-500);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+/* Sortable headers */
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sort-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.sort-asc .sort-icon .fa-sort {
+  display: none;
+}
+
+.sort-asc .sort-icon::after {
+  content: "\f0de"; /* fa-sort-up */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: var(--forest-green);
+}
+
+.sort-desc .sort-icon .fa-sort {
+  display: none;
+}
+
+.sort-desc .sort-icon::after {
+  content: "\f0dd"; /* fa-sort-down */
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: var(--forest-green);
+}
+
+/* Table body */
+.table-body td {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+/* Interactive rows */
+.table-row-interactive {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.table-row-interactive:hover {
+  background-color: var(--forest-green-100);
+}
+
+.table-row-selected {
+  background-color: var(--forest-green-100);
+}
+
+/* Empty state */
+.table-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+/* Responsive tables */
+@media (max-width: 640px) {
+  .table-responsive th,
+  .table-responsive td {
+    padding: 0.5rem;
+  }
+  
+  .table-responsive .mobile-hidden {
+    display: none;
+  }
+  
+  .table-responsive .mobile-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Table pagination */
+.table-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: white;
+  border-top: 1px solid var(--gray-200);
+}
+
+.pagination-info {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.pagination-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: var(--gray-700);
+  border: 1px solid var(--gray-300);
+  transition: all 0.15s ease;
+}
+
+.pagination-button:hover {
+  background-color: var(--gray-100);
+}
+
+.pagination-button.active {
+  background-color: var(--forest-green);
+  color: white;
+  border-color: var(--forest-green);
+}
+
+.pagination-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+} 

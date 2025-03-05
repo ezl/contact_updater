@@ -12,8 +12,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
-    <!-- Common color variables -->
+    <!-- Base CSS with common styles and variables -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <!-- Color utility classes -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <!-- Form styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+    <!-- Modal styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modals.css') }}">
+    <!-- Table styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
     <!-- Site title font styling -->
     <style>
         /* Site title font styling */

@@ -1,33 +1,11 @@
-:root {
-  /* Primary Colors */
-  --forest-green: #2d6a4f;
-  --forest-green-dark: #1b4332;
-  --forest-green-light: #40916c;
-  --forest-green-lighter: #52b788;
-  --forest-green-100: #d8f3dc;
-  
-  /* Accent Colors */
-  --gold: #facc15;
-  --gold-dark: #eab308;
-  --gold-light: #fde68a;
-  
-  /* Text Colors */
-  --text-on-green: #ffffff;
-  --text-on-light: #1f2937;
-  --text-muted: #6b7280;
-  
-  /* UI Colors */
-  --success: #22c55e;
-  --success-light: #dcfce7;
-  --warning: #f59e0b;
-  --warning-light: #fef3c7;
-  --danger: #ef4444;
-  --danger-light: #fee2e2;
-  --info: #3b82f6;
-  --info-light: #dbeafe;
-}
+/* 
+ * Client Magic - Color Utilities
+ * Contains color-specific utility classes
+ */
 
-/* Utility classes for colors */
+/* Color utility classes - these extend the base styles */
+
+/* Background color classes */
 .bg-forest-green {
   background-color: var(--forest-green);
 }

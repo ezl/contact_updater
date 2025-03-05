@@ -1,0 +1,156 @@
+/* 
+ * Client Magic - Modal Styles
+ * Contains styles for modals and dialogs
+ */
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Modal container */
+.modal-container {
+  position: relative;
+  background-color: white;
+  border-radius: 0.5rem;
+  max-width: 600px;
+  width: 100%;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Large modal */
+.modal-container-lg {
+  max-width: 800px;
+}
+
+/* Small modal */
+.modal-container-sm {
+  max-width: 400px;
+}
+
+/* Modal header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.modal-close {
+  color: var(--gray-400);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.modal-close:hover {
+  color: var(--gray-600);
+}
+
+/* Modal body */
+.modal-body {
+  padding: 1.5rem;
+}
+
+/* Modal footer */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+/* Modal field styles */
+.modal-field {
+  margin-bottom: 0.75rem;
+}
+
+.modal-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--gray-400);
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-value {
+  display: block;
+  width: 100%;
+  padding: 0.375rem;
+  border: none;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: var(--gray-800);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.modal-value:hover {
+  background-color: var(--gray-100);
+}
+
+.modal-value.editing {
+  border: 1px solid var(--gray-300);
+  background-color: var(--gray-100);
+  cursor: text;
+  padding: 0.3rem;
+}
+
+/* Modal grid layout */
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .modal-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .modal-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Modal animations */
+.modal-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.modal-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.modal-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.modal-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+} 
