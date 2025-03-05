@@ -32,6 +32,135 @@
         pointer-events: none;
         border: 2px dashed #2F855A;
     }
+    
+    /* Success indicator styles */
+    .success-indicator {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 2;
+    }
+    .success-indicator.show {
+        opacity: 1;
+    }
+    
+    /* Hide old success messages */
+    .edit-success {
+        display: none;
+    }
+    
+    /* Flatpickr customization */
+    .flatpickr-calendar {
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-family: inherit;
+        z-index: 9999 !important;
+        padding-top: 10px !important; /* Add padding to make room for close button */
+    }
+    .flatpickr-day.selected {
+        background: #2F855A !important;
+        border-color: #2F855A !important;
+    }
+    .flatpickr-day:hover {
+        background: rgba(47, 133, 90, 0.1);
+    }
+    .flatpickr-monthDropdown-months {
+        font-weight: 600;
+    }
+    
+    /* Modal field alignment */
+    .modal-value {
+        margin-left: -0.5em;
+    }
+    
+    .modal-field.editing .flatpickr-input {
+        margin-left: -0.5em;
+    }
+    
+    /* Close button for flatpickr */
+    .flatpickr-close-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        z-index: 10000;
+        line-height: 1;
+        color: #555;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .flatpickr-close-button:hover {
+        background: #e0e0e0;
+        color: #333;
+    }
+    
+    /* Prevent scrolling when calendar is open */
+    body.calendar-open {
+        overflow: hidden;
+    }
+    
+    /* Ensure the calendar doesn't get cut off */
+    .flatpickr-calendar.open {
+        position: fixed !important;
+    }
+    
+    /* Editable field hover styles */
+    .modal-field {
+        position: relative;
+    }
+    
+    .modal-value[data-field]:not(.editing) {
+        position: relative;
+        padding-right: 24px; /* Make room for the edit icon */
+        cursor: pointer; /* Show pointer cursor on hover */
+        transition: background-color 0.2s ease;
+    }
+    
+    .modal-value[data-field]:not(.editing):hover {
+        background-color: rgba(47, 133, 90, 0.05); /* Light green background on hover */
+        border-radius: 4px;
+    }
+    
+    .modal-value[data-field]:not(.editing)::after {
+        content: '\f044'; /* FontAwesome edit icon */
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 400; /* Regular weight for the edit icon */
+        position: absolute;
+        right: 4px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2F855A; /* Forest green */
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        font-size: 14px;
+        pointer-events: none; /* Ensure the icon doesn't interfere with clicks */
+        z-index: 1; /* Ensure the icon is above other elements */
+    }
+    
+    /* For multi-line fields like notes, position the icon at the top */
+    .modal-value[data-field="notes"]:not(.editing)::after {
+        top: 12px;
+        transform: none;
+    }
+    
+    /* Add a subtle border on hover for better visual feedback */
+    .modal-value[data-field]:not(.editing):hover::after {
+        opacity: 1;
+    }
+    
+    /* Ensure the notes field has proper padding for the icon */
+    .modal-value[data-field="notes"]:not(.editing) {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
 </style>
 {% endblock %}
 
@@ -103,15 +232,15 @@
                                 </button>
                                 <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
                                     Cancel
-            </button>
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
     </div>
+</div>
 
 <!-- Add Contact Modal -->
 <div id="addContactModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
@@ -165,14 +294,14 @@
                             <div>
                                 <label for="twitter" class="form-label">Twitter</label>
                                 <input type="text" name="twitter" id="twitter" class="form-input w-full">
-    </div>
+                            </div>
                             <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                                 <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-forest-green text-base font-medium text-white hover:bg-forest-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:ml-3 sm:w-auto sm:text-sm">
                                     Add Contact
                                 </button>
                                 <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
                                     Cancel
-                </button>
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -208,11 +337,11 @@
                 <form action="/delete_all_contacts" method="post">
                     <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-danger text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
                         Delete All
-                                </button>
+                    </button>
                 </form>
                 <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
                     Cancel
-                                </button>
+                </button>
             </div>
         </div>
     </div>
@@ -282,6 +411,25 @@
             button.addEventListener('click', function() {
                 this.parentElement.style.display = 'none';
             });
+        });
+        
+        // Add event listener for flatpickr close button
+        document.addEventListener('click', function(e) {
+            // Check if the click is on the flatpickr close button
+            if (e.target && e.target.closest('.flatpickr-calendar') && 
+                e.clientX >= e.target.closest('.flatpickr-calendar').getBoundingClientRect().right - 30 &&
+                e.clientY <= e.target.closest('.flatpickr-calendar').getBoundingClientRect().top + 30) {
+                
+                // Find and close all open flatpickr instances
+                const openCalendars = document.querySelectorAll('.flatpickr-calendar.open');
+                if (openCalendars.length > 0) {
+                    // Find the flatpickr instance and close it
+                    const input = document.querySelector('.flatpickr-input');
+                    if (input && input._flatpickr) {
+                        input._flatpickr.close();
+                    }
+                }
+            }
         });
         
         // Function to open a modal properly
@@ -435,7 +583,10 @@
                     
                     // Format date fields - these are not editable
                     document.getElementById('detailDateAdded').textContent = formatDate(data.dateAdded) || '';
-                    document.getElementById('detailBirthday').textContent = data.birthday || '';
+                    document.getElementById('dateAddedDisplay').textContent = formatDate(data.dateAdded) || '';
+                    
+                    // Format birthday in MMM DD format
+                    document.getElementById('detailBirthday').textContent = formatBirthday(data.birthday) || '';
                     
                     // Format and display last updated dates as help text
                     const emailUpdatedText = data.email_updated ? `Updated: ${formatDate(data.email_updated)}` : '';
@@ -464,6 +615,23 @@
             if (!dateString) return '';
             const date = new Date(dateString);
             return date.toLocaleDateString();
+        }
+
+        // Format birthday for display (MMM DD format)
+        function formatBirthday(birthdayString) {
+            if (!birthdayString) return '';
+            
+            // Handle MM-DD format
+            if (birthdayString.includes('-')) {
+                const [month, day] = birthdayString.split('-');
+                if (month && day) {
+                    const date = new Date(2000, parseInt(month)-1, parseInt(day));
+                    return date.toLocaleDateString('default', { month: 'short', day: 'numeric' });
+                }
+            }
+            
+            // Return as is if we can't parse it
+            return birthdayString;
         }
 
         // Setup editable fields in the modal
@@ -505,17 +673,76 @@
             
             // Create input element based on field type
             let inputElement;
+            let flatpickrInstance = null;
+            
             if (fieldName === 'notes') {
                 inputElement = document.createElement('textarea');
                 inputElement.rows = 3;
+            } else if (fieldName === 'birthday') {
+                inputElement = document.createElement('input');
+                inputElement.type = 'text';
+                inputElement.placeholder = 'MMM DD (e.g. Jan 15)';
+                inputElement.className = 'w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green';
+                
+                // Add datepicker immediately
+                if (typeof flatpickr !== 'undefined') {
+                    // Add the input to DOM first so flatpickr can find it
+                    field.innerHTML = '';
+                    field.appendChild(inputElement);
+                    
+                    // Initialize flatpickr
+                    flatpickrInstance = flatpickr(inputElement, {
+                        dateFormat: "M d",
+                        defaultDate: currentValue,
+                        allowInput: true,
+                        monthSelectorType: "static",
+                        disableMobile: true,
+                        onOpen: function() {
+                            // Lock scrolling when calendar opens
+                            document.body.classList.add('calendar-open');
+                            
+                            // Add custom close button
+                            setTimeout(() => {
+                                const calendar = document.querySelector('.flatpickr-calendar.open');
+                                if (calendar && !calendar.querySelector('.flatpickr-close-button')) {
+                                    const closeBtn = document.createElement('button');
+                                    closeBtn.className = 'flatpickr-close-button';
+                                    closeBtn.innerHTML = '×';
+                                    closeBtn.addEventListener('click', function() {
+                                        if (flatpickrInstance) {
+                                            flatpickrInstance.close();
+                                        }
+                                    });
+                                    calendar.appendChild(closeBtn);
+                                }
+                            }, 0);
+                        },
+                        onClose: function(selectedDates, dateStr) {
+                            // Unlock scrolling when calendar closes
+                            document.body.classList.remove('calendar-open');
+                            
+                            if (dateStr) {
+                                // Automatically save when a date is selected
+                                saveFieldEdit(field, dateStr, fieldName, contactId);
+                            }
+                        }
+                    });
+                    
+                    // Open the calendar immediately
+                    setTimeout(() => {
+                        flatpickrInstance.open();
+                    }, 50);
+                }
             } else {
                 inputElement = document.createElement('input');
-                inputElement.type = fieldName.includes('date') || fieldName === 'birthday' ? 'date' : 'text';
+                inputElement.type = fieldName.includes('email') ? 'email' : 'text';
             }
             
             // Set input value and styling
             inputElement.value = currentValue;
-            inputElement.className = 'w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green';
+            if (fieldName !== 'birthday') { // Already set for birthday above
+                inputElement.className = 'w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green';
+            }
             
             // Create save and cancel buttons
             const actionsDiv = document.createElement('div');
@@ -531,33 +758,66 @@
             
             // Add event listeners
             saveButton.addEventListener('click', function() {
+                if (flatpickrInstance) {
+                    flatpickrInstance.close();
+                }
                 saveFieldEdit(field, inputElement.value, fieldName, contactId);
             });
             
             cancelButton.addEventListener('click', function(e) {
                 e.stopPropagation(); // Prevent event bubbling
+                if (flatpickrInstance) {
+                    flatpickrInstance.close();
+                }
                 cancelFieldEdit(field, currentValue);
             });
             
             // Add blur event to exit edit mode when clicking outside
             inputElement.addEventListener('blur', function(e) {
-                // Check if the related target is not the save or cancel button
-                if (!e.relatedTarget || 
-                    (e.relatedTarget !== saveButton && 
-                     e.relatedTarget !== cancelButton)) {
-                    cancelFieldEdit(field, currentValue);
+                // Don't cancel if the related target is the flatpickr calendar or the save/cancel buttons
+                if (e.relatedTarget && 
+                    (e.relatedTarget.classList.contains('flatpickr-day') || 
+                     e.relatedTarget.classList.contains('flatpickr-month') ||
+                     e.relatedTarget.classList.contains('flatpickr-monthDropdown-month') ||
+                     e.relatedTarget.classList.contains('flatpickr-close-button') ||
+                     e.relatedTarget === saveButton || 
+                     e.relatedTarget === cancelButton)) {
+                    return;
                 }
+                
+                // Also don't cancel if we're clicking inside the flatpickr calendar
+                if (e.relatedTarget && e.relatedTarget.closest('.flatpickr-calendar')) {
+                    return;
+                }
+                
+                // For birthday field, only cancel if we're clicking outside the flatpickr
+                if (fieldName === 'birthday') {
+                    // Check if flatpickr is open
+                    const flatpickrCalendar = document.querySelector('.flatpickr-calendar.open');
+                    if (flatpickrCalendar) {
+                        // Don't cancel if the flatpickr is open
+                        return;
+                    }
+                }
+                
+                cancelFieldEdit(field, currentValue);
             });
             
             // Add keydown event to handle ESC key and Enter key
             inputElement.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     e.stopPropagation(); // Prevent modal from closing
+                    if (flatpickrInstance) {
+                        flatpickrInstance.close();
+                    }
                     cancelFieldEdit(field, currentValue);
                 } else if (e.key === 'Enter') {
                     // For regular inputs, submit on Enter
                     if (inputElement.tagName.toLowerCase() !== 'textarea' || (e.metaKey || e.ctrlKey)) {
                         e.preventDefault(); // Prevent default behavior (newline in textarea)
+                        if (flatpickrInstance) {
+                            flatpickrInstance.close();
+                        }
                         saveFieldEdit(field, inputElement.value, fieldName, contactId);
                     }
                 }
@@ -567,8 +827,12 @@
             actionsDiv.appendChild(saveButton);
             actionsDiv.appendChild(cancelButton);
             
-            field.innerHTML = '';
-            field.appendChild(inputElement);
+            // Only append to DOM if not already done for birthday
+            if (fieldName !== 'birthday') {
+                field.innerHTML = '';
+                field.appendChild(inputElement);
+            }
+            
             field.appendChild(actionsDiv);
             field.classList.add('editing');
             
@@ -595,26 +859,48 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    // Format the display value if needed
+                    let displayValue = newValue;
+                    
+                    // Format birthday if it has a specific format
+                    if (fieldName === 'birthday' && newValue) {
+                        try {
+                            // Try to parse and format the date
+                            const dateParts = newValue.split(/[\/\-\s]/);
+                            if (dateParts.length >= 2) {
+                                const month = isNaN(dateParts[0]) ? dateParts[0] : new Date(2000, parseInt(dateParts[0])-1, 1).toLocaleString('default', { month: 'short' });
+                                const day = dateParts[1];
+                                displayValue = `${month} ${day}`;
+                            }
+                        } catch (e) {
+                            console.error('Error formatting date:', e);
+                        }
+                    }
+                    
                     // Update the field with the new value
-                    field.textContent = newValue;
+                    field.textContent = displayValue;
                     field.classList.remove('editing');
                     
-                    // Show success message
-                    const successElement = document.getElementById(`${field.id}Success`);
-                    if (successElement) {
-                        successElement.classList.add('show');
+                    // Show success indicator
+                    const successIndicator = field.closest('.modal-field').querySelector('.success-indicator');
+                    if (successIndicator) {
+                        successIndicator.classList.remove('hidden');
+                        successIndicator.style.opacity = '1';
                         setTimeout(() => {
-                            successElement.classList.remove('show');
-                        }, 3000);
+                            successIndicator.style.opacity = '0';
+                            setTimeout(() => {
+                                successIndicator.classList.add('hidden');
+                            }, 300);
+                        }, 2000);
                     }
                     
                     // Also update the row in the table if visible
-                    updateTableRow(contactId, fieldName, newValue);
+                    updateTableRow(contactId, fieldName, displayValue);
                     
                     // Update contact name in modal header if name was changed
                     if (fieldName === 'name') {
-                        document.getElementById('contactName').textContent = newValue;
-                        document.getElementById('contactInitial').textContent = newValue ? newValue[0].toUpperCase() : '';
+                        document.getElementById('contactName').textContent = displayValue;
+                        document.getElementById('contactInitial').textContent = displayValue ? displayValue[0].toUpperCase() : '';
                     }
                 } else {
                     // Show error and revert to original value
@@ -778,14 +1064,14 @@
         
         if (fileInput && importForm) {
             // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 document.addEventListener(eventName, preventDefaults, false);
-    });
+            });
 
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
 
             // Counter to track drag enter/leave events
             let dragCounter = 0;
@@ -825,12 +1111,12 @@
                 globalDropzone.classList.remove('global-dropzone-active');
                 console.log('Drop - hiding dropzone');
                 
-        const dt = e.dataTransfer;
-        const files = dt.files;
+                const dt = e.dataTransfer;
+                const files = dt.files;
                 
                 if (files.length > 0 && isCSVFile(files[0])) {
                     // Set the file input value
-        fileInput.files = files;
+                    fileInput.files = files;
                     
                     // Show the import modal if it's not already visible
                     openModal('importModal');
