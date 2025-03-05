@@ -779,12 +779,9 @@
                         allowInput: true,
                         monthSelectorType: "static",
                         disableMobile: true,
-                        position: "auto",
-                        appendTo: field,
-                        positionElement: inputElement,
                         onOpen: function() {
                             // Lock scrolling when calendar opens
-                            document.body.classList.add('calendar-open');
+                            document.body.style.overflow = 'hidden';
                             
                             // Add custom close button
                             setTimeout(() => {
@@ -793,9 +790,16 @@
                                     const closeBtn = document.createElement('button');
                                     closeBtn.className = 'flatpickr-close-button';
                                     closeBtn.innerHTML = '×';
-                                    closeBtn.addEventListener('click', function() {
+                                    closeBtn.addEventListener('click', function(e) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
                                         if (flatpickrInstance) {
                                             flatpickrInstance.close();
+                                            // Force close by hiding the calendar
+                                            const calendar = document.querySelector('.flatpickr-calendar');
+                                            if (calendar) {
+                                                calendar.style.display = 'none';
+                                            }
                                         }
                                     });
                                     calendar.appendChild(closeBtn);
@@ -804,11 +808,29 @@
                         },
                         onClose: function(selectedDates, dateStr) {
                             // Unlock scrolling when calendar closes
-                            document.body.classList.remove('calendar-open');
+                            document.body.style.overflow = '';
                             
                             if (dateStr) {
                                 // Automatically save when a date is selected
                                 saveFieldEdit(field, dateStr, fieldName, contactId);
+                            }
+                            
+                            // Force close by hiding the calendar
+                            setTimeout(() => {
+                                const calendar = document.querySelector('.flatpickr-calendar');
+                                if (calendar) {
+                                    calendar.style.display = 'none';
+                                }
+                            }, 0);
+                        },
+                        onChange: function(selectedDates, dateStr) {
+                            if (dateStr) {
+                                // Close the calendar after selecting a date
+                                setTimeout(() => {
+                                    if (flatpickrInstance) {
+                                        flatpickrInstance.close();
+                                    }
+                                }, 100);
                             }
                         }
                     });
