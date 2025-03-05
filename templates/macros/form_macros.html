@@ -1,21 +1,21 @@
-{% macro input_field(name, label, type="text", placeholder="", required=false, value="", classes="") %}
-<div class="form-group mb-4">
-    <label for="{{ name }}" class="modal-label">{{ label }}</label>
+{% macro input_field(name, label, type="text", required=false, placeholder="", value="", classes="") %}
+<div class="mb-3">
+    <label for="{{ name }}" class="block text-sm font-medium text-gray-700 mb-1">{{ label }}{% if required %} <span class="text-danger">*</span>{% endif %}</label>
     <input type="{{ type }}" id="{{ name }}" name="{{ name }}" 
-           placeholder="{{ placeholder }}" 
-           value="{{ value }}"
-           class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green {{ classes }}"
-           {% if required %}required{% endif %}>
+           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-forest-green focus:ring focus:ring-forest-green focus:ring-opacity-50 {{ classes }}"
+           {% if required %}required{% endif %}
+           {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+           {% if value %}value="{{ value }}"{% endif %}>
 </div>
 {% endmacro %}
 
-{% macro textarea_field(name, label, rows=3, placeholder="", required=false, value="", classes="") %}
-<div class="form-group mb-4">
-    <label for="{{ name }}" class="modal-label">{{ label }}</label>
-    <textarea id="{{ name }}" name="{{ name }}" rows="{{ rows }}" 
-              placeholder="{{ placeholder }}" 
-              class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green {{ classes }}"
-              {% if required %}required{% endif %}>{{ value }}</textarea>
+{% macro textarea_field(name, label, required=false, placeholder="", value="", rows=3, classes="") %}
+<div class="mb-3">
+    <label for="{{ name }}" class="block text-sm font-medium text-gray-700 mb-1">{{ label }}{% if required %} <span class="text-danger">*</span>{% endif %}</label>
+    <textarea id="{{ name }}" name="{{ name }}" rows="{{ rows }}"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-forest-green focus:ring focus:ring-forest-green focus:ring-opacity-50 {{ classes }}"
+              {% if required %}required{% endif %}
+              {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}>{% if value %}{{ value }}{% endif %}</textarea>
 </div>
 {% endmacro %}
 
@@ -47,11 +47,27 @@
 </div>
 {% endmacro %}
 
-{% macro button(text, type="button", classes="", icon_class="") %}
-<button type="{{ type }}" class="{{ classes }}">
-    {% if icon_class %}
-    <i class="{{ icon_class }} mr-1"></i>
-    {% endif %}
+{% macro submit_button(text="Submit", classes="", icon="") %}
+<button type="submit" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-forest-green text-base font-medium text-white hover:bg-forest-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green {{ classes }}">
+    {% if icon %}<i class="fas fa-{{ icon }} mr-1"></i>{% endif %}{{ text }}
+</button>
+{% endmacro %}
+
+{% macro cancel_button(text="Cancel", classes="") %}
+<button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm {{ classes }}">
     {{ text }}
 </button>
+{% endmacro %}
+
+{% macro editable_field(id, label, field, format="", classes="") %}
+<div class="modal-field">
+    <div class="flex justify-between items-center">
+        <label class="modal-label">{{ label }}</label>
+        <span class="success-indicator hidden text-forest-green text-xs">
+            <i class="fas fa-check mr-1"></i> Saved
+        </span>
+    </div>
+    <div id="{{ id }}" class="modal-value {{ classes }}" data-field="{{ field }}"{% if format %} data-format="{{ format }}"{% endif %}></div>
+    <div class="edit-success" id="{{ field }}Success">Changes saved successfully!</div>
+</div>
 {% endmacro %} 

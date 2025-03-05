@@ -1,0 +1,31 @@
+{% from "macros/form_macros.html" import input_field, textarea_field, submit_button, cancel_button %}
+
+{% set modal_id = "addContactModal" %}
+{% set title = "Add New Client" %}
+{% set show_close_button = true %}
+{% set full_width = true %}
+{% set show_icon = false %}
+{% set show_footer = false %}
+
+{% extends "components/modal_base.html" %}
+
+{% block modal_content %}
+<form action="/add_contact" method="post" class="space-y-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+    {{ input_field("name", "Name", required=true) }}
+    {{ input_field("cell", "Cell Phone", type="tel") }}
+    {{ input_field("email", "Email", type="email") }}
+    {{ input_field("mailing_address", "Mailing Address") }}
+    {{ input_field("birthday", "Birthday (MM-DD)", placeholder="MM-DD") }}
+    {{ textarea_field("notes", "Notes", rows=3) }}
+    {{ input_field("facebook", "Facebook") }}
+    {{ input_field("instagram", "Instagram") }}
+    {{ input_field("twitter", "Twitter") }}
+    
+    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+        {{ submit_button("Add Client") }}
+        {{ cancel_button() }}
+    </div>
+</form>
+{% endblock %} 

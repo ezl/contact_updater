@@ -1,0 +1,61 @@
+/* Flatpickr customization */
+.flatpickr-calendar {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-family: inherit;
+    z-index: 9999 !important;
+    padding-top: 10px !important; /* Add padding to make room for close button */
+}
+
+.flatpickr-day.selected {
+    background: #2F855A !important;
+    border-color: #2F855A !important;
+}
+
+.flatpickr-day:hover {
+    background: rgba(47, 133, 90, 0.1);
+}
+
+.flatpickr-monthDropdown-months {
+    font-weight: 600;
+}
+
+.modal-field.editing .flatpickr-input {
+    margin-left: -0.5em;
+}
+
+/* Close button for flatpickr */
+.flatpickr-close-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 10000;
+    line-height: 1;
+    color: #555;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.flatpickr-close-button:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+/* Prevent scrolling when calendar is open */
+body.calendar-open {
+    overflow: hidden;
+}
+
+/* Ensure the calendar doesn't get cut off */
+.flatpickr-calendar.open {
+    position: fixed !important;
+} 

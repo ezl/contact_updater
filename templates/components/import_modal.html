@@ -1,0 +1,33 @@
+{% from "macros/form_macros.html" import input_field, submit_button, cancel_button %}
+
+{% set modal_id = "importModal" %}
+{% set title = "Import Contacts" %}
+{% set show_close_button = true %}
+{% set full_width = true %}
+{% set show_icon = false %}
+{% set show_footer = false %}
+
+{% extends "components/modal_base.html" %}
+
+{% block modal_content %}
+<form action="/dashboard" method="post" enctype="multipart/form-data" class="space-y-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div>
+        <label for="csv_file" class="block text-sm font-medium text-gray-700 mb-1">Select CSV File</label>
+        <input type="file" name="csv_file" id="csv_file" class="form-input w-full" accept=".csv">
+        <p class="mt-1 text-xs text-red-500">Only CSV files are supported</p>
+    </div>
+    <div class="text-sm text-gray-500">
+        <p>CSV should have headers: name, cell, email, mailing_address, notes, birthday (MM-DD format), facebook, instagram, twitter</p>
+        <p class="mt-2">
+            <a href="/download/sample_csv" class="text-forest-green hover:underline">
+                <i class="fas fa-download mr-1"></i> Download Sample CSV
+            </a>
+        </p>
+    </div>
+    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+        {{ submit_button("Import") }}
+        {{ cancel_button() }}
+    </div>
+</form>
+{% endblock %} 

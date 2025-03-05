@@ -41,3 +41,11 @@
     ]
   }
 } 
+
+rules:
+don't modify readme
+start with a gitignore.
+always descend from a common base template.
+never put css directly into a html template file.
+never put javascript directly into a html template file.
+if a tailwind class is used more than 3 times in a file, move it to a css file and create a class for it.
