@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect
+from dateutil.relativedelta import relativedelta
 
 # Load environment variables from .env file
 load_dotenv()
@@ -710,6 +711,94 @@ def download_all_contacts():
     except Exception as e:
         error_message = f"Error downloading contacts: {str(e)}"
         return redirect(url_for('dashboard', error_message=error_message))
+
+@app.route('/events', methods=['GET'])
+def events():
+    # Get all contacts
+    try:
+        contacts = Contact.query.all()
+    except Exception as e:
+        error_message = f"Error loading contacts: {str(e)}"
+        contacts = []
+    
+    # Get current date
+    current_date = datetime.now()
+    
+    # Create a list of the next 12 months
+    months = []
+    for i in range(12):
+        month_date = current_date.replace(day=1) + relativedelta(months=i)
+        month_name = month_date.strftime("%B %Y")
+        month_number = month_date.month
+        
+        # Get contacts with birthdays in this month
+        month_birthdays = []
+        for contact in contacts:
+            if contact.birthday and len(contact.birthday) == 5:  # MM-DD format
+                try:
+                    birthday_month = int(contact.birthday.split('-')[0])
+                    birthday_day = int(contact.birthday.split('-')[1])
+                    if birthday_month == month_number:
+                        month_birthdays.append({
+                            'contact': contact,
+                            'day': birthday_day
+                        })
+                except (ValueError, IndexError):
+                    # Skip invalid birthday formats
+                    continue
+        
+        # Sort birthdays by day
+        month_birthdays.sort(key=lambda x: x['day'])
+        
+        # Get holidays for this month
+        holidays = get_holidays_for_month(month_number, month_date.year)
+        
+        months.append({
+            'name': month_name,
+            'number': month_number,
+            'year': month_date.year,
+            'birthdays': month_birthdays,
+            'holidays': holidays
+        })
+    
+    return render_template('events.html', months=months)
+
+def get_holidays_for_month(month, year):
+    """Get common holidays for a specific month and year."""
+    holidays = []
+    
+    # US Holidays
+    if month == 1:  # January
+        holidays.append({'name': "New Year's Day", 'date': f"01-01-{year}"})
+        holidays.append({'name': "Martin Luther King Jr. Day", 'date': f"Third Monday of January {year}"})
+    elif month == 2:  # February
+        holidays.append({'name': "Valentine's Day", 'date': f"02-14-{year}"})
+        holidays.append({'name': "Presidents' Day", 'date': f"Third Monday of February {year}"})
+    elif month == 3:  # March
+        holidays.append({'name': "St. Patrick's Day", 'date': f"03-17-{year}"})
+    elif month == 4:  # April
+        holidays.append({'name': "Earth Day", 'date': f"04-22-{year}"})
+    elif month == 5:  # May
+        holidays.append({'name': "Memorial Day", 'date': f"Last Monday of May {year}"})
+        holidays.append({'name': "Mother's Day", 'date': f"Second Sunday of May {year}"})
+    elif month == 6:  # June
+        holidays.append({'name': "Father's Day", 'date': f"Third Sunday of June {year}"})
+        holidays.append({'name': "Juneteenth", 'date': f"06-19-{year}"})
+    elif month == 7:  # July
+        holidays.append({'name': "Independence Day", 'date': f"07-04-{year}"})
+    elif month == 9:  # September
+        holidays.append({'name': "Labor Day", 'date': f"First Monday of September {year}"})
+    elif month == 10:  # October
+        holidays.append({'name': "Halloween", 'date': f"10-31-{year}"})
+        holidays.append({'name': "Columbus Day", 'date': f"Second Monday of October {year}"})
+    elif month == 11:  # November
+        holidays.append({'name': "Veterans Day", 'date': f"11-11-{year}"})
+        holidays.append({'name': "Thanksgiving", 'date': f"Fourth Thursday of November {year}"})
+    elif month == 12:  # December
+        holidays.append({'name': "Christmas", 'date': f"12-25-{year}"})
+        holidays.append({'name': "New Year's Eve", 'date': f"12-31-{year}"})
+    
+    return holidays
 
 if __name__ == '__main__':
     # Make sure uploads directory exists
