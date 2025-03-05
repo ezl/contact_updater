@@ -532,7 +532,7 @@ def add_contact():
         db.session.add(new_contact)
         db.session.commit()
         
-        success_message = "Contact added successfully!"
+        success_message = f"Client '{contact_data['name']}' added successfully!"
         return redirect(url_for('dashboard', success_message=success_message))
     
     except Exception as e:
