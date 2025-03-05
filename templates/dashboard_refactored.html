@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}Client Magic - Dashboard{% endblock %}
+
+{% block styles %}
+{% include "components/dashboard_styles.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">
+            <span class="site-title">Client Magic</span> Dashboard
+        </h1>
+    </div>
+
+    <!-- Notification Messages -->
+    {% include "components/notifications.html" %}
+
+    <!-- Action Buttons -->
+    {% include "components/action_buttons.html" %}
+
+    <!-- Search Bar -->
+    {% include "components/search_bar.html" %}
+
+    <!-- Contacts Table -->
+    {% include "components/contacts_table.html" %}
+</div>
+
+<!-- Modals -->
+{% include "components/contact_detail_modal.html" %}
+
+<!-- Import Modal -->
+<div id="importModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <!-- Import modal content -->
+</div>
+
+<!-- Add Contact Modal -->
+<div id="addContactModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <!-- Add contact modal content -->
+</div>
+
+<!-- Delete All Records Confirmation Modal -->
+<div id="deleteAllModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <!-- Delete all modal content -->
+</div>
+
+<!-- Remove Duplicates Confirmation Modal -->
+<div id="removeDuplicatesModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <!-- Remove duplicates modal content -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // JavaScript code for the dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        // Close alert messages
+        document.querySelectorAll('.close-alert').forEach(button => {
+            button.addEventListener('click', function() {
+                this.parentElement.remove();
+            });
+        });
+
+        // Contact detail modal functionality
+        const contactDetailModal = document.getElementById('contactDetailModal');
+        const contactRows = document.querySelectorAll('.contact-row');
+        const closeDetailModal = document.getElementById('closeDetailModal');
+        const closeDetailBtn = document.getElementById('closeDetailBtn');
+
+        // Open contact detail modal when clicking on a row
+        contactRows.forEach(row => {
+            row.addEventListener('click', function() {
+                const contactId = this.getAttribute('data-contact-id');
+                fetchContactDetails(contactId);
+            });
+        });
+
+        // Close contact detail modal
+        if (closeDetailModal) {
+            closeDetailModal.addEventListener('click', function() {
+                contactDetailModal.classList.add('hidden');
+            });
+        }
+
+        if (closeDetailBtn) {
+            closeDetailBtn.addEventListener('click', function() {
+                contactDetailModal.classList.add('hidden');
+            });
+        }
+
+        // Function to fetch contact details
+        function fetchContactDetails(contactId) {
+            fetch(`/get_contact/${contactId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Populate the modal with contact data
+                    document.getElementById('contactName').textContent = data.name || '';
+                    document.getElementById('contactInitial').textContent = data.name ? data.name[0].toUpperCase() : '';
+                    
+                    // Set the delete form action
+                    const deleteForm = contactDetailModal.querySelector('form');
+                    deleteForm.action = `/delete_contact/${contactId}`;
+                    
+                    // Populate all fields
+                    document.getElementById('detailName').textContent = data.name || '';
+                    document.getElementById('detailCell').textContent = data.cell || '';
+                    document.getElementById('detailEmail').textContent = data.email || '';
+                    document.getElementById('detailAddress').textContent = data.mailing_address || '';
+                    document.getElementById('detailNotes').textContent = data.notes || '';
+                    document.getElementById('detailDateAdded').textContent = formatDate(data.dateAdded) || '';
+                    document.getElementById('detailBirthday').textContent = data.birthday || '';
+                    document.getElementById('detailEmailUpdated').textContent = formatDate(data.email_updated) || '';
+                    document.getElementById('detailCellUpdated').textContent = formatDate(data.cell_updated) || '';
+                    document.getElementById('detailFacebook').textContent = data.facebook || '';
+                    document.getElementById('detailInstagram').textContent = data.instagram || '';
+                    document.getElementById('detailTwitter').textContent = data.twitter || '';
+                    
+                    // Store the contact ID for editing
+                    contactDetailModal.setAttribute('data-contact-id', contactId);
+                    
+                    // Show the modal
+                    contactDetailModal.classList.remove('hidden');
+                    
+                    // Setup editable fields
+                    setupEditableFields();
+                })
+                .catch(error => {
+                    console.error('Error fetching contact details:', error);
+                });
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        // Setup editable fields in the modal
+        function setupEditableFields() {
+            const editableFields = contactDetailModal.querySelectorAll('.modal-value');
+            
+            editableFields.forEach(field => {
+                field.addEventListener('click', function() {
+                    if (!this.classList.contains('editing')) {
+                        makeFieldEditable(this);
+                    }
+                });
+            });
+        }
+
+        // Make a field editable
+        function makeFieldEditable(field) {
+            const fieldName = field.getAttribute('data-field');
+            const currentValue = field.textContent;
+            const contactId = contactDetailModal.getAttribute('data-contact-id');
+            
+            // Create input element based on field type
+            let inputElement;
+            if (fieldName === 'notes') {
+                inputElement = document.createElement('textarea');
+                inputElement.rows = 3;
+            } else {
+                inputElement = document.createElement('input');
+                inputElement.type = fieldName.includes('date') || fieldName === 'birthday' ? 'date' : 'text';
+            }
+            
+            // Set input value and styling
+            inputElement.value = currentValue;
+            inputElement.className = 'w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green';
+            
+            // Create save and cancel buttons
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'edit-actions';
+            
+            const saveButton = document.createElement('button');
+            saveButton.textContent = 'Save';
+            saveButton.className = 'edit-save-btn';
+            
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = 'Cancel';
+            cancelButton.className = 'edit-cancel-btn';
+            
+            // Add event listeners
+            saveButton.addEventListener('click', function() {
+                saveFieldEdit(field, inputElement.value, fieldName, contactId);
+            });
+            
+            cancelButton.addEventListener('click', function() {
+                cancelFieldEdit(field, currentValue);
+            });
+            
+            // Add elements to the DOM
+            actionsDiv.appendChild(saveButton);
+            actionsDiv.appendChild(cancelButton);
+            
+            field.innerHTML = '';
+            field.appendChild(inputElement);
+            field.appendChild(actionsDiv);
+            field.classList.add('editing');
+            
+            // Focus the input
+            inputElement.focus();
+        }
+
+        // Save field edit
+        function saveFieldEdit(field, newValue, fieldName, contactId) {
+            // Prepare data for the API call
+            const data = {
+                field: fieldName,
+                value: newValue
+            };
+            
+            // Make API call to update the contact
+            fetch(`/update_contact/${contactId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the field with the new value
+                    field.textContent = newValue;
+                    field.classList.remove('editing');
+                    
+                    // Show success message
+                    const successElement = document.getElementById(`${field.id}Success`);
+                    if (successElement) {
+                        successElement.classList.add('show');
+                        setTimeout(() => {
+                            successElement.classList.remove('show');
+                        }, 3000);
+                    }
+                    
+                    // Also update the row in the table if visible
+                    updateTableRow(contactId, fieldName, newValue);
+                    
+                    // Update contact name in modal header if name was changed
+                    if (fieldName === 'name') {
+                        document.getElementById('contactName').textContent = newValue;
+                        document.getElementById('contactInitial').textContent = newValue ? newValue[0].toUpperCase() : '';
+                    }
+                } else {
+                    // Show error and revert to original value
+                    alert('Error updating contact: ' + data.message);
+                    field.textContent = field.getAttribute('data-original-value') || '';
+                    field.classList.remove('editing');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating contact:', error);
+                field.textContent = field.getAttribute('data-original-value') || '';
+                field.classList.remove('editing');
+            });
+        }
+
+        // Cancel field edit
+        function cancelFieldEdit(field, originalValue) {
+            field.textContent = originalValue;
+            field.classList.remove('editing');
+        }
+
+        // Update table row after edit
+        function updateTableRow(contactId, fieldName, newValue) {
+            const row = document.querySelector(`.contact-row[data-contact-id="${contactId}"]`);
+            if (!row) return;
+            
+            if (fieldName === 'name') {
+                const nameElement = row.querySelector('.text-sm.font-medium');
+                if (nameElement) nameElement.textContent = newValue;
+                
+                const initialElement = row.querySelector('.text-forest-green.font-semibold');
+                if (initialElement) initialElement.textContent = newValue ? newValue[0].toUpperCase() : '';
+            }
+            
+            if (fieldName === 'cell') {
+                const cellElement = row.querySelector('td:nth-child(2) .hidden.md\\:inline');
+                if (cellElement) cellElement.textContent = newValue || '-';
+                
+                const cellLink = row.querySelector('td:nth-child(2) a');
+                if (cellLink) {
+                    if (newValue) {
+                        cellLink.href = `tel:${newValue}`;
+                        cellLink.classList.remove('text-gray-300');
+                        cellLink.classList.add('text-forest-green');
+                    } else {
+                        cellLink.removeAttribute('href');
+                        cellLink.classList.remove('text-forest-green');
+                        cellLink.classList.add('text-gray-300');
+                    }
+                }
+            }
+            
+            if (fieldName === 'email') {
+                const emailElement = row.querySelector('td:nth-child(3) .hidden.md\\:inline');
+                if (emailElement) emailElement.textContent = newValue || '-';
+                
+                const emailLink = row.querySelector('td:nth-child(3) a');
+                if (emailLink) {
+                    if (newValue) {
+                        emailLink.href = `mailto:${newValue}`;
+                        emailLink.classList.remove('text-gray-300');
+                        emailLink.classList.add('text-forest-green');
+                    } else {
+                        emailLink.removeAttribute('href');
+                        emailLink.classList.remove('text-forest-green');
+                        emailLink.classList.add('text-gray-300');
+                    }
+                }
+            }
+            
+            if (fieldName === 'birthday') {
+                const birthdayElement = row.querySelector('td:nth-child(4) .text-sm');
+                if (birthdayElement) birthdayElement.textContent = newValue || '-';
+            }
+            
+            if (fieldName === 'notes') {
+                const notesElement = row.querySelector('td:nth-child(5) .text-sm');
+                if (notesElement) notesElement.textContent = newValue || '-';
+            }
+        }
+
+        // Add more JavaScript functionality as needed
+    });
+</script>
+{% endblock %} 

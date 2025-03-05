@@ -1,0 +1,88 @@
+<!-- Contacts Table -->
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer sortable-header" data-sort="name">
+                    Name
+                    <span class="sort-icon ml-1 inline-block">
+                        <i class="fas fa-sort text-gray-400"></i>
+                    </span>
+                </th>
+                <th scope="col" class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cell</th>
+                <th scope="col" class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell cursor-pointer sortable-header" data-sort="birthday">
+                    Birthday
+                    <span class="sort-icon ml-1 inline-block">
+                        <i class="fas fa-sort text-gray-400"></i>
+                    </span>
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Notes</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% if contacts and contacts|length > 0 %}
+                {% for contact in contacts %}
+                <tr class="contact-row" data-contact-id="{{ contact.id }}">
+                    <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 bg-forest-green-100 rounded-full flex items-center justify-center hidden md:flex">
+                                <span class="text-forest-green font-semibold">{{ contact.name[0]|upper if contact.name else '' }}</span>
+                            </div>
+                            <div class="ml-0 md:ml-4">
+                                <div class="text-sm font-medium text-gray-900">{{ contact.name }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">
+                            {% if contact.cell %}
+                            <a href="tel:{{ contact.cell }}" class="text-forest-green hover:text-forest-green-dark hover:underline">
+                                <span class="hidden md:inline">{{ contact.cell }}</span>
+                                <span class="mobile-icon md:hidden">
+                                    <i class="fas fa-phone"></i>
+                                </span>
+                            </a>
+                            {% else %}
+                            <span class="hidden md:inline">-</span>
+                            <span class="mobile-icon md:hidden">
+                                <i class="fas fa-phone text-gray-300"></i>
+                            </span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">
+                            {% if contact.email %}
+                            <a href="mailto:{{ contact.email }}" class="text-forest-green hover:text-forest-green-dark hover:underline">
+                                <span class="hidden md:inline">{{ contact.email }}</span>
+                                <span class="mobile-icon md:hidden">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                            </a>
+                            {% else %}
+                            <span class="hidden md:inline">-</span>
+                            <span class="mobile-icon md:hidden">
+                                <i class="fas fa-envelope text-gray-300"></i>
+                            </span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900">{{ contact.birthday if contact.birthday else '-' }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                        <div class="text-sm text-gray-900 truncate max-w-xs">{{ contact.notes if contact.notes else '-' }}</div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                        No contacts found. Add your first contact or import from CSV.
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div> 

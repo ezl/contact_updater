@@ -1,0 +1,57 @@
+{% macro input_field(name, label, type="text", placeholder="", required=false, value="", classes="") %}
+<div class="form-group mb-4">
+    <label for="{{ name }}" class="modal-label">{{ label }}</label>
+    <input type="{{ type }}" id="{{ name }}" name="{{ name }}" 
+           placeholder="{{ placeholder }}" 
+           value="{{ value }}"
+           class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green {{ classes }}"
+           {% if required %}required{% endif %}>
+</div>
+{% endmacro %}
+
+{% macro textarea_field(name, label, rows=3, placeholder="", required=false, value="", classes="") %}
+<div class="form-group mb-4">
+    <label for="{{ name }}" class="modal-label">{{ label }}</label>
+    <textarea id="{{ name }}" name="{{ name }}" rows="{{ rows }}" 
+              placeholder="{{ placeholder }}" 
+              class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green {{ classes }}"
+              {% if required %}required{% endif %}>{{ value }}</textarea>
+</div>
+{% endmacro %}
+
+{% macro select_field(name, label, options, selected="", required=false, classes="") %}
+<div class="form-group mb-4">
+    <label for="{{ name }}" class="modal-label">{{ label }}</label>
+    <select id="{{ name }}" name="{{ name }}" 
+            class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green {{ classes }}"
+            {% if required %}required{% endif %}>
+        {% for option in options %}
+            <option value="{{ option.value }}" {% if option.value == selected %}selected{% endif %}>
+                {{ option.label }}
+            </option>
+        {% endfor %}
+    </select>
+</div>
+{% endmacro %}
+
+{% macro modal_field(id, label, field_name, icon_class="") %}
+<div class="modal-field">
+    <label class="modal-label">
+        {% if icon_class %}
+        <i class="{{ icon_class }} mr-1"></i>
+        {% endif %}
+        {{ label }}
+    </label>
+    <div id="{{ id }}" class="modal-value" data-field="{{ field_name }}"></div>
+    <div class="edit-success" id="{{ id }}Success">Changes saved successfully!</div>
+</div>
+{% endmacro %}
+
+{% macro button(text, type="button", classes="", icon_class="") %}
+<button type="{{ type }}" class="{{ classes }}">
+    {% if icon_class %}
+    <i class="{{ icon_class }} mr-1"></i>
+    {% endif %}
+    {{ text }}
+</button>
+{% endmacro %} 
