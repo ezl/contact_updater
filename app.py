@@ -198,7 +198,12 @@ def dashboard():
                 db.session.rollback()
                 error_message = f"Error processing CSV file: {str(e)}"
         else:
-            error_message = "File type not allowed. Please upload a CSV file."
+            # Provide a clear error message for non-CSV files
+            error_message = f"Invalid file type: {file.filename}. Only CSV files are supported."
+            return render_template('dashboard.html', 
+                                  contacts=contacts, 
+                                  success_message=success_message,
+                                  error_message=error_message)
         
     return render_template('dashboard.html', 
                           contacts=contacts, 
