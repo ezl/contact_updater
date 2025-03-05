@@ -79,6 +79,7 @@
 /* Modal field styles */
 .modal-field {
   margin-bottom: 0.75rem;
+  position: relative;
 }
 
 .modal-label {
@@ -106,6 +107,35 @@
   padding: 0;
   border: none;
   background-color: transparent;
+}
+
+/* Flatpickr calendar positioning */
+.flatpickr-calendar {
+  z-index: 9999 !important;
+}
+
+.modal-value .flatpickr-calendar {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: auto !important;
+  max-width: 100%;
+}
+
+.flatpickr-close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #666;
+  z-index: 10000;
+}
+
+.flatpickr-close-button:hover {
+  color: #000;
 }
 
 .edit-actions {

@@ -779,6 +779,9 @@
                         allowInput: true,
                         monthSelectorType: "static",
                         disableMobile: true,
+                        position: "auto",
+                        appendTo: field,
+                        positionElement: inputElement,
                         onOpen: function() {
                             // Lock scrolling when calendar opens
                             document.body.classList.add('calendar-open');
@@ -924,6 +927,11 @@
 
         // Save field edit
         function saveFieldEdit(field, newValue, fieldName, contactId) {
+            console.log('Saving field edit:', fieldName, newValue, 'for contact:', contactId);
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
             // Prepare data for the API call
             const data = {
                 field: fieldName,
@@ -935,11 +943,17 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Update response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Update response data:', data);
                 if (data.success) {
                     // Format the display value if needed
                     let displayValue = newValue;
