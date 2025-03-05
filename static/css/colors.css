@@ -60,6 +60,40 @@
   background-color: var(--gold-light);
 }
 
+/* UI Color Background Classes */
+.bg-success {
+  background-color: var(--success);
+}
+
+.bg-success-light {
+  background-color: var(--success-light);
+}
+
+.bg-warning {
+  background-color: var(--warning);
+}
+
+.bg-warning-light {
+  background-color: var(--warning-light);
+}
+
+.bg-danger {
+  background-color: var(--danger);
+}
+
+.bg-danger-light {
+  background-color: var(--danger-light);
+}
+
+.bg-info {
+  background-color: var(--info);
+}
+
+.bg-info-light {
+  background-color: var(--info-light);
+}
+
+/* Text color classes */
 .text-forest-green {
   color: var(--forest-green);
 }
@@ -80,12 +114,46 @@
   color: var(--gold-dark);
 }
 
+/* UI Text Color Classes */
+.text-success {
+  color: var(--success);
+}
+
+.text-warning {
+  color: var(--warning);
+}
+
+.text-danger {
+  color: var(--danger);
+}
+
+.text-info {
+  color: var(--info);
+}
+
+/* Border color classes */
 .border-forest-green {
   border-color: var(--forest-green);
 }
 
 .border-gold {
   border-color: var(--gold);
+}
+
+.border-success {
+  border-color: var(--success);
+}
+
+.border-warning {
+  border-color: var(--warning);
+}
+
+.border-danger {
+  border-color: var(--danger);
+}
+
+.border-info {
+  border-color: var(--info);
 }
 
 /* Gradient backgrounds */
