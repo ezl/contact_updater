@@ -61,6 +61,9 @@
     .edit-success {
         display: none;
     }
+    .edit-success.show {
+        display: block;
+    }
     
     /* Flatpickr customization */
     .flatpickr-calendar {
@@ -133,7 +136,6 @@
     
     .modal-value[data-field]:not(.editing) {
         position: relative;
-        padding-right: 24px; /* Make room for the edit icon */
         cursor: pointer; /* Show pointer cursor on hover */
         transition: background-color 0.2s ease;
     }
@@ -143,34 +145,7 @@
         border-radius: 4px;
     }
     
-    .modal-value[data-field]:not(.editing)::after {
-        content: '\f044'; /* FontAwesome edit icon */
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 400; /* Regular weight for the edit icon */
-        position: absolute;
-        right: 4px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #2F855A; /* Forest green */
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        font-size: 14px;
-        pointer-events: none; /* Ensure the icon doesn't interfere with clicks */
-        z-index: 1; /* Ensure the icon is above other elements */
-    }
-    
-    /* For multi-line fields like notes, position the icon at the top */
-    .modal-value[data-field="notes"]:not(.editing)::after {
-        top: 12px;
-        transform: none;
-    }
-    
-    /* Add a subtle border on hover for better visual feedback */
-    .modal-value[data-field]:not(.editing):hover::after {
-        opacity: 1;
-    }
-    
-    /* Ensure the notes field has proper padding for the icon */
+    /* Ensure the notes field has proper padding */
     .modal-value[data-field="notes"]:not(.editing) {
         padding-top: 8px;
         padding-bottom: 8px;
@@ -651,33 +626,37 @@
                         }
                     }, 100); // Short delay to ensure modal is fully rendered
                     
-                    // Populate all fields
-                    document.getElementById('detailName').textContent = data.name || '';
-                    document.getElementById('detailCell').textContent = data.cell || '';
-                    document.getElementById('detailEmail').textContent = data.email || '';
-                    document.getElementById('detailAddress').textContent = data.mailing_address || '';
-                    document.getElementById('detailNotes').textContent = data.notes || '';
-                    
-                    // Format date fields - these are not editable
-                    document.getElementById('detailDateAdded').textContent = formatDate(data.dateAdded) || '';
-                    document.getElementById('dateAddedDisplay').textContent = formatDate(data.dateAdded) || '';
-                    
-                    // Format birthday in MMM DD format
-                    document.getElementById('detailBirthday').textContent = formatBirthday(data.birthday) || '';
-                    
-                    // Format and display last updated dates as help text
-                    const emailUpdatedText = data.email_updated ? `Updated: ${formatDate(data.email_updated)}` : '';
-                    document.getElementById('detailEmailUpdated').textContent = emailUpdatedText;
-                    
-                    const cellUpdatedText = data.cell_updated ? `Updated: ${formatDate(data.cell_updated)}` : '';
-                    document.getElementById('detailCellUpdated').textContent = cellUpdatedText;
-                    
-                    const addressUpdatedText = data.mailing_address_updated ? `Updated: ${formatDate(data.mailing_address_updated)}` : '';
-                    document.getElementById('detailAddressUpdated').textContent = addressUpdatedText;
-                    
-                    document.getElementById('detailFacebook').textContent = data.facebook || '';
-                    document.getElementById('detailInstagram').textContent = data.instagram || '';
-                    document.getElementById('detailTwitter').textContent = data.twitter || '';
+                    // Populate all fields - wrap in try/catch to handle missing elements
+                    try {
+                        document.getElementById('detailName').textContent = data.name || '';
+                        document.getElementById('detailCell').textContent = data.cell || '';
+                        document.getElementById('detailEmail').textContent = data.email || '';
+                        document.getElementById('detailAddress').textContent = data.mailing_address || '';
+                        document.getElementById('detailNotes').textContent = data.notes || '';
+                        
+                        // Format date fields - these are not editable
+                        document.getElementById('detailDateAdded').textContent = formatDate(data.dateAdded) || '';
+                        document.getElementById('dateAddedDisplay').textContent = formatDate(data.dateAdded) || '';
+                        
+                        // Format birthday in MMM DD format
+                        document.getElementById('detailBirthday').textContent = formatBirthday(data.birthday) || '';
+                        
+                        // Format and display last updated dates as help text
+                        const emailUpdatedText = data.email_updated ? `Updated: ${formatDate(data.email_updated)}` : '';
+                        document.getElementById('detailEmailUpdated').textContent = emailUpdatedText;
+                        
+                        const cellUpdatedText = data.cell_updated ? `Updated: ${formatDate(data.cell_updated)}` : '';
+                        document.getElementById('detailCellUpdated').textContent = cellUpdatedText;
+                        
+                        const addressUpdatedText = data.mailing_address_updated ? `Updated: ${formatDate(data.mailing_address_updated)}` : '';
+                        document.getElementById('detailAddressUpdated').textContent = addressUpdatedText;
+                        
+                        document.getElementById('detailFacebook').textContent = data.facebook || '';
+                        document.getElementById('detailInstagram').textContent = data.instagram || '';
+                        document.getElementById('detailTwitter').textContent = data.twitter || '';
+                    } catch (error) {
+                        console.error('Error populating modal fields:', error);
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching contact details:', error);
@@ -954,6 +933,8 @@
                 value: newValue
             };
             
+            console.log('Sending data to server:', data);
+            
             // Make API call to update the contact
             fetch(`/update_contact/${contactId}`, {
                 method: 'POST',
@@ -1018,6 +999,15 @@
                                 successIndicator.classList.add('hidden');
                             }, 300);
                         }, 2000);
+                    }
+                    
+                    // Show success message
+                    const successMessage = field.closest('.modal-field').querySelector('.edit-success');
+                    if (successMessage) {
+                        successMessage.classList.add('show');
+                        setTimeout(() => {
+                            successMessage.classList.remove('show');
+                        }, 3000);
                     }
                     
                     // Also update the row in the table if visible
