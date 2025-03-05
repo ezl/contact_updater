@@ -4,52 +4,11 @@
 
 {% block styles %}
 {% include "components/dashboard_styles.html" %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dropzone.css') }}">
 <style>
-    /* Global dropzone styles */
-    .global-dropzone {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(47, 133, 90, 0.2); /* Forest green with transparency */
-        z-index: 9999;
-        justify-content: center;
-        align-items: center;
-        backdrop-filter: blur(3px);
-        transition: all 0.3s ease;
-    }
-    .global-dropzone-active {
-        display: flex !important;
-        background-color: rgba(47, 133, 90, 0.3); /* Slightly darker when active */
-    }
-    .global-dropzone-content {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        max-width: 500px;
-        border: 3px dashed #2f855a;
-        animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-        0% {
-            box-shadow: 0 0 0 0 rgba(47, 133, 90, 0.4);
-        }
-        70% {
-            box-shadow: 0 0 0 15px rgba(47, 133, 90, 0);
-        }
-        100% {
-            box-shadow: 0 0 0 0 rgba(47, 133, 90, 0);
-        }
-    }
-    
     /* Success indicator styles */
     .success-indicator {
-        margin-bottom: 0.25rem; /* to match the label margin bottom so success message appears vertically aligned
+        margin-bottom: 0.25rem; /* to match the label margin bottom so success message appears vertically aligned */
         opacity: 0;
         transition: opacity 0.3s ease;
         z-index: 2;
@@ -150,18 +109,8 @@
 {% endblock %}
 
 {% block content %}
-<!-- Global Dropzone Overlay -->
-<div id="globalDropzone" class="global-dropzone">
-    <div class="global-dropzone-content">
-        <i class="fas fa-cloud-upload-alt text-6xl text-forest-green mb-4"></i>
-        <h3 class="text-2xl font-bold text-gray-800 mb-2">Drop to Upload</h3>
-        <p class="text-gray-600 mb-2">Release your CSV file to automatically import contacts</p>
-        <div class="text-sm text-gray-500 max-w-md mx-auto">
-            <p class="mb-1">CSV should have headers: name, cell, email, mailing_address, notes, birthday (MM-DD format), facebook, instagram, twitter</p>
-            <p class="text-xs italic">Files will be uploaded and processed immediately</p>
-        </div>
-    </div>
-</div>
+<!-- Include Global Dropzone Component -->
+{% include "components/dropzone.html" %}
 
 <div class="container mx-auto px-4 py-6">
     <div class="flex justify-between items-center mb-6">
