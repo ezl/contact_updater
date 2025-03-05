@@ -17,9 +17,12 @@
         z-index: 9999;
         justify-content: center;
         align-items: center;
+        backdrop-filter: blur(3px);
+        transition: all 0.3s ease;
     }
     .global-dropzone-active {
         display: flex !important;
+        background-color: rgba(47, 133, 90, 0.3); /* Slightly darker when active */
     }
     .global-dropzone-content {
         background-color: white;
@@ -28,9 +31,20 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         text-align: center;
         max-width: 500px;
-        width: 90%;
-        pointer-events: none;
-        border: 2px dashed #2F855A;
+        border: 3px dashed #2f855a;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(47, 133, 90, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 15px rgba(47, 133, 90, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(47, 133, 90, 0);
+        }
     }
     
     /* Success indicator styles */
@@ -170,7 +184,11 @@
     <div class="global-dropzone-content">
         <i class="fas fa-cloud-upload-alt text-6xl text-forest-green mb-4"></i>
         <h3 class="text-2xl font-bold text-gray-800 mb-2">Drop to Upload</h3>
-        <p class="text-gray-600">Release your CSV file to automatically import contacts</p>
+        <p class="text-gray-600 mb-2">Release your CSV file to automatically import contacts</p>
+        <div class="text-sm text-gray-500 max-w-md mx-auto">
+            <p class="mb-1">CSV should have headers: name, cell, email, mailing_address, notes, birthday (MM-DD format), facebook, instagram, twitter</p>
+            <p class="text-xs italic">Files will be uploaded and processed immediately</p>
+        </div>
     </div>
 </div>
 
@@ -1248,6 +1266,7 @@
             
             // Handle file drop anywhere on the document
             document.addEventListener('drop', function(e) {
+                e.preventDefault();
                 dragCounter = 0;
                 globalDropzone.classList.remove('global-dropzone-active');
                 console.log('Drop - hiding dropzone');
@@ -1256,14 +1275,53 @@
                 const files = dt.files;
                 
                 if (files.length > 0 && isCSVFile(files[0])) {
+                    // Show loading indicator
+                    const loadingToast = document.createElement('div');
+                    loadingToast.className = 'fixed bottom-4 right-4 bg-forest-green text-white px-4 py-2 rounded shadow-lg z-50 flex items-center';
+                    loadingToast.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Uploading ${files[0].name}...
+                    `;
+                    document.body.appendChild(loadingToast);
+                    
                     // Set the file input value
                     fileInput.files = files;
                     
-                    // Show the import modal if it's not already visible
-                    openModal('importModal');
+                    // Create a FormData object and submit via fetch
+                    const formData = new FormData(importForm);
                     
-                    // Automatically submit the form
-                    importForm.submit();
+                    fetch('/dashboard', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        // Remove loading indicator
+                        document.body.removeChild(loadingToast);
+                        
+                        // Redirect to dashboard with success message
+                        window.location.href = '/dashboard?success_message=Successfully imported contacts from CSV file.';
+                    })
+                    .catch(error => {
+                        // Remove loading indicator
+                        document.body.removeChild(loadingToast);
+                        
+                        // Redirect to dashboard with error message
+                        window.location.href = '/dashboard?error_message=Error importing contacts. Please try again.';
+                        
+                        console.error('Upload error:', error);
+                    });
                 }
             });
             
