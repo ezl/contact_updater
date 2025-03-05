@@ -1,7 +1,9 @@
 <!-- Contact Detail Modal -->
 <div id="contactDetailModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="fixed inset-0 bg-black opacity-50"></div>
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75 modal-backdrop"></div>
+        </div>
         <div class="relative bg-white rounded-lg max-w-2xl w-full p-4 shadow-xl">
             <div class="flex justify-between items-center mb-3">
                 <div class="flex items-center">
@@ -10,7 +12,7 @@
                     </div>
                     <h3 id="contactName" class="text-xl font-semibold text-gray-800"></h3>
                 </div>
-                <button id="closeDetailModal" class="text-gray-400 hover:text-gray-500">
+                <button id="closeDetailModal" class="modal-close text-gray-400 hover:text-gray-500">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -23,18 +25,14 @@
                 </div>
                 <div class="modal-field">
                     <label class="modal-label">Cell</label>
-                    <div class="flex items-center">
-                        <div id="detailCell" class="modal-value" data-field="cell"></div>
-                        <div id="detailCellUpdated" class="ml-2 text-xs text-gray-500 italic"></div>
-                    </div>
+                    <div id="detailCell" class="modal-value" data-field="cell"></div>
+                    <div id="detailCellUpdated" class="text-xs text-gray-500 italic mt-1"></div>
                     <div class="edit-success" id="cellSuccess">Changes saved successfully!</div>
                 </div>
                 <div class="modal-field">
                     <label class="modal-label">Email</label>
-                    <div class="flex items-center">
-                        <div id="detailEmail" class="modal-value" data-field="email"></div>
-                        <div id="detailEmailUpdated" class="ml-2 text-xs text-gray-500 italic"></div>
-                    </div>
+                    <div id="detailEmail" class="modal-value" data-field="email"></div>
+                    <div id="detailEmailUpdated" class="text-xs text-gray-500 italic mt-1"></div>
                     <div class="edit-success" id="emailSuccess">Changes saved successfully!</div>
                 </div>
                 <div class="modal-field">
@@ -98,7 +96,7 @@
                         <i class="fas fa-trash mr-1"></i> Delete Contact
                     </button>
                 </form>
-                <button type="button" id="closeDetailBtn" class="px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Close</button>
+                <button type="button" id="closeDetailBtn" class="modal-cancel px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Close</button>
             </div>
         </div>
     </div>

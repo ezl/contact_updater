@@ -4,9 +4,47 @@
 
 {% block styles %}
 {% include "components/dashboard_styles.html" %}
+<style>
+    /* Global dropzone styles */
+    .global-dropzone {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(47, 133, 90, 0.2); /* Forest green with transparency */
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+    .global-dropzone-active {
+        display: flex !important;
+    }
+    .global-dropzone-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        pointer-events: none;
+        border: 2px dashed #2F855A;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
+<!-- Global Dropzone Overlay -->
+<div id="globalDropzone" class="global-dropzone">
+    <div class="global-dropzone-content">
+        <i class="fas fa-cloud-upload-alt text-6xl text-forest-green mb-4"></i>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Drop to Upload</h3>
+        <p class="text-gray-600">Release your CSV file to automatically import contacts</p>
+    </div>
+</div>
+
 <div class="container mx-auto px-4 py-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">
@@ -34,7 +72,7 @@
 <div id="importModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            <div class="absolute inset-0 bg-gray-500 opacity-75 modal-backdrop"></div>
         </div>
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -65,21 +103,21 @@
                                 </button>
                                 <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
                                     Cancel
-                                </button>
+            </button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
+        </div>
     </div>
-</div>
 
 <!-- Add Contact Modal -->
 <div id="addContactModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            <div class="absolute inset-0 bg-gray-500 opacity-75 modal-backdrop"></div>
         </div>
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -127,14 +165,14 @@
                             <div>
                                 <label for="twitter" class="form-label">Twitter</label>
                                 <input type="text" name="twitter" id="twitter" class="form-input w-full">
-                            </div>
+    </div>
                             <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                                 <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-forest-green text-base font-medium text-white hover:bg-forest-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:ml-3 sm:w-auto sm:text-sm">
                                     Add Contact
                                 </button>
                                 <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
                                     Cancel
-                                </button>
+                </button>
                             </div>
                         </form>
                     </div>
@@ -148,7 +186,7 @@
 <div id="deleteAllModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            <div class="absolute inset-0 bg-gray-500 opacity-75 modal-backdrop"></div>
         </div>
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -170,11 +208,11 @@
                 <form action="/delete_all_contacts" method="post">
                     <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-danger text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
                         Delete All
-                    </button>
+                                </button>
                 </form>
                 <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
                     Cancel
-                </button>
+                                </button>
             </div>
         </div>
     </div>
@@ -184,7 +222,7 @@
 <div id="removeDuplicatesModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            <div class="absolute inset-0 bg-gray-500 opacity-75 modal-backdrop"></div>
         </div>
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -246,16 +284,100 @@
             });
         });
         
+        // Function to open a modal properly
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                // Reset any previous state
+                modal.classList.remove('hidden');
+                
+                // Ensure backdrop is visible
+                const backdrop = modal.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.style.opacity = '0.75';
+                }
+                
+                // Re-initialize click handlers for this modal
+                setupModalClickHandlers(modal);
+            }
+        }
+        
+        // Function to close a modal properly
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+        
+        // Setup event handlers for a specific modal
+        function setupModalClickHandlers(modal) {
+            // Remove any existing event listeners (to prevent duplicates)
+            const newModal = modal.cloneNode(true);
+            modal.parentNode.replaceChild(newModal, modal);
+            
+            // Add click handlers to close buttons within this modal
+            newModal.querySelectorAll('.modal-close, .modal-cancel').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeModal(newModal.id);
+                });
+            });
+            
+            // Add click handler to the modal container for outside clicks
+            newModal.addEventListener('click', function(e) {
+                // If clicking directly on the modal container or on a backdrop element
+                if (e.target === this || e.target.classList.contains('modal-backdrop')) {
+                    closeModal(this.id);
+                }
+            });
+            
+            // Prevent clicks on modal content from closing the modal
+            const modalContent = newModal.querySelector('.inline-block') || newModal.querySelector('.relative');
+            if (modalContent) {
+                modalContent.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+            
+            // If this is the contact detail modal, re-setup the editable fields
+            if (newModal.id === 'contactDetailModal') {
+                setupEditableFields();
+            }
+        }
+        
+        // Initialize all modals on page load
+        document.querySelectorAll('.fixed').forEach(modal => {
+            setupModalClickHandlers(modal);
+        });
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // Check if any field is in edit mode
+                const editingFields = document.querySelectorAll('.modal-value.editing');
+                if (editingFields.length > 0) {
+                    // Don't close the modal if a field is being edited
+                    return;
+                }
+                
+                // Find visible modals and hide them
+                document.querySelectorAll('.fixed:not(.hidden)').forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
+        
         // Action button event listeners
         if (addContactBtn) {
             addContactBtn.addEventListener('click', function() {
-                addContactModal.classList.remove('hidden');
+                openModal('addContactModal');
             });
         }
         
         if (importBtn) {
             importBtn.addEventListener('click', function() {
-                importModal.classList.remove('hidden');
+                openModal('importModal');
             });
         }
         
@@ -267,56 +389,15 @@
         
         if (deleteAllBtn) {
             deleteAllBtn.addEventListener('click', function() {
-                deleteAllModal.classList.remove('hidden');
+                openModal('deleteAllModal');
             });
         }
         
         if (removeDuplicatesBtn) {
             removeDuplicatesBtn.addEventListener('click', function() {
-                removeDuplicatesModal.classList.remove('hidden');
+                openModal('removeDuplicatesModal');
             });
         }
-        
-        // Close modals when clicking outside or on close button
-        document.querySelectorAll('.modal-close, .modal-cancel').forEach(button => {
-            button.addEventListener('click', function() {
-                const modal = this.closest('.fixed');
-                if (modal) {
-                    modal.classList.add('hidden');
-                }
-            });
-        });
-        
-        // Close modals when clicking on the backdrop
-        document.querySelectorAll('.fixed').forEach(modal => {
-            modal.addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
-                }
-            });
-        });
-        
-        // Specific event listeners for contact detail modal close buttons
-        if (closeDetailModalBtn) {
-            closeDetailModalBtn.addEventListener('click', function() {
-                contactDetailModal.classList.add('hidden');
-            });
-        }
-        
-        if (closeDetailBtn) {
-            closeDetailBtn.addEventListener('click', function() {
-                contactDetailModal.classList.add('hidden');
-            });
-        }
-        
-        // Close modals with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.fixed:not(.hidden)').forEach(modal => {
-                    modal.classList.add('hidden');
-                });
-            }
-        });
         
         // Contact row click event
         const contactRows = document.querySelectorAll('.contact-row');
@@ -371,10 +452,7 @@
                     contactDetailModal.setAttribute('data-contact-id', contactId);
                     
                     // Show the modal
-                    contactDetailModal.classList.remove('hidden');
-                    
-                    // Setup editable fields
-                    setupEditableFields();
+                    openModal('contactDetailModal');
                 })
                 .catch(error => {
                     console.error('Error fetching contact details:', error);
@@ -390,7 +468,8 @@
 
         // Setup editable fields in the modal
         function setupEditableFields() {
-            const editableFields = contactDetailModal.querySelectorAll('.modal-value');
+            console.log('Setting up editable fields');
+            const editableFields = document.querySelectorAll('#contactDetailModal .modal-value[data-field]');
             
             editableFields.forEach(field => {
                 // Skip fields that shouldn't be editable
@@ -399,7 +478,15 @@
                     return;
                 }
                 
-                field.addEventListener('click', function() {
+                console.log('Adding click listener to field:', fieldName);
+                
+                // Remove any existing listeners by cloning and replacing
+                const newField = field.cloneNode(true);
+                field.parentNode.replaceChild(newField, field);
+                
+                // Add the click event listener to the new field
+                newField.addEventListener('click', function(e) {
+                    console.log('Field clicked:', fieldName);
                     if (!this.classList.contains('editing')) {
                         makeFieldEditable(this);
                     }
@@ -412,6 +499,9 @@
             const fieldName = field.getAttribute('data-field');
             const currentValue = field.textContent;
             const contactId = contactDetailModal.getAttribute('data-contact-id');
+            
+            // Store original value for potential cancellation
+            field.setAttribute('data-original-value', currentValue);
             
             // Create input element based on field type
             let inputElement;
@@ -444,8 +534,33 @@
                 saveFieldEdit(field, inputElement.value, fieldName, contactId);
             });
             
-            cancelButton.addEventListener('click', function() {
+            cancelButton.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent event bubbling
                 cancelFieldEdit(field, currentValue);
+            });
+            
+            // Add blur event to exit edit mode when clicking outside
+            inputElement.addEventListener('blur', function(e) {
+                // Check if the related target is not the save or cancel button
+                if (!e.relatedTarget || 
+                    (e.relatedTarget !== saveButton && 
+                     e.relatedTarget !== cancelButton)) {
+                    cancelFieldEdit(field, currentValue);
+                }
+            });
+            
+            // Add keydown event to handle ESC key and Enter key
+            inputElement.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.stopPropagation(); // Prevent modal from closing
+                    cancelFieldEdit(field, currentValue);
+                } else if (e.key === 'Enter') {
+                    // For regular inputs, submit on Enter
+                    if (inputElement.tagName.toLowerCase() !== 'textarea' || (e.metaKey || e.ctrlKey)) {
+                        e.preventDefault(); // Prevent default behavior (newline in textarea)
+                        saveFieldEdit(field, inputElement.value, fieldName, contactId);
+                    }
+                }
             });
             
             // Add elements to the DOM
@@ -517,7 +632,7 @@
 
         // Cancel field edit
         function cancelFieldEdit(field, originalValue) {
-            field.textContent = originalValue;
+            field.textContent = originalValue || field.getAttribute('data-original-value') || '';
             field.classList.remove('editing');
         }
 
@@ -659,121 +774,75 @@
         // File drop zone functionality
         const fileInput = document.getElementById('csv_file');
         const importForm = fileInput ? fileInput.closest('form') : null;
+        const globalDropzone = document.getElementById('globalDropzone');
         
         if (fileInput && importForm) {
-            // Add drop zone styling to the form
-            importForm.classList.add('drop-zone');
-            
-            // Create a drop zone message
-            const dropZoneMsg = document.createElement('div');
-            dropZoneMsg.className = 'drop-zone-message hidden';
-            dropZoneMsg.innerHTML = '<i class="fas fa-cloud-upload-alt text-3xl mb-2"></i><p>Drop your CSV file here</p>';
-            importForm.appendChild(dropZoneMsg);
-            
-            // Add drop zone styling
-            const style = document.createElement('style');
-            style.textContent = `
-                .drop-zone {
-                    position: relative;
-                    transition: all 0.3s ease;
-                    border: 2px dashed #e5e7eb;
-                    border-radius: 0.5rem;
-                    padding: 1.5rem;
-                }
-                .drop-zone.active {
-                    background-color: rgba(47, 133, 90, 0.1);
-                    border-color: #2F855A;
-                }
-                .drop-zone-message {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    background-color: rgba(255, 255, 255, 0.9);
-                    color: #2F855A;
-                    font-weight: bold;
-                    z-index: 10;
-                }
-                .hidden {
-                    display: none;
-                }
-            `;
-            document.head.appendChild(style);
-            
             // Prevent default drag behaviors
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                importForm.addEventListener(eventName, preventDefaults, false);
-                document.body.addEventListener(eventName, preventDefaults, false);
-            });
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                document.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+            // Counter to track drag enter/leave events
+            let dragCounter = 0;
             
-            // Highlight drop area when item is dragged over it
-            ['dragenter', 'dragover'].forEach(eventName => {
-                importForm.addEventListener(eventName, highlight, false);
-                document.body.addEventListener(eventName, showDropZone, false);
-            });
-            
-            ['dragleave', 'drop'].forEach(eventName => {
-                importForm.addEventListener(eventName, unhighlight, false);
-            });
-            
-            document.body.addEventListener('dragleave', hideDropZone, false);
-            document.body.addEventListener('drop', hideDropZone, false);
-            
-            // Handle dropped files
-            importForm.addEventListener('drop', handleDrop, false);
-            
-            function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            function highlight(e) {
-                importForm.classList.add('active');
-            }
-            
-            function unhighlight(e) {
-                importForm.classList.remove('active');
-            }
-            
-            function showDropZone(e) {
-                // Only show drop zone if dragging a file
+            // Show global dropzone when dragging over the document
+            document.addEventListener('dragenter', function(e) {
+                dragCounter++;
                 if (e.dataTransfer.types && e.dataTransfer.types.includes('Files')) {
-                    // Show the import modal if it's not already visible
-                    if (importModal.classList.contains('hidden')) {
-                        importModal.classList.remove('hidden');
-                    }
-                    dropZoneMsg.classList.remove('hidden');
-                    // If we're dragging over the body but not the form, show the message
-                    if (e.target !== importForm && !importForm.contains(e.target)) {
-                        importForm.classList.add('active');
+                    globalDropzone.classList.add('global-dropzone-active');
+                    console.log('Drag enter - showing dropzone', dragCounter);
+                }
+            });
+            
+            // Hide global dropzone when leaving the document
+            document.addEventListener('dragleave', function(e) {
+                dragCounter--;
+                if (dragCounter === 0) {
+                    globalDropzone.classList.remove('global-dropzone-active');
+                    console.log('Drag leave - hiding dropzone', dragCounter);
+                }
+            });
+            
+            // Keep dropzone visible during dragover
+            document.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                if (e.dataTransfer.types && e.dataTransfer.types.includes('Files')) {
+                    if (!globalDropzone.classList.contains('global-dropzone-active')) {
+                        globalDropzone.classList.add('global-dropzone-active');
+                        console.log('Drag over - showing dropzone');
                     }
                 }
-            }
+            });
             
-            function hideDropZone(e) {
-                // Check if we're still over the form
-                if (e.type === 'dragleave' && (e.target === importForm || importForm.contains(e.target))) {
-                    return;
-                }
-                dropZoneMsg.classList.add('hidden');
-            }
-            
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
+            // Handle file drop anywhere on the document
+            document.addEventListener('drop', function(e) {
+                dragCounter = 0;
+                globalDropzone.classList.remove('global-dropzone-active');
+                console.log('Drop - hiding dropzone');
                 
-                if (files.length) {
-                    fileInput.files = files;
-                    // Submit the form automatically when a file is dropped
+        const dt = e.dataTransfer;
+        const files = dt.files;
+                
+                if (files.length > 0 && isCSVFile(files[0])) {
+                    // Set the file input value
+        fileInput.files = files;
+                    
+                    // Show the import modal if it's not already visible
+                    openModal('importModal');
+                    
+                    // Automatically submit the form
                     importForm.submit();
                 }
-                
-                dropZoneMsg.classList.add('hidden');
+            });
+            
+            // Helper function to check if file is a CSV
+            function isCSVFile(file) {
+                return file.name.toLowerCase().endsWith('.csv');
             }
         }
     });

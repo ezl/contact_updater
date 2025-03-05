@@ -83,24 +83,22 @@
 
 .modal-label {
   display: block;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
-  color: #4b5563;
   margin-bottom: 0.25rem;
+  color: #9ca3af; /* Light grey color */
 }
 
 .modal-value {
   padding: 0.375rem 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: none;
   border-radius: 0.25rem;
-  background-color: #f9fafb;
+  background-color: transparent;
   min-height: 2rem;
   cursor: pointer;
-  transition: all 0.15s ease-in-out;
 }
 
 .modal-value:hover {
-  border-color: #d1d5db;
   background-color: #f3f4f6;
 }
 
