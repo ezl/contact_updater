@@ -97,6 +97,7 @@
   background-color: transparent;
   min-height: 2rem;
   cursor: pointer;
+  margin-left: -0.5em; /* really only wanted for client detail modal, so if this is impacting others need more specific selector */
 }
 
 .modal-value:hover {
