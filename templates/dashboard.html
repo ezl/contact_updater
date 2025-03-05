@@ -711,16 +711,8 @@
         function formatBirthday(birthdayString) {
             if (!birthdayString) return '';
             
-            // Handle MM-DD format
-            if (birthdayString.includes('-')) {
-                const [month, day] = birthdayString.split('-');
-                if (month && day) {
-                    const date = new Date(2000, parseInt(month)-1, parseInt(day));
-                    return date.toLocaleDateString('default', { month: 'short', day: 'numeric' });
-                }
-            }
-            
-            // Return as is if we can't parse it
+            // The server will handle the formatting via the format_date filter
+            // This function is kept for backward compatibility
             return birthdayString;
         }
 
@@ -1124,12 +1116,35 @@
                         aValue = a.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
                         bValue = b.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
                     } else if (column === 'birthday') {
-                        aValue = a.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
-                        bValue = b.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+                        // Get the text content
+                        const aText = a.querySelector('td:nth-child(4)').textContent.trim();
+                        const bText = b.querySelector('td:nth-child(4)').textContent.trim();
                         
                         // Handle empty values
-                        if (aValue === '-') aValue = 'z'; // Sort empty values to the end
-                        if (bValue === '-') bValue = 'z';
+                        if (aText === '-') aValue = 'z'; // Sort empty values to the end
+                        if (bText === '-') bValue = 'z';
+                        
+                        // If both values are valid dates
+                        if (aText !== '-' && bText !== '-') {
+                            // Convert to MM-DD format for comparison
+                            const aMonth = getMonthNumber(aText.split(' ')[0]);
+                            const aDay = parseInt(aText.split(' ')[1]);
+                            
+                            const bMonth = getMonthNumber(bText.split(' ')[0]);
+                            const bDay = parseInt(bText.split(' ')[1]);
+                            
+                            // Compare months first, then days
+                            if (aMonth !== bMonth) {
+                                aValue = aMonth;
+                                bValue = bMonth;
+                            } else {
+                                aValue = aDay;
+                                bValue = bDay;
+                            }
+                        } else {
+                            aValue = aText;
+                            bValue = bText;
+                        }
                     }
                     
                     if (direction === 'asc') {
@@ -1220,6 +1235,33 @@
             function isCSVFile(file) {
                 return file.name.toLowerCase().endsWith('.csv');
             }
+        }
+
+        // Kebab menu dropdown toggle
+        const kebabMenuBtn = document.getElementById('kebabMenuBtn');
+        const kebabDropdown = document.getElementById('kebabDropdown');
+        
+        if (kebabMenuBtn && kebabDropdown) {
+            kebabMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                kebabDropdown.classList.toggle('hidden');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!kebabDropdown.contains(e.target) && e.target !== kebabMenuBtn) {
+                    kebabDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Helper function to convert month name to number
+        function getMonthNumber(monthName) {
+            const months = {
+                'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+                'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
+            };
+            return months[monthName.toLowerCase().substring(0, 3)] || 0;
         }
     });
 </script>

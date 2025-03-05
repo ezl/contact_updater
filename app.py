@@ -25,6 +25,19 @@ csrf = CSRFProtect(app)
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
 
+# Custom Jinja filter for formatting dates
+@app.template_filter('format_date')
+def format_date(date_str):
+    if not date_str or date_str == '-':
+        return '-'
+    try:
+        # Parse MM-DD format
+        date_obj = datetime.strptime(date_str, '%m-%d')
+        # Format as "Month Day"
+        return date_obj.strftime('%b %-d')
+    except ValueError:
+        return date_str
+
 # Define Contact model
 class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
