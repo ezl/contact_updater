@@ -5,6 +5,7 @@ import json
 from datetime import datetime, timedelta
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
+from flask_wtf.csrf import CSRFProtect
 
 # Load environment variables from .env file
 load_dotenv()
@@ -17,6 +18,9 @@ app.config['ALLOWED_EXTENSIONS'] = {'csv'}
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite3.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UNDO_EXPIRATION_MINUTES'] = 30  # How long undo actions are available
+
+# Initialize CSRF protection
+csrf = CSRFProtect(app)
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
@@ -237,10 +241,15 @@ def delete_contact(id):
         db.session.delete(contact)
         db.session.commit()
         
-        # Create success message with undo option
-        success_message = "Contact deleted successfully!"
+        # Check if this is an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'success': True,
+                'message': 'Contact deleted successfully!'
+            })
         
-        # Redirect with undo parameters
+        # For regular form submissions, redirect with undo parameters
+        success_message = "Contact deleted successfully!"
         return redirect(url_for('dashboard', 
                                success_message=success_message,
                                undo_action='single',
@@ -248,6 +257,14 @@ def delete_contact(id):
     except Exception as e:
         db.session.rollback()
         error_message = f"Error deleting contact: {str(e)}"
+        
+        # Check if this is an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'success': False,
+                'message': error_message
+            })
+        
         return redirect(url_for('dashboard', error_message=error_message))
 
 @app.route('/download/sample_csv')
