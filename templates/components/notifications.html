@@ -4,7 +4,9 @@
     <span class="block sm:inline">{{ success_message }}</span>
     {% if undo_action and undo_id %}
     <span class="ml-2">
-        <a href="{{ url_for('undo_action', action=undo_action, id=undo_id) }}" class="underline font-medium">Undo</a>
+        <form action="{{ url_for('undo_delete', action=undo_action, id=undo_id) }}" method="POST" class="inline">
+            <button type="submit" class="underline font-medium text-success hover:text-success-dark">Undo</button>
+        </form>
     </span>
     {% endif %}
     <button type="button" class="absolute top-0 right-0 mt-3 mr-4 close-alert">

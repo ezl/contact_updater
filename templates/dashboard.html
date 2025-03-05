@@ -3,1120 +3,431 @@
 {% block title %}Client Magic - Dashboard{% endblock %}
 
 {% block styles %}
-<style>
-/* Base styles */
-.dropzone-border {
-    border: 2px dashed #d1d5db; /* border-gray-300 */
-}
-.dropzone-active {
-    border-color: var(--forest-green); /* Changed from indigo */
-    background-color: var(--forest-green-100); /* Changed from indigo-50 */
-}
-.contact-row {
-    cursor: pointer !important;
-    transition: background-color 0.2s ease;
-}
-.contact-row:hover {
-    background-color: var(--forest-green-100) !important; /* Changed from indigo-50 */
-}
-.contact-row.selected {
-    background-color: var(--forest-green-100) !important; /* Changed from indigo-50 */
-}
-.modal-field {
-    margin-bottom: 0.75rem; /* reduced from 1rem */
-}
-.modal-label {
-    display: block;
-    font-size: 0.7rem; /* reduced from 0.75rem */
-    font-weight: 500;
-    color: #9ca3af;
-    margin-bottom: 0.2rem; /* reduced from 0.25rem */
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-.modal-value {
-    display: block;
-    width: 100%;
-    padding: 0.375rem; /* reduced from 0.5rem */
-    border: none;
-    border-radius: 0.375rem;
-    background-color: white;
-    color: #1f2937;
-    font-size: 0.95rem; /* reduced from 1rem */
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-}
-.modal-value:hover {
-    background-color: #f9fafb;
-}
-.modal-value.editing {
-    border: 1px solid #e5e7eb;
-    background-color: #f9fafb;
-    cursor: text;
-    padding: 0.3rem; /* reduced from 0.375rem */
-}
-.edit-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 0.375rem; /* reduced from 0.5rem */
-    gap: 0.375rem; /* reduced from 0.5rem */
-}
-.edit-save-btn {
-    padding: 0.2rem 0.6rem; /* reduced from 0.25rem 0.75rem */
-    background-color: var(--forest-green);
-    color: white;
-    border-radius: 0.25rem;
-    font-size: 0.7rem; /* reduced from 0.75rem */
-    font-weight: 500;
-    transition: background-color 0.15s;
-}
-.edit-save-btn:hover {
-    background-color: var(--forest-green-dark); /* Changed from green-600 */
-}
-.edit-cancel-btn {
-    padding: 0.25rem 0.75rem;
-    background-color: #f3f4f6; /* bg-gray-100 */
-    color: #4b5563; /* text-gray-600 */
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    transition: background-color 0.15s;
-}
-.edit-cancel-btn:hover {
-    background-color: #e5e7eb; /* bg-gray-200 */
-}
-.edit-success {
-    margin-top: 0.5rem;
-    padding: 0.375rem;
-    background-color: var(--success-light);
-    color: var(--success);
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    text-align: center;
-    display: none;
-    transition: all 0.3s ease;
-}
-.edit-success.show {
-    display: block;
-}
-.mobile-icon {
-    width: 2rem; /* w-8 */
-    height: 2rem; /* h-8 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 9999px; /* rounded-full */
-    background-color: var(--forest-green-100); /* Changed from indigo-100 */
-    color: var(--forest-green); /* Changed from indigo-600 */
-}
-.sortable-header {
-    cursor: pointer;
-    transition: background-color 0.15s;
-}
-.sortable-header:hover {
-    background-color: #f3f4f6; /* bg-gray-100 */
-}
-/* Date picker styles */
-.flatpickr-calendar {
-    background-color: white;
-    border: 1px solid #e5e7eb; /* border-gray-200 */
-    border-radius: 0.375rem; /* rounded-md */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
-}
-.flatpickr-day.selected {
-    background-color: var(--forest-green); /* Changed from green-500 */
-    border-color: var(--forest-green); /* Changed from green-500 */
-}
-.flatpickr-day.today {
-    border-color: var(--forest-green-light); /* Changed from green-300 */
-}
-.flatpickr-day:hover {
-    background-color: var(--forest-green-100); /* Changed from green-100 */
-}
-/* Global dropzone styles */
-.global-dropzone {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(45, 106, 79, 0.2); /* Changed from indigo */
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-}
-.global-dropzone-active {
-    display: flex !important;
-}
-.global-dropzone-content {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 500px;
-    width: 90%;
-    pointer-events: none;
-}
-</style>
+{% include "components/dashboard_styles.html" %}
 {% endblock %}
 
 {% block content %}
-<!-- Global Dropzone Overlay -->
-<div id="globalDropzone" class="global-dropzone">
-    <div class="global-dropzone-content">
-        <i class="fas fa-cloud-upload-alt text-6xl text-forest-green mb-4"></i>
-        <h3 class="text-2xl font-bold text-gray-800 mb-2">Drop to Upload</h3>
-        <p class="text-gray-600">Release your CSV file to automatically import contacts</p>
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">
+            Dashboard
+        </h1>
     </div>
+
+    <!-- Notification Messages -->
+    {% include "components/notifications.html" %}
+
+    <!-- Action Buttons -->
+    {% include "components/action_buttons.html" %}
+
+    <!-- Search Bar -->
+    {% include "components/search_bar.html" %}
+
+    <!-- Contacts Table -->
+    {% include "components/contacts_table.html" %}
 </div>
 
-<div class="container mx-auto px-6 py-8">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <div>
-            <h1 class="text-3xl font-bold text-gray-800">Your Clients</h1>
-            <p class="text-gray-600">Manage and import your contacts</p>
-        </div>
-        <div class="flex items-center">
-            <span class="text-sm text-gray-500">{{ contacts|length if contacts else 0 }} contacts</span>
-        </div>
-    </div>
-    
-    <!-- Action buttons row -->
-    <div class="flex flex-wrap items-center gap-3 mb-8">
-        <a href="{{ url_for('download_all_contacts') }}" class="bg-forest-green hover:bg-forest-green-dark text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
-            <i class="fas fa-download mr-2"></i> Download All
-        </a>
-        <button id="deleteAllBtn" class="bg-danger hover:bg-red-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
-            <i class="fas fa-trash-alt mr-2"></i> Delete All
-        </button>
-        <button id="removeDuplicatesBtn" class="bg-warning hover:bg-amber-700 text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
-            <i class="fas fa-broom mr-2"></i> Remove Duplicates
-        </button>
-        <button id="addContactBtn" class="bg-forest-green hover:bg-forest-green-dark text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
-            <i class="fas fa-user-plus mr-2"></i> Add Contact
-        </button>
-        <button id="openModal" class="bg-forest-green hover:bg-forest-green-dark text-white px-4 py-2 rounded-md shadow-sm transition duration-150 flex items-center">
-            <i class="fas fa-upload mr-2"></i> Import Contacts
-        </button>
-    </div>
+<!-- Modals -->
+{% include "components/contact_detail_modal.html" %}
 
-    <!-- Alerts for feedback -->
-    {% if success_message %}
-    <div class="bg-success-light border-l-4 border-success text-success p-4 mb-6 rounded-md" role="alert">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2"></i>
-                <span>{{ success_message }}</span>
-            </div>
-            {% if undo_action and undo_id %}
-            <form action="{{ url_for('undo_delete', action=undo_action, id=undo_id) }}" method="post" class="ml-4">
-                <button type="submit" class="bg-forest-green hover:bg-forest-green-dark text-white px-3 py-1 rounded-md text-sm flex items-center">
-                    <i class="fas fa-undo mr-1"></i> Undo
-                </button>
-            </form>
-            {% endif %}
+<!-- Import Modal -->
+<div id="importModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
-    </div>
-    {% endif %}
-    
-    {% if error_message %}
-    <div class="bg-danger-light border-l-4 border-danger text-danger p-4 mb-6 rounded-md" role="alert">
-        <div class="flex items-center">
-            <i class="fas fa-exclamation-circle mr-2"></i>
-            <span>{{ error_message }}</span>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- Contacts Table Card -->
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-            <h2 class="font-semibold text-lg text-gray-800">All Contacts</h2>
-            <div class="relative max-w-xs">
-                <input type="text" id="contactSearch" placeholder="Search contacts..." class="py-2 pl-3 pr-10 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-forest-green focus:border-forest-green">
-                <button class="absolute inset-y-0 right-0 px-3 flex items-center bg-gray-100 rounded-r-md border-l-0 border border-gray-300">
-                    <i class="fas fa-search text-gray-500"></i>
-                </button>
-            </div>
-        </div>
-        <div>
-            <!-- Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer sortable-header" data-sort="name">
-                                Name
-                                <span class="sort-icon ml-1 inline-block">
-                                    <i class="fas fa-sort text-gray-400"></i>
-                                </span>
-                            </th>
-                            <th scope="col" class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cell</th>
-                            <th scope="col" class="px-2 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell cursor-pointer sortable-header" data-sort="birthday">
-                                Birthday
-                                <span class="sort-icon ml-1 inline-block">
-                                    <i class="fas fa-sort text-gray-400"></i>
-                                </span>
-                            </th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        {% if contacts and contacts|length > 0 %}
-                            {% for contact in contacts %}
-                            <tr class="contact-row" data-contact-id="{{ contact.id }}">
-                                <td class="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10 bg-forest-green-100 rounded-full flex items-center justify-center hidden md:flex">
-                                            <span class="text-forest-green font-semibold">{{ contact.name[0]|upper if contact.name else '' }}</span>
-                                        </div>
-                                        <div class="ml-0 md:ml-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ contact.name }}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {% if contact.cell %}
-                                        <a href="tel:{{ contact.cell }}" class="text-forest-green hover:text-forest-green-dark hover:underline">
-                                            <span class="hidden md:inline">{{ contact.cell }}</span>
-                                            <span class="mobile-icon md:hidden">
-                                                <i class="fas fa-phone"></i>
-                                            </span>
-                                        </a>
-                                        {% else %}
-                                        <span class="hidden md:inline">-</span>
-                                        <span class="mobile-icon md:hidden">
-                                            <i class="fas fa-phone text-gray-300"></i>
-                                        </span>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td class="px-2 md:px-6 py-2 md:py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">
-                                        {% if contact.email %}
-                                        <a href="mailto:{{ contact.email }}" class="text-forest-green hover:text-forest-green-dark hover:underline">
-                                            <span class="hidden md:inline">{{ contact.email }}</span>
-                                            <span class="mobile-icon md:hidden">
-                                                <i class="fas fa-envelope"></i>
-                                            </span>
-                                        </a>
-                                        {% else %}
-                                        <span class="hidden md:inline">-</span>
-                                        <span class="mobile-icon md:hidden">
-                                            <i class="fas fa-envelope text-gray-300"></i>
-                                        </span>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                                    <div class="text-sm text-gray-900" data-raw-birthday="{{ contact.birthday }}">
-                                        {% if contact.birthday %}
-                                            {{ contact.birthday | formatBirthday }}
-                                        {% else %}
-                                            N/A
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                                    <div class="text-sm text-gray-900">{{ contact.notes }}</div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
-                                    No contacts found. Import your contacts by clicking the "Import Contacts" button.
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Remove Duplicates Confirmation Modal -->
-    <div id="removeDuplicatesModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="fixed inset-0 bg-black opacity-50"></div>
-            <div class="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-semibold text-gray-800">Remove Duplicate Contacts</h3>
-                    <button id="closeRemoveDuplicatesModal" class="text-gray-400 hover:text-gray-500">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="mb-8">
-                    <p class="text-gray-600 mb-4">This will remove duplicate contacts from your database. Duplicates are identified by matching email addresses or phone numbers.</p>
-                </div>
-
-                <form action="{{ url_for('remove_duplicates') }}" method="post" id="removeDuplicatesForm">
-                    <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
-                        <button type="button" id="cancelRemoveDuplicates" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-warning text-white rounded-md hover:bg-amber-700 transition duration-150">Remove Duplicates</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Contact Modal -->
-    <div id="addContactModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="fixed inset-0 bg-black opacity-50"></div>
-            <div class="relative bg-white rounded-lg max-w-2xl w-full p-6 shadow-xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-semibold text-gray-800">Add New Contact</h3>
-                    <button id="closeAddContactModal" class="text-gray-400 hover:text-gray-500">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <form action="{{ url_for('add_contact') }}" method="post" id="addContactForm">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-                        <div class="form-group">
-                            <label for="name" class="modal-label">Name *</label>
-                            <input type="text" id="name" name="name" required class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Import Contacts</h3>
+                            <button type="button" class="modal-close text-gray-400 hover:text-gray-500">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="cell" class="modal-label">Cell Phone</label>
-                            <input type="tel" id="cell" name="cell" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email" class="modal-label">Email</label>
-                            <input type="email" id="email" name="email" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="birthday" class="modal-label">Birthday (MM-DD)</label>
-                            <input type="text" id="birthday" name="birthday" placeholder="MM-DD" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
-                            <p class="text-xs text-gray-500 mt-1">Format: Month-Day (e.g., 05-15 for May 15)</p>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group mb-5">
-                        <label for="mailing_address" class="modal-label">Mailing Address</label>
-                        <input type="text" id="mailing_address" name="mailing_address" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
-                    </div>
-                    
-                    <div class="form-group mb-6">
-                        <label for="notes" class="modal-label">Notes</label>
-                        <textarea id="notes" name="notes" rows="3" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green"></textarea>
-                    </div>
-                    
-                    <div class="mt-6 pt-4 border-t border-gray-100">
-                        <h4 class="text-sm font-medium text-gray-700 mb-4">Social Media Profiles</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div class="form-group">
-                                <label for="facebook" class="modal-label">
-                                    <i class="fab fa-facebook text-blue-600 mr-1"></i> Facebook
-                                </label>
-                                <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
+                        <form action="/dashboard" method="post" enctype="multipart/form-data" class="space-y-4">
+                            <div>
+                                <label for="csv_file" class="block text-sm font-medium text-gray-700 mb-1">Select CSV File</label>
+                                <input type="file" name="csv_file" id="csv_file" class="form-input w-full" accept=".csv">
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="instagram" class="modal-label">
-                                    <i class="fab fa-instagram text-pink-600 mr-1"></i> Instagram
-                                </label>
-                                <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
+                            <div class="text-sm text-gray-500">
+                                <p>CSV should have headers: name, cell, email, mailing_address, notes, birthday (MM-DD format), facebook, instagram, twitter</p>
+                                <p class="mt-2">
+                                    <a href="/download/sample_csv" class="text-forest-green hover:underline">
+                                        <i class="fas fa-download mr-1"></i> Download Sample CSV
+                                    </a>
+                                </p>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="twitter" class="modal-label">
-                                    <i class="fab fa-twitter text-blue-400 mr-1"></i> Twitter
-                                </label>
-                                <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/username" class="w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green">
+                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-forest-green text-base font-medium text-white hover:bg-forest-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:ml-3 sm:w-auto sm:text-sm">
+                                    Import
+                                </button>
+                                <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
+                                    Cancel
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
-                        <button type="button" id="cancelAddContact" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-forest-green text-white rounded-md hover:bg-forest-green-dark transition duration-150">Add Contact</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Import Modal -->
-    <div id="importModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="fixed inset-0 bg-black opacity-50"></div>
-            <div class="relative bg-white rounded-lg max-w-lg w-full p-6 shadow-xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-semibold text-gray-800">Import Contacts</h3>
-                    <button id="closeModal" class="text-gray-400 hover:text-gray-500">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="mb-6">
-                    <p class="text-gray-600 mb-4">Upload a CSV file containing your contacts. Your CSV should include columns for contact information.</p>
-                    <a href="{{ url_for('download_sample') }}" class="text-forest-green hover:text-forest-green-dark text-sm flex items-center mb-4">
-                        <i class="fas fa-download mr-1"></i> Download sample CSV template
-                    </a>
-                </div>
-
-                <form action="{{ url_for('dashboard') }}" method="post" enctype="multipart/form-data" id="uploadForm">
-                    <div id="dropzone" class="dropzone-border p-6 mb-5 rounded-md flex flex-col items-center justify-center cursor-pointer bg-gray-50">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
-                        <p class="text-gray-600 mb-1">Drag & drop your CSV file here</p>
-                        <p class="text-gray-500 text-sm">or</p>
-                        <label for="csv_file" class="mt-2 inline-flex items-center px-4 py-2 bg-forest-green hover:bg-forest-green-dark text-white rounded-md cursor-pointer transition duration-150">
-                            <span>Select file</span>
-                        </label>
-                        <input type="file" id="csv_file" name="csv_file" accept=".csv" class="hidden" />
-                        <p id="selectedFileName" class="text-sm text-gray-500 mt-2"></p>
-                    </div>
-
-                    <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
-                        <button type="button" id="cancelUpload" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
-                        <button type="submit" id="submitUpload" class="px-4 py-2 bg-forest-green text-white rounded-md hover:bg-forest-green-dark transition duration-150">Upload</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contact Detail Modal -->
-    <div id="contactDetailModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="fixed inset-0 bg-black opacity-50"></div>
-            <div class="relative bg-white rounded-lg max-w-2xl w-full p-4 shadow-xl">
-                <div class="flex justify-between items-center mb-3">
-                    <div class="flex items-center">
-                        <div class="h-10 w-10 bg-forest-green-100 rounded-full flex items-center justify-center mr-3">
-                            <span id="contactInitial" class="text-forest-green text-lg font-semibold"></span>
-                        </div>
-                        <h3 id="contactName" class="text-xl font-semibold text-gray-800"></h3>
-                    </div>
-                    <button id="closeDetailModal" class="text-gray-400 hover:text-gray-500">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                    <div class="modal-field">
-                        <label class="modal-label">Name</label>
-                        <div id="detailName" class="modal-value" data-field="name"></div>
-                        <div class="edit-success" id="nameSuccess">Changes saved successfully!</div>
-                    </div>
-                    <div class="modal-field">
-                        <label class="modal-label">Cell</label>
-                        <div id="detailCell" class="modal-value" data-field="cell"></div>
-                        <div class="edit-success" id="cellSuccess">Changes saved successfully!</div>
-                    </div>
-                    <div class="modal-field">
-                        <label class="modal-label">Email</label>
-                        <div id="detailEmail" class="modal-value" data-field="email"></div>
-                        <div class="edit-success" id="emailSuccess">Changes saved successfully!</div>
-                    </div>
-                    <div class="modal-field">
-                        <label class="modal-label">Date Added</label>
-                        <div id="detailDateAdded" class="modal-value" data-field="date_added"></div>
-                        <div class="edit-success" id="dateAddedSuccess">Changes saved successfully!</div>
+                        </form>
                     </div>
                 </div>
-                
-                <div class="modal-field mb-3">
-                    <label class="modal-label">Mailing Address</label>
-                    <div id="detailAddress" class="modal-value" data-field="mailing_address"></div>
-                    <div class="edit-success" id="addressSuccess">Changes saved successfully!</div>
-                </div>
-                
-                <div class="modal-field mb-3">
-                    <label class="modal-label">Notes</label>
-                    <div id="detailNotes" class="modal-value min-h-[80px]" data-field="notes"></div>
-                    <div class="edit-success" id="notesSuccess">Changes saved successfully!</div>
-                </div>
-                
-                <!-- Reserved space for future additional fields -->
-                <div id="additionalFields" class="mt-3">
-                    <h4 class="text-base font-medium text-gray-700 mb-2">Additional Information</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                        <div class="modal-field">
-                            <label class="modal-label">Birthday</label>
-                            <div id="detailBirthday" class="modal-value" data-field="birthday"></div>
-                            <div class="edit-success" id="birthdaySuccess">Changes saved successfully!</div>
-                        </div>
-                        <div class="modal-field">
-                            <label class="modal-label">Email Last Updated</label>
-                            <div id="detailEmailUpdated" class="modal-value" data-field="email_updated"></div>
-                            <div class="edit-success" id="emailUpdatedSuccess">Changes saved successfully!</div>
-                        </div>
-                        <div class="modal-field">
-                            <label class="modal-label">Cell Last Updated</label>
-                            <div id="detailCellUpdated" class="modal-value" data-field="cell_updated"></div>
-                            <div class="edit-success" id="cellUpdatedSuccess">Changes saved successfully!</div>
-                        </div>
-                    </div>
-                    
-                    <h4 class="text-base font-medium text-gray-700 mb-2">Social Media</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div class="modal-field">
-                            <label class="modal-label">
-                                <i class="fab fa-facebook text-blue-600 mr-1"></i> Facebook
-                            </label>
-                            <div id="detailFacebook" class="modal-value" data-field="facebook"></div>
-                            <div class="edit-success" id="facebookSuccess">Changes saved successfully!</div>
-                        </div>
-                        <div class="modal-field">
-                            <label class="modal-label">
-                                <i class="fab fa-instagram text-pink-600 mr-1"></i> Instagram
-                            </label>
-                            <div id="detailInstagram" class="modal-value" data-field="instagram"></div>
-                            <div class="edit-success" id="instagramSuccess">Changes saved successfully!</div>
-                        </div>
-                        <div class="modal-field">
-                            <label class="modal-label">
-                                <i class="fab fa-twitter text-blue-400 mr-1"></i> Twitter
-                            </label>
-                            <div id="detailTwitter" class="modal-value" data-field="twitter"></div>
-                            <div class="edit-success" id="twitterSuccess">Changes saved successfully!</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex justify-end mt-4 pt-3 border-t border-gray-100">
-                    <form action="" method="POST" class="inline mr-2">
-                        <button type="submit" class="px-3 py-1.5 bg-danger hover:bg-red-700 text-white rounded-md transition duration-150">
-                            <i class="fas fa-trash mr-1"></i> Delete Contact
-                        </button>
-                    </form>
-                    <button type="button" id="closeDetailBtn" class="px-3 py-1.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete All Records Confirmation Modal -->
-    <div id="deleteAllModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
-        <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="fixed inset-0 bg-black opacity-50"></div>
-            <div class="relative bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-semibold text-gray-800">Delete All Contacts</h3>
-                    <button id="closeDeleteAllModal" class="text-gray-400 hover:text-gray-500">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="mb-8">
-                    <p class="text-gray-600 mb-4">This will delete all contacts from your database.</p>
-                </div>
-
-                <form action="{{ url_for('delete_all_contacts') }}" method="post" id="deleteAllForm">
-                    <div class="flex justify-end space-x-2 pt-4 border-t border-gray-100">
-                        <button type="button" id="cancelDeleteAll" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition duration-150">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-danger text-white rounded-md hover:bg-red-700 transition duration-150">Delete All</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Add this before the closing </body> tag or in the head section -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<!-- Add Contact Modal -->
+<div id="addContactModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Add New Contact</h3>
+                            <button type="button" class="modal-close text-gray-400 hover:text-gray-500">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form action="/add_contact" method="post" class="space-y-4">
+                            <div>
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" name="name" id="name" class="form-input w-full" required>
+                            </div>
+                            <div>
+                                <label for="cell" class="form-label">Cell Phone</label>
+                                <input type="tel" name="cell" id="cell" class="form-input w-full">
+                            </div>
+                            <div>
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" name="email" id="email" class="form-input w-full">
+                            </div>
+                            <div>
+                                <label for="mailing_address" class="form-label">Mailing Address</label>
+                                <input type="text" name="mailing_address" id="mailing_address" class="form-input w-full">
+                            </div>
+                            <div>
+                                <label for="birthday" class="form-label">Birthday (MM-DD)</label>
+                                <input type="text" name="birthday" id="birthday" class="form-input w-full" placeholder="MM-DD">
+                            </div>
+                            <div>
+                                <label for="notes" class="form-label">Notes</label>
+                                <textarea name="notes" id="notes" class="form-input w-full" rows="3"></textarea>
+                            </div>
+                            <div>
+                                <label for="facebook" class="form-label">Facebook</label>
+                                <input type="text" name="facebook" id="facebook" class="form-input w-full">
+                            </div>
+                            <div>
+                                <label for="instagram" class="form-label">Instagram</label>
+                                <input type="text" name="instagram" id="instagram" class="form-input w-full">
+                            </div>
+                            <div>
+                                <label for="twitter" class="form-label">Twitter</label>
+                                <input type="text" name="twitter" id="twitter" class="form-input w-full">
+                            </div>
+                            <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-forest-green text-base font-medium text-white hover:bg-forest-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:ml-3 sm:w-auto sm:text-sm">
+                                    Add Contact
+                                </button>
+                                <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- Delete All Records Confirmation Modal -->
+<div id="deleteAllModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-danger-light sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-exclamation-triangle text-danger"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Delete All Contacts</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">
+                                Are you sure you want to delete all contacts? This action cannot be undone.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <form action="/delete_all_contacts" method="post">
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-danger text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Delete All
+                    </button>
+                </form>
+                <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Remove Duplicates Confirmation Modal -->
+<div id="removeDuplicatesModal" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-warning-light sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-exclamation-circle text-warning"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Remove Duplicate Contacts</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">
+                                This will remove contacts with duplicate email addresses or phone numbers, keeping only the most recently updated record. This action can be undone for 30 days.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <form action="/remove_duplicates" method="post">
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-warning text-base font-medium text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Remove Duplicates
+                    </button>
+                </form>
+                <button type="button" class="modal-cancel mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green sm:mt-0 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
 <script>
-    // File upload modal
-    const modal = document.getElementById('importModal');
-    const openBtn = document.getElementById('openModal');
-    const closeBtn = document.getElementById('closeModal');
-    const cancelBtn = document.getElementById('cancelUpload');
-    const fileInput = document.getElementById('csv_file');
-    const dropzone = document.getElementById('dropzone');
-    const selectedFileName = document.getElementById('selectedFileName');
-    const contactSearch = document.getElementById('contactSearch');
-    const contactRows = document.querySelectorAll('.contact-row');
-    const globalDropzone = document.getElementById('globalDropzone');
-    const uploadForm = document.getElementById('uploadForm');
-    
-    // Remove duplicates modal
-    const removeDuplicatesModal = document.getElementById('removeDuplicatesModal');
-    const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
-    const closeRemoveDuplicatesModal = document.getElementById('closeRemoveDuplicatesModal');
-    const cancelRemoveDuplicates = document.getElementById('cancelRemoveDuplicates');
-    
-    // Delete all records modal
-    const deleteAllModal = document.getElementById('deleteAllModal');
-    const deleteAllBtn = document.getElementById('deleteAllBtn');
-    const closeDeleteAllModal = document.getElementById('closeDeleteAllModal');
-    const cancelDeleteAll = document.getElementById('cancelDeleteAll');
-    
-    // Add contact modal
-    const addContactModal = document.getElementById('addContactModal');
-    const addContactBtn = document.getElementById('addContactBtn');
-    const closeAddContactModal = document.getElementById('closeAddContactModal');
-    const cancelAddContact = document.getElementById('cancelAddContact');
-    
-    // Sorting functionality
-    const sortableHeaders = document.querySelectorAll('th[data-sort]');
-    let currentSort = {
-        column: null,
-        direction: 'asc'
-    };
-    
-    // Function to sort table rows
-    function sortTable(column) {
-        const tbody = document.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr.contact-row'));
+    document.addEventListener('DOMContentLoaded', function() {
+        // Modal elements
+        const contactDetailModal = document.getElementById('contactDetailModal');
+        const importModal = document.getElementById('importModal');
+        const addContactModal = document.getElementById('addContactModal');
+        const deleteAllModal = document.getElementById('deleteAllModal');
+        const removeDuplicatesModal = document.getElementById('removeDuplicatesModal');
         
-        // If clicking the same column, toggle direction
-        if (currentSort.column === column) {
-            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-        } else {
-            currentSort.column = column;
-            currentSort.direction = 'asc';
+        // Close buttons for contact detail modal
+        const closeDetailModalBtn = document.getElementById('closeDetailModal');
+        const closeDetailBtn = document.getElementById('closeDetailBtn');
+        
+        // Action buttons
+        const addContactBtn = document.getElementById('addContactBtn');
+        const importBtn = document.getElementById('importBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const deleteAllBtn = document.getElementById('deleteAllBtn');
+        const removeDuplicatesBtn = document.getElementById('removeDuplicatesBtn');
+        
+        // Close alert buttons
+        const closeAlertButtons = document.querySelectorAll('.close-alert');
+        closeAlertButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                this.parentElement.style.display = 'none';
+            });
+        });
+        
+        // Action button event listeners
+        if (addContactBtn) {
+            addContactBtn.addEventListener('click', function() {
+                addContactModal.classList.remove('hidden');
+            });
         }
         
-        // Update sort icons
-        sortableHeaders.forEach(header => {
-            const icon = header.querySelector('.sort-icon i');
-            if (header.dataset.sort === column) {
-                icon.className = currentSort.direction === 'asc' 
-                    ? 'fas fa-sort-up text-forest-green' 
-                    : 'fas fa-sort-down text-forest-green';
-            } else {
-                icon.className = 'fas fa-sort text-gray-400';
-            }
-        });
-        
-        // Sort the rows
-        const sortedRows = rows.sort((a, b) => {
-            let aValue, bValue;
-            
-            if (column === 'name') {
-                // Get the name text directly from the div that contains it
-                const aNameCell = a.querySelector('td:nth-child(1)');
-                const bNameCell = b.querySelector('td:nth-child(1)');
-                
-                // Find the div with the name text
-                const aNameDiv = aNameCell.querySelector('.text-sm.font-medium.text-gray-900');
-                const bNameDiv = bNameCell.querySelector('.text-sm.font-medium.text-gray-900');
-                
-                aValue = aNameDiv ? aNameDiv.textContent.trim().toLowerCase() : aNameCell.textContent.trim().toLowerCase();
-                bValue = bNameDiv ? bNameDiv.textContent.trim().toLowerCase() : bNameCell.textContent.trim().toLowerCase();
-            } else if (column === 'birthday') {
-                // Get raw birthday values from data attributes
-                const aBirthdayCell = a.querySelector('td:nth-child(4) div[data-raw-birthday]');
-                const bBirthdayCell = b.querySelector('td:nth-child(4) div[data-raw-birthday]');
-                
-                aValue = aBirthdayCell ? aBirthdayCell.dataset.rawBirthday : '';
-                bValue = bBirthdayCell ? bBirthdayCell.dataset.rawBirthday : '';
-                
-                // Handle empty values for proper sorting
-                if (!aValue || aValue === 'N/A') aValue = '13-32'; // A date that doesn't exist, for sorting last
-                if (!bValue || bValue === 'N/A') bValue = '13-32';
-            }
-            
-            // Compare the values
-            if (aValue < bValue) {
-                return currentSort.direction === 'asc' ? -1 : 1;
-            }
-            if (aValue > bValue) {
-                return currentSort.direction === 'asc' ? 1 : -1;
-            }
-            return 0;
-        });
-        
-        // Reorder the rows in the DOM
-        sortedRows.forEach(row => {
-            tbody.appendChild(row);
-        });
-    }
-    
-    // Add click event listeners to sortable headers
-    sortableHeaders.forEach(header => {
-        header.addEventListener('click', () => {
-            const column = header.dataset.sort;
-            sortTable(column);
-        });
-    });
-
-    // Open modal
-    openBtn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-    });
-
-    // Close modal functions
-    const closeModal = () => {
-        modal.classList.add('hidden');
-        fileInput.value = '';
-        selectedFileName.textContent = '';
-        dropzone.classList.remove('dropzone-active');
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-
-    // Click outside to close
-    modal.addEventListener('click', (e) => {
-        // Check if click is on the modal background or the overlay
-        if (e.target === modal || e.target.classList.contains('fixed')) {
-            closeModal();
+        if (importBtn) {
+            importBtn.addEventListener('click', function() {
+                importModal.classList.remove('hidden');
+            });
         }
-    });
-
-    // Handle file selection
-    fileInput.addEventListener('change', (e) => {
-        if (fileInput.files.length > 0) {
-            selectedFileName.textContent = fileInput.files[0].name;
-            dropzone.classList.add('dropzone-active');
-            
-            // Read and log the first 3 rows of the CSV
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const csvContent = e.target.result;
-                const rows = csvContent.split('\n');
-                
-                console.log('CSV File Contents (First 3 rows):');
-                for (let i = 0; i < Math.min(3, rows.length); i++) {
-                    console.log(`Row ${i+1}: ${rows[i]}`);
+        
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                window.location.href = '/download_all_contacts';
+            });
+        }
+        
+        if (deleteAllBtn) {
+            deleteAllBtn.addEventListener('click', function() {
+                deleteAllModal.classList.remove('hidden');
+            });
+        }
+        
+        if (removeDuplicatesBtn) {
+            removeDuplicatesBtn.addEventListener('click', function() {
+                removeDuplicatesModal.classList.remove('hidden');
+            });
+        }
+        
+        // Close modals when clicking outside or on close button
+        document.querySelectorAll('.modal-close, .modal-cancel').forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.fixed');
+                if (modal) {
+                    modal.classList.add('hidden');
                 }
-            };
-            
-            reader.readAsText(file);
-        } else {
-            selectedFileName.textContent = '';
-            dropzone.classList.remove('dropzone-active');
-        }
-    });
-
-    // Drag and drop handling
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropzone.addEventListener(eventName, highlight, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropzone.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight() {
-        dropzone.classList.add('dropzone-active');
-    }
-
-    function unhighlight() {
-        dropzone.classList.remove('dropzone-active');
-    }
-
-    dropzone.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        fileInput.files = files;
-        
-        if (files.length > 0) {
-            selectedFileName.textContent = files[0].name;
-            
-            // Read and log the first 3 rows of the CSV
-            const file = files[0];
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                const csvContent = e.target.result;
-                const rows = csvContent.split('\n');
-                
-                console.log('CSV File Contents (First 3 rows):');
-                for (let i = 0; i < Math.min(3, rows.length); i++) {
-                    console.log(`Row ${i+1}: ${rows[i]}`);
-                }
-            };
-            
-            reader.readAsText(file);
-        }
-    }
-
-    // Contact row click handling
-    const contactDetailModal = document.getElementById('contactDetailModal');
-    const closeDetailModal = document.getElementById('closeDetailModal');
-    const closeDetailBtn = document.getElementById('closeDetailBtn');
-    
-    // Initialize contact data from the DOM
-    const contactData = {};
-    contactRows.forEach(row => {
-        const id = row.dataset.contactId;
-        const nameCell = row.querySelector('td:nth-child(1)');
-        const cellCell = row.querySelector('td:nth-child(2)');
-        const emailCell = row.querySelector('td:nth-child(3)');
-        const birthdayCell = row.querySelector('td:nth-child(4)');
-        const notesCell = row.querySelector('td:nth-child(5)');
-        
-        // Extract just the name text, not including the initial circle
-        let nameText;
-        const nameTextElement = nameCell.querySelector('.ml-0.md\\:ml-4 .text-sm');
-        if (nameTextElement) {
-            nameText = nameTextElement.textContent.trim();
-        } else {
-            nameText = '';
-        }
-        
-        // Extract cell and email values even if they're hidden in mobile view
-        let cellText = '';
-        const cellLink = cellCell.querySelector('a');
-        if (cellLink && cellLink.href) {
-            // Extract from the tel: link
-            cellText = cellLink.href.replace('tel:', '');
-        }
-        
-        let emailText = '';
-        const emailLink = emailCell.querySelector('a');
-        if (emailLink && emailLink.href) {
-            // Extract from the mailto: link
-            emailText = emailLink.href.replace('mailto:', '');
-        }
-        
-        // Get raw birthday value from data attribute
-        let birthdayValue = 'N/A';
-        if (birthdayCell) {
-            const birthdayDiv = birthdayCell.querySelector('div[data-raw-birthday]');
-            if (birthdayDiv && birthdayDiv.dataset.rawBirthday) {
-                birthdayValue = birthdayDiv.dataset.rawBirthday;
-            } else {
-                birthdayValue = birthdayCell.textContent.trim();
-            }
-        }
-        
-        contactData[id] = {
-            name: nameText,
-            cell: cellText,
-            email: emailText,
-            birthday: birthdayValue,
-            notes: notesCell ? notesCell.textContent.trim() : '',
-            // Keep mailing_address in the data model for the modal
-            mailing_address: '',
-            dateAdded: '',
-            // Add new fields
-            email_updated: '',
-            cell_updated: '',
-            facebook: '',
-            instagram: '',
-            twitter: ''
-        };
-    });
-    
-    // Prevent link clicks from triggering row click
-    document.querySelectorAll('.contact-row a').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.stopPropagation();
+            });
         });
-    });
-    
-    // Open contact detail modal when clicking on a row
-    contactRows.forEach(row => {
-        row.addEventListener('click', () => {
-            const contactId = row.dataset.contactId;
-            
-            // Fetch the full contact details from the server
+        
+        // Close modals when clicking on the backdrop
+        document.querySelectorAll('.fixed').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+        });
+        
+        // Specific event listeners for contact detail modal close buttons
+        if (closeDetailModalBtn) {
+            closeDetailModalBtn.addEventListener('click', function() {
+                contactDetailModal.classList.add('hidden');
+            });
+        }
+        
+        if (closeDetailBtn) {
+            closeDetailBtn.addEventListener('click', function() {
+                contactDetailModal.classList.add('hidden');
+            });
+        }
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.fixed:not(.hidden)').forEach(modal => {
+                    modal.classList.add('hidden');
+                });
+            }
+        });
+        
+        // Contact row click event
+        const contactRows = document.querySelectorAll('.contact-row');
+        contactRows.forEach(row => {
+            row.addEventListener('click', function() {
+                const contactId = this.getAttribute('data-contact-id');
+                openContactDetailModal(contactId);
+            });
+        });
+
+        // Function to open contact detail modal
+        function openContactDetailModal(contactId) {
+            fetchContactDetails(contactId);
+        }
+
+        // Function to fetch contact details
+        function fetchContactDetails(contactId) {
             fetch(`/get_contact/${contactId}`)
                 .then(response => response.json())
-                .then(contact => {
-                    if (contact) {
-                        // Set the contact details in the modal
-                        document.getElementById('contactName').textContent = contact.name;
-                        document.getElementById('contactInitial').textContent = contact.name ? contact.name[0].toUpperCase() : '';
-                        
-                        // Set up editable fields
-                        setupEditableField('detailName', contact.name, contactId);
-                        
-                        // Make cell phone a clickable link or editable field
-                        const detailCell = document.getElementById('detailCell');
-                        if (contact.cell && contact.cell !== 'N/A') {
-                            detailCell.innerHTML = `<a href="tel:${contact.cell}" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.cell}</a>`;
-                        } else {
-                            detailCell.textContent = 'N/A';
-                        }
-                        setupEditableField('detailCell', contact.cell, contactId);
-                        
-                        // Make email a clickable link or editable field
-                        const detailEmail = document.getElementById('detailEmail');
-                        if (contact.email && contact.email !== 'N/A') {
-                            detailEmail.innerHTML = `<a href="mailto:${contact.email}" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.email}</a>`;
-                        } else {
-                            detailEmail.textContent = 'N/A';
-                        }
-                        setupEditableField('detailEmail', contact.email, contactId);
-                        
-                        // Set up other editable fields
-                        setupEditableField('detailAddress', contact.mailing_address || 'N/A', contactId);
-                        setupEditableField('detailNotes', contact.notes || 'N/A', contactId);
-                        setupEditableField('detailDateAdded', contact.dateAdded || 'N/A', contactId);
-                        
-                        // Populate new fields
-                        if (contact.birthday && contact.birthday !== 'N/A') {
-                            try {
-                                // Try to parse MM-DD format
-                                if (contact.birthday.includes('-') && contact.birthday.length === 5) {
-                                    const [month, day] = contact.birthday.split('-').map(num => parseInt(num, 10));
-                                    
-                                    if (!isNaN(month) && !isNaN(day) && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-                                        // Create a date object with a non-leap year
-                                        const date = new Date(2001, month - 1, day);
-                                        
-                                        // Format the date to show 3-letter month abbreviation and day
-                                        const formattedBirthday = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                                        document.getElementById('detailBirthday').textContent = formattedBirthday;
-                                        setupEditableField('detailBirthday', contact.birthday, contactId);
-                                    } else {
-                                        // Invalid numbers, display as is
-                                        document.getElementById('detailBirthday').textContent = contact.birthday;
-                                        setupEditableField('detailBirthday', contact.birthday, contactId);
-                                        console.log(`Invalid birthday value: ${contact.birthday}`);
-                                    }
-                                } else {
-                                    // Not in MM-DD format, display as is
-                                    document.getElementById('detailBirthday').textContent = contact.birthday;
-                                    setupEditableField('detailBirthday', contact.birthday, contactId);
-                                }
-                            } catch (e) {
-                                // If any error in parsing, show as is and log the error
-                                console.error(`Error formatting birthday: ${contact.birthday}`, e);
-                                document.getElementById('detailBirthday').textContent = contact.birthday;
-                                setupEditableField('detailBirthday', contact.birthday, contactId);
-                            }
-                        } else {
-                            document.getElementById('detailBirthday').textContent = 'N/A';
-                            setupEditableField('detailBirthday', '', contactId);
-                        }
-                        
-                        setupEditableField('detailEmailUpdated', contact.email_updated || 'N/A', contactId);
-                        setupEditableField('detailCellUpdated', contact.cell_updated || 'N/A', contactId);
-                        
-                        // Make social media links clickable and editable
-                        const detailFacebook = document.getElementById('detailFacebook');
-                        if (contact.facebook && contact.facebook !== 'N/A') {
-                            detailFacebook.innerHTML = `<a href="${contact.facebook}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.facebook}</a>`;
-                        } else {
-                            detailFacebook.textContent = 'N/A';
-                        }
-                        setupEditableField('detailFacebook', contact.facebook || '', contactId);
-                        
-                        const detailInstagram = document.getElementById('detailInstagram');
-                        if (contact.instagram && contact.instagram !== 'N/A') {
-                            detailInstagram.innerHTML = `<a href="${contact.instagram}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.instagram}</a>`;
-                        } else {
-                            detailInstagram.textContent = 'N/A';
-                        }
-                        setupEditableField('detailInstagram', contact.instagram || '', contactId);
-                        
-                        const detailTwitter = document.getElementById('detailTwitter');
-                        if (contact.twitter && contact.twitter !== 'N/A') {
-                            detailTwitter.innerHTML = `<a href="${contact.twitter}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${contact.twitter}</a>`;
-                        } else {
-                            detailTwitter.textContent = 'N/A';
-                        }
-                        setupEditableField('detailTwitter', contact.twitter || '', contactId);
-                        
-                        // Update the delete form action with the correct contact ID
-                        const deleteForm = document.querySelector('#contactDetailModal form');
-                        deleteForm.action = `/delete_contact/${contactId}`;
-                        
-                        // Show the modal
-                        contactDetailModal.classList.remove('hidden');
-                        
-                        // Add selected class to the clicked row
-                        contactRows.forEach(r => r.classList.remove('selected'));
-                        row.classList.add('selected');
-                    }
+                .then(data => {
+                    // Populate the modal with contact data
+                    document.getElementById('contactName').textContent = data.name || '';
+                    document.getElementById('contactInitial').textContent = data.name ? data.name[0].toUpperCase() : '';
+                    
+                    // Set the delete form action
+                    const deleteForm = contactDetailModal.querySelector('form');
+                    deleteForm.action = `/delete_contact/${contactId}`;
+                    
+                    // Populate all fields
+                    document.getElementById('detailName').textContent = data.name || '';
+                    document.getElementById('detailCell').textContent = data.cell || '';
+                    document.getElementById('detailEmail').textContent = data.email || '';
+                    document.getElementById('detailAddress').textContent = data.mailing_address || '';
+                    document.getElementById('detailNotes').textContent = data.notes || '';
+                    
+                    // Format date fields - these are not editable
+                    document.getElementById('detailDateAdded').textContent = formatDate(data.dateAdded) || '';
+                    document.getElementById('detailBirthday').textContent = data.birthday || '';
+                    
+                    // Format and display last updated dates as help text
+                    const emailUpdatedText = data.email_updated ? `Updated: ${formatDate(data.email_updated)}` : '';
+                    document.getElementById('detailEmailUpdated').textContent = emailUpdatedText;
+                    
+                    const cellUpdatedText = data.cell_updated ? `Updated: ${formatDate(data.cell_updated)}` : '';
+                    document.getElementById('detailCellUpdated').textContent = cellUpdatedText;
+                    
+                    document.getElementById('detailFacebook').textContent = data.facebook || '';
+                    document.getElementById('detailInstagram').textContent = data.instagram || '';
+                    document.getElementById('detailTwitter').textContent = data.twitter || '';
+                    
+                    // Store the contact ID for editing
+                    contactDetailModal.setAttribute('data-contact-id', contactId);
+                    
+                    // Show the modal
+                    contactDetailModal.classList.remove('hidden');
+                    
+                    // Setup editable fields
+                    setupEditableFields();
                 })
                 .catch(error => {
                     console.error('Error fetching contact details:', error);
-                    alert('Failed to load contact details. Please try again.');
                 });
-        });
-    });
-    
-    // Function to set up editable fields
-    function setupEditableField(elementId, value, contactId) {
-        const element = document.getElementById(elementId);
-        const fieldName = element.dataset.field;
-        const successElement = document.getElementById(fieldName + 'Success');
-        
-        // First, set the content directly if it's not already set
-        // This ensures the element shows the correct value initially
-        if (!element.innerHTML.trim() || element.innerHTML === 'N/A') {
-            if (!value || value === 'N/A') {
-                element.textContent = 'N/A';
-            } else if (fieldName === 'email') {
-                element.innerHTML = `<a href="mailto:${value}" class="text-forest-green hover:text-forest-green-dark hover:underline">${value}</a>`;
-            } else if (fieldName === 'cell') {
-                element.innerHTML = `<a href="tel:${value}" class="text-forest-green hover:text-forest-green-dark hover:underline">${value}</a>`;
-            } else if (fieldName === 'facebook' || fieldName === 'instagram' || fieldName === 'twitter') {
-                element.innerHTML = `<a href="${value}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${value}</a>`;
-            } else {
-                element.textContent = value;
-            }
         }
-        
-        // Add click event to make field editable
-        element.addEventListener('click', function(e) {
-            // Don't make the field editable if it's already in edit mode
-            if (element.classList.contains('editing')) {
-                return;
-            }
+
+        // Format date for display
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        // Setup editable fields in the modal
+        function setupEditableFields() {
+            const editableFields = contactDetailModal.querySelectorAll('.modal-value');
             
-            // Don't make the field editable if the click was on a link
-            if (e.target.tagName === 'A') {
-                return;
-            }
-            
-            // Close any other fields that are currently being edited
-            document.querySelectorAll('.modal-value.editing').forEach(field => {
-                if (field !== element) {
-                    // Get the original content from the data attribute if available
-                    const originalContent = field.getAttribute('data-original-content');
-                    if (originalContent) {
-                        field.innerHTML = originalContent;
-                    }
-                    field.classList.remove('editing');
+            editableFields.forEach(field => {
+                // Skip fields that shouldn't be editable
+                const fieldName = field.getAttribute('data-field');
+                if (!fieldName || fieldName === 'date_added' || fieldName === 'email_updated' || fieldName === 'cell_updated') {
+                    return;
                 }
+                
+                field.addEventListener('click', function() {
+                    if (!this.classList.contains('editing')) {
+                        makeFieldEditable(this);
+                    }
+                });
             });
-            
-            // Store the original content
-            const originalContent = element.innerHTML;
-            // Store the original content as a data attribute for potential recovery
-            element.setAttribute('data-original-content', originalContent);
-            const originalValue = value === 'N/A' ? '' : value;
+        }
+
+        // Make a field editable
+        function makeFieldEditable(field) {
+            const fieldName = field.getAttribute('data-field');
+            const currentValue = field.textContent;
+            const contactId = contactDetailModal.getAttribute('data-contact-id');
             
             // Create input element based on field type
             let inputElement;
             if (fieldName === 'notes') {
                 inputElement = document.createElement('textarea');
-                inputElement.rows = 4;
+                inputElement.rows = 3;
             } else {
                 inputElement = document.createElement('input');
-                inputElement.type = fieldName === 'email' ? 'email' : 
-                                   fieldName === 'cell' ? 'tel' : 
-                                   fieldName.includes('facebook') || fieldName.includes('instagram') || fieldName.includes('twitter') ? 'url' : 'text';
+                inputElement.type = fieldName.includes('date') || fieldName === 'birthday' ? 'date' : 'text';
             }
             
-            // Set input properties
-            inputElement.value = originalValue;
+            // Set input value and styling
+            inputElement.value = currentValue;
             inputElement.className = 'w-full p-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-forest-green focus:border-forest-green';
             
-            // Create action buttons
+            // Create save and cancel buttons
             const actionsDiv = document.createElement('div');
             actionsDiv.className = 'edit-actions';
             
@@ -1128,391 +439,343 @@
             cancelButton.textContent = 'Cancel';
             cancelButton.className = 'edit-cancel-btn';
             
-            // Add buttons to actions div
-            actionsDiv.appendChild(cancelButton);
-            actionsDiv.appendChild(saveButton);
+            // Add event listeners
+            saveButton.addEventListener('click', function() {
+                saveFieldEdit(field, inputElement.value, fieldName, contactId);
+            });
             
-            // Clear the element and add the input
-            element.innerHTML = '';
-            element.appendChild(inputElement);
-            element.appendChild(actionsDiv);
-            element.classList.add('editing');
+            cancelButton.addEventListener('click', function() {
+                cancelFieldEdit(field, currentValue);
+            });
+            
+            // Add elements to the DOM
+            actionsDiv.appendChild(saveButton);
+            actionsDiv.appendChild(cancelButton);
+            
+            field.innerHTML = '';
+            field.appendChild(inputElement);
+            field.appendChild(actionsDiv);
+            field.classList.add('editing');
             
             // Focus the input
             inputElement.focus();
+        }
+
+        // Save field edit
+        function saveFieldEdit(field, newValue, fieldName, contactId) {
+            // Prepare data for the API call
+            const data = {
+                field: fieldName,
+                value: newValue
+            };
             
-            // Handle keyboard shortcuts for saving and canceling
-            inputElement.addEventListener('keydown', function(e) {
-                // Escape key to exit editing mode without closing modal
-                if (e.key === 'Escape') {
-                    e.stopPropagation(); // Prevent the event from bubbling up to document
-                    element.innerHTML = originalContent;
-                    element.classList.remove('editing');
-                }
-                
-                // Ctrl/Cmd+Enter to save for both input fields and textareas
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    saveButton.click(); // Trigger the save button click event
-                }
-                
-                // Enter key to save for input fields only (not for textareas)
-                if (e.key === 'Enter' && !e.ctrlKey && !e.metaKey && inputElement.tagName !== 'TEXTAREA') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    saveButton.click(); // Trigger the save button click event
-                }
-            });
-            
-            // Handle blur event on the input element
-            inputElement.addEventListener('blur', function(e) {
-                // Use setTimeout to allow the click event to be processed first
-                // This ensures we can check what element was clicked
-                setTimeout(() => {
-                    // If we're clicking on a button within the same editable field, don't exit edit mode
-                    if (document.activeElement && element.contains(document.activeElement)) {
-                        return;
+            // Make API call to update the contact
+            fetch(`/update_contact/${contactId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the field with the new value
+                    field.textContent = newValue;
+                    field.classList.remove('editing');
+                    
+                    // Show success message
+                    const successElement = document.getElementById(`${field.id}Success`);
+                    if (successElement) {
+                        successElement.classList.add('show');
+                        setTimeout(() => {
+                            successElement.classList.remove('show');
+                        }, 3000);
                     }
                     
-                    // If we're clicking on an input or button in another editable field,
-                    // exit editing mode for this field
-                    const clickedElement = document.activeElement;
-                    const isClickingAnotherField = clickedElement && 
-                        (clickedElement.tagName === 'INPUT' || 
-                         clickedElement.tagName === 'TEXTAREA' ||
-                         clickedElement.tagName === 'BUTTON' ||
-                         clickedElement.classList.contains('modal-value'));
+                    // Also update the row in the table if visible
+                    updateTableRow(contactId, fieldName, newValue);
                     
-                    if (isClickingAnotherField) {
-                        element.innerHTML = originalContent;
-                        element.classList.remove('editing');
+                    // Update contact name in modal header if name was changed
+                    if (fieldName === 'name') {
+                        document.getElementById('contactName').textContent = newValue;
+                        document.getElementById('contactInitial').textContent = newValue ? newValue[0].toUpperCase() : '';
                     }
-                }, 0);
+                } else {
+                    // Show error and revert to original value
+                    alert('Error updating contact: ' + data.message);
+                    field.textContent = field.getAttribute('data-original-value') || '';
+                    field.classList.remove('editing');
+                }
+            })
+            .catch(error => {
+                console.error('Error updating contact:', error);
+                field.textContent = field.getAttribute('data-original-value') || '';
+                field.classList.remove('editing');
             });
+        }
+
+        // Cancel field edit
+        function cancelFieldEdit(field, originalValue) {
+            field.textContent = originalValue;
+            field.classList.remove('editing');
+        }
+
+        // Update table row after edit
+        function updateTableRow(contactId, fieldName, newValue) {
+            const row = document.querySelector(`.contact-row[data-contact-id="${contactId}"]`);
+            if (!row) return;
             
-            // Cancel button event
-            cancelButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                element.innerHTML = originalContent;
-                element.classList.remove('editing');
-            });
-            
-            // Save button event
-            saveButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const newValue = inputElement.value.trim();
+            if (fieldName === 'name') {
+                const nameElement = row.querySelector('.text-sm.font-medium');
+                if (nameElement) nameElement.textContent = newValue;
                 
-                // Send the update to the server
-                fetch(`/update_contact/${contactId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        field: fieldName,
-                        value: newValue
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update the display value
-                        if (newValue === '') {
-                            element.textContent = 'N/A';
-                        } else if (fieldName === 'email') {
-                            element.innerHTML = `<a href="mailto:${newValue}" class="text-forest-green hover:text-forest-green-dark hover:underline">${newValue}</a>`;
-                        } else if (fieldName === 'cell') {
-                            element.innerHTML = `<a href="tel:${newValue}" class="text-forest-green hover:text-forest-green-dark hover:underline">${newValue}</a>`;
-                        } else if (fieldName === 'facebook' || fieldName === 'instagram' || fieldName === 'twitter') {
-                            element.innerHTML = `<a href="${newValue}" target="_blank" class="text-forest-green hover:text-forest-green-dark hover:underline">${newValue}</a>`;
-                        } else {
-                            element.textContent = newValue;
-                        }
-                        
-                        // Update the contact data
-                        contactData[contactId][fieldName] = newValue;
-                        
-                        // Update the contact name in the header if it was changed
-                        if (fieldName === 'name') {
-                            document.getElementById('contactName').textContent = newValue;
-                            document.getElementById('contactInitial').textContent = newValue ? newValue[0].toUpperCase() : '';
-                        }
-                        
-                        // Show success message
-                        if (successElement) {
-                            successElement.classList.add('show');
-                            setTimeout(() => {
-                                successElement.classList.remove('show');
-                            }, 3000);
-                        }
-                        
-                        // Also update the row in the table if visible
-                        const row = document.querySelector(`.contact-row[data-contact-id="${contactId}"]`);
-                        if (row) {
-                            const cell = row.querySelector(`.contact-${fieldName}`);
-                            if (cell) {
-                                cell.textContent = newValue;
-                            }
-                        }
+                const initialElement = row.querySelector('.text-forest-green.font-semibold');
+                if (initialElement) initialElement.textContent = newValue ? newValue[0].toUpperCase() : '';
+            }
+            
+            if (fieldName === 'cell') {
+                const cellElement = row.querySelector('td:nth-child(2) .hidden.md\\:inline');
+                if (cellElement) cellElement.textContent = newValue || '-';
+                
+                const cellLink = row.querySelector('td:nth-child(2) a');
+                if (cellLink) {
+                    if (newValue) {
+                        cellLink.href = `tel:${newValue}`;
+                        cellLink.classList.remove('text-gray-300');
+                        cellLink.classList.add('text-forest-green');
                     } else {
-                        alert('Failed to update: ' + (data.message || 'Unknown error'));
-                        element.innerHTML = originalContent;
+                        cellLink.removeAttribute('href');
+                        cellLink.classList.remove('text-forest-green');
+                        cellLink.classList.add('text-gray-300');
                     }
+                }
+            }
+            
+            if (fieldName === 'email') {
+                const emailElement = row.querySelector('td:nth-child(3) .hidden.md\\:inline');
+                if (emailElement) emailElement.textContent = newValue || '-';
+                
+                const emailLink = row.querySelector('td:nth-child(3) a');
+                if (emailLink) {
+                    if (newValue) {
+                        emailLink.href = `mailto:${newValue}`;
+                        emailLink.classList.remove('text-gray-300');
+                        emailLink.classList.add('text-forest-green');
+                    } else {
+                        emailLink.removeAttribute('href');
+                        emailLink.classList.remove('text-forest-green');
+                        emailLink.classList.add('text-gray-300');
+                    }
+                }
+            }
+            
+            if (fieldName === 'birthday') {
+                const birthdayElement = row.querySelector('td:nth-child(4) .text-sm');
+                if (birthdayElement) birthdayElement.textContent = newValue || '-';
+            }
+            
+            if (fieldName === 'notes') {
+                const notesElement = row.querySelector('td:nth-child(5) .text-sm');
+                if (notesElement) notesElement.textContent = newValue || '-';
+            }
+        }
+
+        // Add more JavaScript functionality as needed
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.contact-row');
+                
+                rows.forEach(row => {
+                    const name = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+                    const cell = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    const email = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+                    const notes = row.querySelector('td:nth-child(5)') ? row.querySelector('td:nth-child(5)').textContent.toLowerCase() : '';
                     
-                    element.classList.remove('editing');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while updating the contact.');
-                    element.innerHTML = originalContent;
-                    element.classList.remove('editing');
+                    if (name.includes(searchTerm) || cell.includes(searchTerm) || email.includes(searchTerm) || notes.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
                 });
             });
-            
-            // Set up a one-time click outside handler
-            document.addEventListener('click', function handleOutsideClick(e) {
-                // If clicking outside the current editable field
-                if (!element.contains(e.target)) {
-                    // Check if clicking on another editable field or its child elements
-                    const isClickingAnotherField = e.target.classList.contains('modal-value') || 
-                                                e.target.closest('.modal-value') !== null;
-                    
-                    // Exit editing mode for this field
-                    element.innerHTML = originalContent;
-                    element.classList.remove('editing');
-                    document.removeEventListener('click', handleOutsideClick);
-                }
-            }, { once: true });
-            
-            // Prevent the click from bubbling up
-            e.stopPropagation();
-        });
-    }
-    
-    // Close contact detail modal functions
-    const closeContactDetailModal = () => {
-        contactDetailModal.classList.add('hidden');
-        // Remove selected class from all rows
-        contactRows.forEach(row => row.classList.remove('selected'));
-    };
-    
-    closeDetailModal.addEventListener('click', closeContactDetailModal);
-    closeDetailBtn.addEventListener('click', closeContactDetailModal);
-    
-    // Click outside to close contact detail modal
-    contactDetailModal.addEventListener('click', (e) => {
-        // Check if click is on the modal background or the overlay
-        if (e.target === contactDetailModal || e.target.classList.contains('fixed')) {
-            closeContactDetailModal();
         }
-    });
-    
-    // Search contacts functionality
-    if (contactSearch) {
-        contactSearch.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            
-            contactRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+        
+        // Table sorting functionality
+        const sortableHeaders = document.querySelectorAll('.sortable-header');
+        let currentSort = { column: null, direction: 'asc' };
+        
+        sortableHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                const column = this.getAttribute('data-sort');
+                const direction = currentSort.column === column && currentSort.direction === 'asc' ? 'desc' : 'asc';
+                
+                // Update sort icons
+                document.querySelectorAll('.sort-icon i').forEach(icon => {
+                    icon.className = 'fas fa-sort text-gray-400';
+                });
+                
+                const sortIcon = this.querySelector('.sort-icon i');
+                sortIcon.className = `fas fa-sort-${direction === 'asc' ? 'up' : 'down'} text-forest-green`;
+                
+                // Sort the table
+                const tbody = document.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                
+                rows.sort((a, b) => {
+                    let aValue, bValue;
+                    
+                    if (column === 'name') {
+                        aValue = a.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
+                        bValue = b.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
+                    } else if (column === 'birthday') {
+                        aValue = a.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+                        bValue = b.querySelector('td:nth-child(4)').textContent.trim().toLowerCase();
+                        
+                        // Handle empty values
+                        if (aValue === '-') aValue = 'z'; // Sort empty values to the end
+                        if (bValue === '-') bValue = 'z';
+                    }
+                    
+                    if (direction === 'asc') {
+                        return aValue > bValue ? 1 : -1;
+                    } else {
+                        return aValue < bValue ? 1 : -1;
+                    }
+                });
+                
+                // Re-append rows in the new order
+                rows.forEach(row => tbody.appendChild(row));
+                
+                // Update current sort
+                currentSort = { column, direction };
             });
         });
-    }
-
-    // Open add contact modal
-    addContactBtn.addEventListener('click', () => {
-        addContactModal.classList.remove('hidden');
-    });
-    
-    // Close add contact modal functions
-    const closeAddContactModalFn = () => {
-        addContactModal.classList.add('hidden');
-        document.getElementById('addContactForm').reset();
-    };
-    
-    closeAddContactModal.addEventListener('click', closeAddContactModalFn);
-    cancelAddContact.addEventListener('click', closeAddContactModalFn);
-    
-    // Click outside to close add contact modal
-    addContactModal.addEventListener('click', (e) => {
-        // Check if click is on the modal background or the overlay
-        if (e.target === addContactModal || e.target.classList.contains('fixed')) {
-            closeAddContactModalFn();
-        }
-    });
-
-    // Open delete all modal
-    deleteAllBtn.addEventListener('click', () => {
-        deleteAllModal.classList.remove('hidden');
-    });
-    
-    // Close delete all modal functions
-    const closeDeleteAllModalFn = () => {
-        deleteAllModal.classList.add('hidden');
-    };
-    
-    closeDeleteAllModal.addEventListener('click', closeDeleteAllModalFn);
-    cancelDeleteAll.addEventListener('click', closeDeleteAllModalFn);
-    
-    // Click outside to close delete all modal
-    deleteAllModal.addEventListener('click', (e) => {
-        // Check if click is on the modal background or the overlay
-        if (e.target === deleteAllModal || e.target.classList.contains('fixed')) {
-            closeDeleteAllModalFn();
-        }
-    });
-
-    // Close modals on Escape key press
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            // Check if any field is currently being edited
-            const isEditing = document.querySelector('.modal-value.editing') !== null;
-            
-            // If a field is being edited, let the field's own Escape handler take care of it
-            if (isEditing) {
-                return;
-            }
-            
-            // Close import modal if it's open
-            if (!modal.classList.contains('hidden')) {
-                closeModal();
-            }
-            
-            // Close contact detail modal if it's open
-            if (!contactDetailModal.classList.contains('hidden')) {
-                closeContactDetailModal();
-            }
-            
-            // Close remove duplicates modal if it's open
-            if (!removeDuplicatesModal.classList.contains('hidden')) {
-                closeRemoveDuplicatesModalFn();
-            }
-            
-            // Close delete all modal if it's open
-            if (!deleteAllModal.classList.contains('hidden')) {
-                closeDeleteAllModalFn();
-            }
-            
-            // Close add contact modal if it's open
-            if (!addContactModal.classList.contains('hidden')) {
-                closeAddContactModalFn();
-            }
-        }
-    });
-
-    // Open remove duplicates modal
-    removeDuplicatesBtn.addEventListener('click', () => {
-        removeDuplicatesModal.classList.remove('hidden');
-    });
-    
-    // Close remove duplicates modal functions
-    const closeRemoveDuplicatesModalFn = () => {
-        removeDuplicatesModal.classList.add('hidden');
-    };
-    
-    closeRemoveDuplicatesModal.addEventListener('click', closeRemoveDuplicatesModalFn);
-    cancelRemoveDuplicates.addEventListener('click', closeRemoveDuplicatesModalFn);
-    
-    // Click outside to close remove duplicates modal
-    removeDuplicatesModal.addEventListener('click', (e) => {
-        // Check if click is on the modal background or the overlay
-        if (e.target === removeDuplicatesModal || e.target.classList.contains('fixed')) {
-            closeRemoveDuplicatesModalFn();
-        }
-    });
-
-    // Initialize date picker for birthday field
-    flatpickr("#birthday", {
-        dateFormat: "m-d",
-        altFormat: "F j",
-        altInput: true,
-        allowInput: true,
-        monthSelectorType: "static",
-        disableMobile: true,
-        onReady: function(selectedDates, dateStr, instance) {
-            // Add a placeholder to the alt input
-            instance.altInput.placeholder = "Select a date";
-        }
-    });
-
-    // Global dropzone functionality
-    // Remove existing event listeners to avoid duplicates
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        document.removeEventListener(eventName, preventDefaults, false);
-    });
-    
-    // Add event listeners to the document
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        document.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    // Counter to track drag enter/leave events
-    let dragCounter = 0;
-
-    // Show global dropzone when dragging over the document
-    document.addEventListener('dragenter', function(e) {
-        dragCounter++;
-        globalDropzone.classList.add('global-dropzone-active');
-        console.log('Drag enter - showing dropzone', dragCounter);
-    });
-
-    // Hide global dropzone when leaving the document
-    document.addEventListener('dragleave', function(e) {
-        dragCounter--;
-        if (dragCounter === 0) {
-            globalDropzone.classList.remove('global-dropzone-active');
-            console.log('Drag leave - hiding dropzone', dragCounter);
-        }
-    });
-
-    // Keep dropzone visible during dragover
-    document.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        if (!globalDropzone.classList.contains('global-dropzone-active')) {
-            globalDropzone.classList.add('global-dropzone-active');
-            console.log('Drag over - showing dropzone');
-        }
-    });
-
-    // Handle file drop anywhere on the document
-    document.addEventListener('drop', function(e) {
-        dragCounter = 0;
-        globalDropzone.classList.remove('global-dropzone-active');
-        console.log('Drop - hiding dropzone');
         
-        const dt = e.dataTransfer;
-        const files = dt.files;
+        // File drop zone functionality
+        const fileInput = document.getElementById('csv_file');
+        const importForm = fileInput ? fileInput.closest('form') : null;
         
-        if (files.length > 0 && isCSVFileFromList(files)) {
-            // Set the file input value
-            fileInput.files = files;
+        if (fileInput && importForm) {
+            // Add drop zone styling to the form
+            importForm.classList.add('drop-zone');
             
-            // Show the file name in the modal
-            selectedFileName.textContent = files[0].name;
+            // Create a drop zone message
+            const dropZoneMsg = document.createElement('div');
+            dropZoneMsg.className = 'drop-zone-message hidden';
+            dropZoneMsg.innerHTML = '<i class="fas fa-cloud-upload-alt text-3xl mb-2"></i><p>Drop your CSV file here</p>';
+            importForm.appendChild(dropZoneMsg);
             
-            // Automatically submit the form
-            uploadForm.submit();
-        }
-    });
-
-    // Helper function to check if file list contains a CSV file
-    function isCSVFileFromList(files) {
-        for (let i = 0; i < files.length; i++) {
-            if (files[i].name.toLowerCase().endsWith('.csv')) {
-                return true;
+            // Add drop zone styling
+            const style = document.createElement('style');
+            style.textContent = `
+                .drop-zone {
+                    position: relative;
+                    transition: all 0.3s ease;
+                    border: 2px dashed #e5e7eb;
+                    border-radius: 0.5rem;
+                    padding: 1.5rem;
+                }
+                .drop-zone.active {
+                    background-color: rgba(47, 133, 90, 0.1);
+                    border-color: #2F855A;
+                }
+                .drop-zone-message {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: rgba(255, 255, 255, 0.9);
+                    color: #2F855A;
+                    font-weight: bold;
+                    z-index: 10;
+                }
+                .hidden {
+                    display: none;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                importForm.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                importForm.addEventListener(eventName, highlight, false);
+                document.body.addEventListener(eventName, showDropZone, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                importForm.addEventListener(eventName, unhighlight, false);
+            });
+            
+            document.body.addEventListener('dragleave', hideDropZone, false);
+            document.body.addEventListener('drop', hideDropZone, false);
+            
+            // Handle dropped files
+            importForm.addEventListener('drop', handleDrop, false);
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight(e) {
+                importForm.classList.add('active');
+            }
+            
+            function unhighlight(e) {
+                importForm.classList.remove('active');
+            }
+            
+            function showDropZone(e) {
+                // Only show drop zone if dragging a file
+                if (e.dataTransfer.types && e.dataTransfer.types.includes('Files')) {
+                    // Show the import modal if it's not already visible
+                    if (importModal.classList.contains('hidden')) {
+                        importModal.classList.remove('hidden');
+                    }
+                    dropZoneMsg.classList.remove('hidden');
+                    // If we're dragging over the body but not the form, show the message
+                    if (e.target !== importForm && !importForm.contains(e.target)) {
+                        importForm.classList.add('active');
+                    }
+                }
+            }
+            
+            function hideDropZone(e) {
+                // Check if we're still over the form
+                if (e.type === 'dragleave' && (e.target === importForm || importForm.contains(e.target))) {
+                    return;
+                }
+                dropZoneMsg.classList.add('hidden');
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length) {
+                    fileInput.files = files;
+                    // Submit the form automatically when a file is dropped
+                    importForm.submit();
+                }
+                
+                dropZoneMsg.classList.add('hidden');
             }
         }
-        return false;
-    }
+    });
 </script>
 {% endblock %} 

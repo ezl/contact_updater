@@ -5,8 +5,7 @@ This directory contains the templates for the Client Magic application. The temp
 ## Directory Structure
 
 - `base.html` - The base template that all other templates extend
-- `dashboard.html` - The original dashboard template
-- `dashboard_refactored.html` - The refactored dashboard template using components
+- `dashboard.html` - The main dashboard template (component-based)
 - `index.html` - The landing page template
 
 ### Components
