@@ -3,6 +3,7 @@
 {% block title %}Client Magic - Client Appreciation Made Easy{% endblock %}
 
 {% block styles %}
+<style>
 @keyframes float {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
@@ -48,6 +49,7 @@
         transform: translateY(-10px) translateX(-50%);
     }
 }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -56,7 +58,9 @@
     <div class="container mx-auto px-6 py-12 max-w-6xl">
         <div class="flex flex-col md:flex-row items-center">
             <div class="md:w-1/2 text-center md:text-left mb-12 md:mb-0">
-                <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">Client Appreciation For Real Estate Agents <span class="text-yellow-600">On Autopilot</span></h1>
+                <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+                    Client Appreciation For Real Estate Agents <span class="text-yellow-600">On Autopilot</span>
+                </h1>
                 <p class="text-xl opacity-90 mb-10 max-w-2xl">Automatically send small gifts or notes to your clients on birthdays, anniversaries, or holidays.</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                     <a href="/dashboard" class="bg-forest-green text-white hover:bg-forest-green/90 transition duration-300 px-8 py-4 rounded-full text-lg font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-1 text-center" style="background-color: #2d6a4f;">Get Started</a>

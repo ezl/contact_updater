@@ -8,20 +8,30 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Lobster for site title -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
     <!-- Common color variables -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/colors.css') }}">
+    <!-- Site title font styling -->
     <style>
-        {% block styles %}
-        /* Shared styles across pages */
-        {% endblock %}
+        /* Site title font styling */
+        .site-title {
+            font-family: 'Lobster', cursive;
+        }
     </style>
+    
+    {% block styles %}
+    <!-- Page-specific styles will be inserted here -->
+    {% endblock %}
 </head>
 <body class="font-sans bg-gray-50 text-gray-800">
     <!-- Navigation -->
     <nav class="bg-white shadow-md border-b border-gray-200">
         <div class="container mx-auto px-6 py-3">
             <div class="flex items-center justify-between">
-                <a class="text-gray-800 font-bold text-xl" href="/">
+                <a class="text-gray-800 font-bold text-xl site-title" href="/">
                     <span class="text-forest-green">Client</span> <span class="text-gold">Magic</span>
                 </a>
                 <div class="hidden md:flex items-center space-x-1">
