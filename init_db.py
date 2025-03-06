@@ -2,28 +2,27 @@
 Database initialization script for Client Magic application.
 Run this script to create the database tables if they don't exist.
 """
-from app import app, db
+from app import create_app, db
 import os
 
-print("Initializing database...")
+def init_db():
+    """Initialize the database by creating all tables"""
+    print("Initializing database...")
+    app = create_app()
+    with app.app_context():
+        db.create_all()
+        print("Database initialized successfully.")
+        
+        # Verify the database file exists
+        db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+        if db_uri.startswith('sqlite:///'):
+            db_file = db_uri.replace('sqlite:///', '')
+            db_absolute_path = os.path.abspath(db_file)
+            print(f"Database file path: {db_absolute_path}")
+            if os.path.exists(db_file):
+                print(f"Database file size: {os.path.getsize(db_file)} bytes")
+            else:
+                print("WARNING: Database file does not exist after initialization!")
 
-# Flask-SQLAlchemy stores the database in the instance folder by default
-INSTANCE_DIR = 'instance'
-DB_FILE = os.path.join(INSTANCE_DIR, 'sqlite3.db')
-DB_ABSOLUTE_PATH = os.path.abspath(DB_FILE)
-
-print(f"Database file path: {DB_ABSOLUTE_PATH}")
-
-with app.app_context():
-    # Create tables only if they don't exist
-    db.create_all()
-    print("Database tables created.")
-    
-    # Verify the database file exists
-    if os.path.exists(DB_FILE):
-        print(f"Database file created successfully ({os.path.getsize(DB_FILE)} bytes)")
-    else:
-        print("WARNING: Database file was not created at the expected location!")
-        print(f"Expected at: {DB_ABSOLUTE_PATH}")
-    
-print("Database initialization complete.") 
+if __name__ == '__main__':
+    init_db() 

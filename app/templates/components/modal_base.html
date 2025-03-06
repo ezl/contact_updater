@@ -1,0 +1,47 @@
+<!-- Base Modal Template -->
+<div id="{{ modal_id }}" class="hidden fixed inset-0 z-10 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75 modal-backdrop"></div>
+        </div>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle {% if full_width %}sm:max-w-2xl w-full{% else %}sm:max-w-lg{% endif %}">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    {% if show_icon %}
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-{{ icon_bg|default('forest-green') }}-light sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-{{ icon|default('info-circle') }} text-{{ icon_color|default('forest-green') }}"></i>
+                    </div>
+                    {% endif %}
+                    <div class="{% if not full_width %}mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left{% else %}mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full{% endif %}">
+                        <div class="flex justify-between items-center {% if full_width %}mb-4{% endif %}">
+                            <div class="flex items-center">
+                                {% if title %}
+                                <h3 class="text-lg leading-6 font-medium text-gray-900">{{ title }}</h3>
+                                {% endif %}
+                                
+                                {% block modal_header %}{% endblock %}
+                            </div>
+                            
+                            {% if show_close_button %}
+                            <button type="button" class="modal-close text-gray-400 hover:text-gray-500">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        {% block modal_content %}
+                        <!-- Modal content will be inserted here -->
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+            {% if show_footer %}
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                {% block modal_footer %}
+                <!-- Modal footer will be inserted here -->
+                {% endblock %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div> 

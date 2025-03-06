@@ -1,0 +1,156 @@
+/* 
+ * Client Magic - Form Styles
+ * Contains styles for forms and form elements
+ */
+
+/* Form container */
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Form label and input */
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.form-input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--gray-700);
+  background-color: white;
+  border: 1px solid var(--gray-300);
+  border-radius: 0.375rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-input:focus {
+  border-color: var(--forest-green);
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.2);
+}
+
+/* Form group */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Form group with inline elements */
+.form-group-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Form input with icon */
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon .form-input {
+  padding-left: 2.5rem;
+}
+
+.input-with-icon .icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-400);
+}
+
+/* Checkbox and radio styles */
+.form-checkbox, .form-radio {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.form-checkbox input[type="checkbox"],
+.form-radio input[type="radio"] {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+/* File upload */
+.file-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border: 2px dashed var(--gray-300);
+  border-radius: 0.5rem;
+  background-color: var(--gray-100);
+  transition: all 0.2s ease;
+}
+
+.file-upload:hover, .file-upload.active {
+  border-color: var(--forest-green);
+  background-color: var(--forest-green-100);
+}
+
+.file-upload-icon {
+  font-size: 2rem;
+  color: var(--gray-400);
+  margin-bottom: 0.5rem;
+}
+
+.file-upload:hover .file-upload-icon,
+.file-upload.active .file-upload-icon {
+  color: var(--forest-green);
+}
+
+.file-upload-text {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  text-align: center;
+}
+
+.file-upload-input {
+  display: none;
+}
+
+/* Form validation */
+.form-input.is-invalid {
+  border-color: var(--danger);
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--danger);
+}
+
+/* Form help text */
+.form-help-text {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
+} 

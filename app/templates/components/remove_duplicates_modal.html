@@ -1,0 +1,31 @@
+{% from "macros/form_macros.html" import submit_button, cancel_button %}
+
+{% set modal_id = "removeDuplicatesModal" %}
+{% set title = "Remove Duplicate Contacts" %}
+{% set show_close_button = false %}
+{% set full_width = false %}
+{% set show_icon = true %}
+{% set icon = "exclamation-circle" %}
+{% set icon_bg = "warning" %}
+{% set icon_color = "warning" %}
+{% set show_footer = true %}
+
+{% extends "components/modal_base.html" %}
+
+{% block modal_content %}
+<div class="mt-2">
+    <p class="text-sm text-gray-500">
+        This will remove contacts with duplicate email addresses or phone numbers, keeping only the most recently updated record. This action can be undone for 30 days.
+    </p>
+</div>
+{% endblock %}
+
+{% block modal_footer %}
+<form action="/remove_duplicates" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-warning text-base font-medium text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm">
+        Remove Duplicates
+    </button>
+</form>
+{{ cancel_button() }}
+{% endblock %} 
