@@ -1,30 +1,47 @@
-from flask import Flask, render_template, send_from_directory, request, flash, redirect, url_for, jsonify, session
+from flask import Flask, render_template, send_from_directory, request, flash, redirect, url_for, jsonify, session, send_file, make_response
 import os
 import pandas as pd
 import json
+import uuid
 from datetime import datetime, timedelta
+import io
+from werkzeug.utils import secure_filename
+import re
+import csv
+import holidays
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect
 from dateutil.relativedelta import relativedelta
+from flask_session import Session
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key_here'  # Required for flashing messages
+app.config['SECRET_KEY'] = 'your_secret_key_here'  # Required for flashing messages and sessions
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'csv'}
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite3.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contacts.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UNDO_EXPIRATION_MINUTES'] = 30  # How long undo actions are available
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_FILE_DIR'] = os.path.join(os.getcwd(), 'flask_session')
+
+# Initialize session
+Session(app)
 
 # Initialize CSRF protection
 csrf = CSRFProtect(app)
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
+
+# Store rejected records in memory
+rejected_records_store = {}
 
 # Custom Jinja filter for formatting dates
 @app.template_filter('format_date')
@@ -74,141 +91,33 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/dashboard', methods=['GET', 'POST'])
+@app.route('/dashboard')
 def dashboard():
-    success_message = request.args.get('success_message')
-    error_message = request.args.get('error_message')
+    # Get messages from session
+    success_message = session.pop('success_message', None)
+    error_message = session.pop('error_message', None)
+    
+    # Check for HTML content in success message
+    has_html = False
+    if success_message and ('<' in success_message and '>' in success_message):
+        has_html = True
+    
+    # Get undo parameters if present
     undo_action = request.args.get('undo_action')
     undo_id = request.args.get('undo_id')
     
-    # Get all contacts
+    # Load contacts
     try:
         contacts = Contact.query.order_by(Contact.name).all()
     except Exception as e:
-        error_message = f"Error loading contacts: {str(e)}"
         contacts = []
+        error_message = f"Error loading contacts: {str(e)}"
     
-    if request.method == 'POST':
-        # Check if the post request has the file part
-        if 'csv_file' not in request.files:
-            error_message = "No file part in the request"
-            return render_template('dashboard.html', 
-                                  contacts=contacts, 
-                                  success_message=success_message,
-                                  error_message=error_message)
-        
-        file = request.files['csv_file']
-        
-        # If user does not select file, browser may submit an empty file without filename
-        if file.filename == '':
-            error_message = "No file selected"
-            return render_template('dashboard.html', 
-                                  contacts=contacts, 
-                                  success_message=success_message,
-                                  error_message=error_message)
-        
-        if file and allowed_file(file.filename):
-            try:
-                # Read the CSV file
-                df = pd.read_csv(file)
-                
-                # Log the first 3 rows of the CSV
-                print("======= CSV DATA (FIRST 3 ROWS) =======")
-                print(df.head(3))
-                print("========================================")
-                
-                # Process each row in the CSV
-                rows_processed = 0
-                for _, row in df.iterrows():
-                    # Clean and prepare data
-                    contact_data = {}
-                    
-                    # Map CSV columns to database fields
-                    field_mapping = {
-                        'name': 'name',
-                        'cell': 'cell',
-                        'email': 'email',
-                        'mailing_address': 'mailing_address',
-                        'notes': 'notes',
-                        'birthday': 'birthday',
-                        'email_updated': 'email_updated',
-                        'cell_updated': 'cell_updated',
-                        'facebook': 'facebook',
-                        'instagram': 'instagram',
-                        'twitter': 'twitter'
-                    }
-                    
-                    # Process each field if it exists in the CSV
-                    for csv_field, db_field in field_mapping.items():
-                        if csv_field in row and not pd.isna(row[csv_field]):
-                            # Handle date fields
-                            if csv_field in ['email_updated', 'cell_updated'] and row[csv_field]:
-                                try:
-                                    # Try to parse the date string
-                                    contact_data[db_field] = datetime.strptime(str(row[csv_field]), '%Y-%m-%d')
-                                except ValueError:
-                                    # If parsing fails, leave as None
-                                    pass
-                            # Special handling for birthday to store only month and day
-                            elif csv_field == 'birthday' and row[csv_field]:
-                                try:
-                                    # Check if it's in YYYY-MM-DD format
-                                    if len(str(row[csv_field])) > 5:
-                                        # Parse the full date and extract just month and day
-                                        full_date = datetime.strptime(str(row[csv_field]), '%Y-%m-%d')
-                                        contact_data[db_field] = full_date.strftime('%m-%d')
-                                    # Check if it's already in MM-DD format
-                                    elif len(str(row[csv_field])) == 5 and '-' in str(row[csv_field]):
-                                        # Validate that it's a proper MM-DD format
-                                        datetime.strptime(str(row[csv_field]), '%m-%d')
-                                        contact_data[db_field] = str(row[csv_field])
-                                    else:
-                                        # Try to parse in flexible format, but store as MM-DD
-                                        try:
-                                            date_obj = pd.to_datetime(str(row[csv_field]))
-                                            contact_data[db_field] = date_obj.strftime('%m-%d')
-                                        except:
-                                            # If all parsing fails, skip this field
-                                            print(f"Skipping invalid birthday format: {row[csv_field]}")
-                                except (ValueError, AttributeError) as e:
-                                    print(f"Error processing birthday: {e}")
-                                
-                                if db_field in contact_data:
-                                    print(f"Importing {csv_field}: {row[csv_field]} → {contact_data[db_field]} (MM-DD)")
-                            else:
-                                contact_data[db_field] = str(row[csv_field])
-                                print(f"Importing {csv_field}: {row[csv_field]}")
-                    
-                    # Create the contact record
-                    contact = Contact(**contact_data)
-                    db.session.add(contact)
-                    rows_processed += 1
-                
-                # Commit all changes to the database
-                db.session.commit()
-                
-                success_message = f"Successfully processed {rows_processed} clients from the CSV file."
-                
-                # Refresh contacts list
-                contacts = Contact.query.order_by(Contact.name).all()
-            except Exception as e:
-                db.session.rollback()
-                error_message = f"Error processing CSV file: {str(e)}"
-        else:
-            # Provide a clear error message for non-CSV files
-            error_message = f"Invalid file type: {file.filename}. Only CSV files are supported."
-            return render_template('dashboard.html', 
-                                  contacts=contacts, 
-                                  success_message=success_message,
-                                  error_message=error_message)
-        
     return render_template('dashboard.html', 
-                          contacts=contacts, 
+                          contacts=contacts,
                           success_message=success_message,
                           error_message=error_message,
+                          has_html=has_html,
                           undo_action=undo_action,
                           undo_id=undo_id)
 
@@ -242,18 +151,20 @@ def serialize_contact(contact):
 @app.route('/delete_contact/<int:id>', methods=['POST'])
 def delete_contact(id):
     try:
-        # Get the contact
         contact = Contact.query.get_or_404(id)
         
-        # Store the contact data for potential undo
+        # Serialize the contact data before deletion
         contact_data = serialize_contact(contact)
         
-        # Create a DeletedContact record
+        # Create a unique operation ID for this deletion
+        operation_id = str(datetime.utcnow().timestamp())
+        
+        # Store the deleted contact in the DeletedContact table
         deleted_contact = DeletedContact(
             original_id=contact.id,
             contact_data=json.dumps(contact_data),
             deletion_type='single',
-            operation_id=str(datetime.utcnow().timestamp())
+            operation_id=operation_id
         )
         db.session.add(deleted_contact)
         
@@ -261,31 +172,15 @@ def delete_contact(id):
         db.session.delete(contact)
         db.session.commit()
         
-        # Check if this is an AJAX request
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({
-                'success': True,
-                'message': 'Client deleted successfully!'
-            })
+        # Set success message in session
+        session['success_message'] = f"Successfully deleted {contact.name}."
         
-        # For regular form submissions, redirect with undo parameters
-        success_message = "Client deleted successfully!"
-        return redirect(url_for('dashboard', 
-                               success_message=success_message,
-                               undo_action='single',
-                               undo_id=deleted_contact.id))
+        # Return to dashboard with success message and undo info
+        return redirect(url_for('dashboard', undo_action='single', undo_id=deleted_contact.id))
     except Exception as e:
         db.session.rollback()
-        error_message = f"Error deleting contact: {str(e)}"
-        
-        # Check if this is an AJAX request
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({
-                'success': False,
-                'message': error_message
-            })
-        
-        return redirect(url_for('dashboard', error_message=error_message))
+        session['error_message'] = f"Error deleting contact: {str(e)}"
+        return redirect(url_for('dashboard'))
 
 @app.route('/download/sample_csv')
 def download_sample():
@@ -372,45 +267,42 @@ def delete_all_contacts():
     try:
         # Get all contacts
         contacts = Contact.query.all()
-        contact_count = len(contacts)
         
-        if contact_count > 0:
-            # Create an operation ID for this batch deletion
-            operation_id = str(datetime.utcnow().timestamp())
-            
-            # Store all contacts for potential undo
-            for contact in contacts:
-                contact_data = serialize_contact(contact)
-                deleted_contact = DeletedContact(
-                    original_id=contact.id,
-                    contact_data=json.dumps(contact_data),
-                    deletion_type='all',
-                    operation_id=operation_id
-                )
-                db.session.add(deleted_contact)
-            
-            # Delete all contacts
-            Contact.query.delete()
-            
-            # Commit the changes to the database
-            db.session.commit()
-            
-            success_message = f"Successfully deleted all {contact_count} clients from the database."
-            return redirect(url_for('dashboard', 
-                                   success_message=success_message,
-                                   undo_action='all',
-                                   undo_id=operation_id))
-        else:
-            success_message = "No clients to delete."
-            return redirect(url_for('dashboard', success_message=success_message))
-    
+        if not contacts:
+            session['error_message'] = "No contacts to delete."
+            return redirect(url_for('dashboard'))
+        
+        # Create a unique operation ID for this batch deletion
+        operation_id = str(datetime.utcnow().timestamp())
+        
+        # Store each contact in the DeletedContact table
+        for contact in contacts:
+            contact_data = serialize_contact(contact)
+            deleted_contact = DeletedContact(
+                original_id=contact.id,
+                contact_data=json.dumps(contact_data),
+                deletion_type='all',
+                operation_id=operation_id
+            )
+            db.session.add(deleted_contact)
+        
+        # Delete all contacts
+        count = len(contacts)
+        Contact.query.delete()
+        db.session.commit()
+        
+        # Set success message in session
+        session['success_message'] = f"Successfully deleted all {count} clients from the database."
+        
+        # Return to dashboard with success message and undo info
+        return redirect(url_for('dashboard', undo_action='all', undo_id=operation_id))
     except Exception as e:
         db.session.rollback()
-        error_message = f"Error deleting all contacts: {str(e)}"
-        return redirect(url_for('dashboard', error_message=error_message))
+        session['error_message'] = f"Error deleting all contacts: {str(e)}"
+        return redirect(url_for('dashboard'))
 
 # Add routes for undoing deletions
-@app.route('/undo_delete/<string:action>/<string:id>', methods=['POST'])
+@app.route('/undo_delete/<string:action>/<string:id>')
 def undo_delete(action, id):
     try:
         if action == 'single':
@@ -418,72 +310,63 @@ def undo_delete(action, id):
             deleted_contact = DeletedContact.query.get_or_404(id)
             contact_data = json.loads(deleted_contact.contact_data)
             
-            # Remove fields that shouldn't be directly set
-            original_id = contact_data.pop('original_id', None)
-            contact_data.pop('dateAdded', None)
-            contact_data.pop('lastModified', None)
-            
-            # Convert ISO format dates back to datetime objects
-            if 'email_updated' in contact_data and contact_data['email_updated']:
-                contact_data['email_updated'] = datetime.fromisoformat(contact_data['email_updated'])
-            if 'cell_updated' in contact_data and contact_data['cell_updated']:
-                contact_data['cell_updated'] = datetime.fromisoformat(contact_data['cell_updated'])
-            
             # Create a new contact with the original data
-            new_contact = Contact(**contact_data)
-            db.session.add(new_contact)
+            new_contact = Contact(
+                name=contact_data.get('name', ''),
+                email=contact_data.get('email', ''),
+                cell=contact_data.get('cell', ''),
+                mailing_address=contact_data.get('mailing_address', ''),
+                birthday=parse_date(contact_data.get('birthday', None)),
+                email_updated=parse_date(contact_data.get('email_updated', None)),
+                cell_updated=parse_date(contact_data.get('cell_updated', None))
+            )
             
-            # Delete the DeletedContact record
+            db.session.add(new_contact)
             db.session.delete(deleted_contact)
             db.session.commit()
             
-            success_message = "Contact restored successfully!"
+            session['success_message'] = f"Successfully restored {new_contact.name}."
             
-        elif action in ['all', 'duplicates', 'bulk']:
-            # Restore all contacts from a batch operation
-            deleted_contacts = DeletedContact.query.filter_by(operation_id=id).all()
+        elif action == 'all':
+            # Restore all contacts from a batch deletion
+            operation_id = id
+            deleted_contacts = DeletedContact.query.filter_by(operation_id=operation_id).all()
             
             if not deleted_contacts:
-                return redirect(url_for('dashboard', error_message="No contacts found to restore."))
+                session['error_message'] = "No contacts found to restore."
+                return redirect(url_for('dashboard'))
             
-            # Restore each contact
             restored_count = 0
             for deleted_contact in deleted_contacts:
                 contact_data = json.loads(deleted_contact.contact_data)
                 
-                # Remove fields that shouldn't be directly set
-                original_id = contact_data.pop('original_id', None)
-                contact_data.pop('dateAdded', None)
-                contact_data.pop('lastModified', None)
-                
-                # Convert ISO format dates back to datetime objects
-                if 'email_updated' in contact_data and contact_data['email_updated']:
-                    contact_data['email_updated'] = datetime.fromisoformat(contact_data['email_updated'])
-                if 'cell_updated' in contact_data and contact_data['cell_updated']:
-                    contact_data['cell_updated'] = datetime.fromisoformat(contact_data['cell_updated'])
-                
                 # Create a new contact with the original data
-                new_contact = Contact(**contact_data)
-                db.session.add(new_contact)
+                new_contact = Contact(
+                    name=contact_data.get('name', ''),
+                    email=contact_data.get('email', ''),
+                    cell=contact_data.get('cell', ''),
+                    mailing_address=contact_data.get('mailing_address', ''),
+                    birthday=parse_date(contact_data.get('birthday', None)),
+                    email_updated=parse_date(contact_data.get('email_updated', None)),
+                    cell_updated=parse_date(contact_data.get('cell_updated', None))
+                )
                 
-                # Delete the DeletedContact record
+                db.session.add(new_contact)
                 db.session.delete(deleted_contact)
                 restored_count += 1
             
             db.session.commit()
             
-            action_type = "all contacts" if action == 'all' else "duplicate contacts" if action == 'duplicates' else "bulk deleted contacts"
-            success_message = f"Successfully restored {restored_count} {action_type}!"
+            session['success_message'] = f"Successfully restored {restored_count} clients."
             
         else:
-            return redirect(url_for('dashboard', error_message="Invalid undo action."))
-        
-        return redirect(url_for('dashboard', success_message=success_message))
-    
+            session['error_message'] = "Invalid undo action."
+            
+        return redirect(url_for('dashboard'))
     except Exception as e:
         db.session.rollback()
-        error_message = f"Error restoring contact(s): {str(e)}"
-        return redirect(url_for('dashboard', error_message=error_message))
+        session['error_message'] = f"Error restoring contact(s): {str(e)}"
+        return redirect(url_for('dashboard'))
 
 # Cleanup expired deleted contacts
 @app.before_request
@@ -856,6 +739,198 @@ def bulk_delete_contacts():
         error_message = f"Error deleting contacts: {str(e)}"
         flash(error_message, 'error')
         return redirect(url_for('dashboard'))
+
+@app.route('/download_rejected_records', methods=['GET'])
+def download_rejected_records():
+    """Download the CSV file containing rejected records from the last import."""
+    rejected_id = request.args.get('rejected_id')
+    
+    if rejected_id and rejected_id in rejected_records_store:
+        rejected_rows = rejected_records_store[rejected_id]
+        
+        # Create a CSV in memory
+        output = io.StringIO()
+        if rejected_rows:
+            # Get the fieldnames from the first row
+            fieldnames = rejected_rows[0].keys()
+            
+            # Create a CSV writer
+            writer = csv.DictWriter(output, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            # Write all rows
+            for row in rejected_rows:
+                writer.writerow(row)
+            
+            # Reset the pointer to the beginning of the StringIO object
+            output.seek(0)
+            
+            # Create a response with the CSV data
+            response = make_response(output.getvalue())
+            response.headers["Content-Disposition"] = f"attachment; filename=rejected_records.csv"
+            response.headers["Content-type"] = "text/csv"
+            
+            return response
+        else:
+            session['error_message'] = "No rejected records to download."
+            return redirect(url_for('dashboard'))
+    else:
+        session['error_message'] = "No rejected records found or invalid ID."
+        return redirect(url_for('dashboard'))
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    # Check if the post request has the file part
+    if 'csv_file' not in request.files:
+        session['error_message'] = "No file part in the request"
+        return redirect(url_for('dashboard'))
+    
+    file = request.files['csv_file']
+    
+    # If user does not select file, browser may submit an empty file without filename
+    if file.filename == '':
+        session['error_message'] = "No file selected"
+        return redirect(url_for('dashboard'))
+    
+    if file and allowed_file(file.filename):
+        try:
+            # Read the CSV file
+            df = pd.read_csv(file)
+            
+            # Log the first 3 rows of the CSV
+            print("======= CSV DATA (FIRST 3 ROWS) =======")
+            print(df.head(3))
+            print("========================================")
+            
+            # Track processed and rejected rows
+            rows_processed = 0
+            rejected_rows = []
+            
+            # Process each row in the CSV
+            for index, row in df.iterrows():
+                # Clean and prepare data
+                contact_data = {}
+                
+                # Map CSV columns to database fields
+                field_mapping = {
+                    'name': 'name',
+                    'cell': 'cell',
+                    'email': 'email',
+                    'mailing_address': 'mailing_address',
+                    'notes': 'notes',
+                    'birthday': 'birthday',
+                    'email_updated': 'email_updated',
+                    'cell_updated': 'cell_updated',
+                    'facebook': 'facebook',
+                    'instagram': 'instagram',
+                    'twitter': 'twitter'
+                }
+                
+                # Count valid fields
+                valid_field_count = 0
+                valid_fields = []
+                
+                # Process each field if it exists in the CSV
+                for csv_field, db_field in field_mapping.items():
+                    if csv_field in row and not pd.isna(row[csv_field]) and str(row[csv_field]).strip():
+                        valid_field_count += 1
+                        valid_fields.append(csv_field)
+                        
+                        # Handle date fields
+                        if csv_field in ['email_updated', 'cell_updated'] and row[csv_field]:
+                            try:
+                                # Try to parse the date string
+                                contact_data[db_field] = datetime.strptime(str(row[csv_field]), '%Y-%m-%d')
+                            except ValueError:
+                                # If parsing fails, leave as None
+                                pass
+                        # Special handling for birthday to store only month and day
+                        elif csv_field == 'birthday' and row[csv_field]:
+                            try:
+                                # Check if it's in YYYY-MM-DD format
+                                if len(str(row[csv_field])) > 5:
+                                    # Parse the full date and extract just month and day
+                                    full_date = datetime.strptime(str(row[csv_field]), '%Y-%m-%d')
+                                    contact_data[db_field] = full_date.strftime('%m-%d')
+                                # Check if it's already in MM-DD format
+                                elif len(str(row[csv_field])) == 5 and '-' in str(row[csv_field]):
+                                    # Validate that it's a proper MM-DD format
+                                    datetime.strptime(str(row[csv_field]), '%m-%d')
+                                    contact_data[db_field] = str(row[csv_field])
+                                else:
+                                    # Try to parse in flexible format, but store as MM-DD
+                                    try:
+                                        date_obj = pd.to_datetime(str(row[csv_field]))
+                                        contact_data[db_field] = date_obj.strftime('%m-%d')
+                                    except:
+                                        # If all parsing fails, skip this field
+                                        print(f"Skipping invalid birthday format: {row[csv_field]}")
+                            except (ValueError, AttributeError) as e:
+                                print(f"Error processing birthday: {e}")
+                            
+                            if db_field in contact_data:
+                                print(f"Importing {csv_field}: {row[csv_field]} → {contact_data[db_field]} (MM-DD)")
+                        else:
+                            contact_data[db_field] = str(row[csv_field])
+                            print(f"Importing {csv_field}: {row[csv_field]}")
+                
+                # Check if we have at least 3 valid fields
+                if valid_field_count >= 3:
+                    # Create the contact record
+                    contact = Contact(**contact_data)
+                    db.session.add(contact)
+                    rows_processed += 1
+                    print(f"Row {index}: ACCEPTED - {valid_field_count} valid fields: {', '.join(valid_fields)}")
+                else:
+                    # Add to rejected rows
+                    rejected_rows.append(row.to_dict())
+                    print(f"Row {index}: REJECTED - Only {valid_field_count} valid fields: {', '.join(valid_fields)}")
+            
+            # Commit all changes to the database
+            db.session.commit()
+            
+            # Store rejected rows in memory if any exist
+            if rejected_rows:
+                # Generate a unique ID for this set of rejected records
+                rejected_id = str(uuid.uuid4())
+                rejected_records_store[rejected_id] = rejected_rows
+                
+                # Create a success message with errors
+                session['success_message'] = f"Successfully imported {rows_processed} clients. Were unable to import some. <a href=\"{url_for('download_rejected_records', rejected_id=rejected_id)}\" class=\"underline font-medium\">View errors</a>."
+            else:
+                # Simple success message with no errors
+                session['success_message'] = f"Successfully imported {rows_processed} clients."
+            
+            print(f"Import summary: {rows_processed} records imported, {len(rejected_rows)} records rejected")
+            
+            # Redirect to dashboard to show the updated page with success message
+            return redirect(url_for('dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            session['error_message'] = f"Error processing CSV file: {str(e)}"
+            return redirect(url_for('dashboard'))
+    else:
+        # Provide a clear error message for non-CSV files
+        session['error_message'] = f"Invalid file type: {file.filename}. Only CSV files are supported."
+        return redirect(url_for('dashboard'))
+
+@app.route('/upload/error', methods=['POST'])
+@csrf.exempt
+def upload_error():
+    """Handle error messages for file uploads from the client side."""
+    data = request.json
+    if data and 'error_message' in data:
+        session['error_message'] = data['error_message']
+    return jsonify({'status': 'success'})
+
+@app.route('/debug_session')
+def debug_session():
+    """Debug route to check session contents."""
+    session['test_message'] = "This is a test message"
+    return jsonify({
+        'session_contents': dict(session),
+        'session_id': session.sid if hasattr(session, 'sid') else None
+    })
 
 if __name__ == '__main__':
     # Make sure uploads directory exists
