@@ -27,35 +27,6 @@ function fetchContactDetails(contactId) {
             // Show the modal first, so the client_actions component is rendered
             openModal('contactDetailModal');
             
-            // Set the delete form action - do this after modal is opened
-            setTimeout(() => {
-                const deleteForm = document.getElementById('deleteContactForm');
-                if (deleteForm) {
-                    deleteForm.action = `/delete_contact/${contactId}`;
-                    console.log('Delete form action set to:', deleteForm.action);
-                    
-                    // Add a direct event listener to the delete button
-                    const deleteButton = deleteForm.querySelector('button[type="submit"]');
-                    if (deleteButton) {
-                        // Remove any existing listeners
-                        const newDeleteButton = deleteButton.cloneNode(true);
-                        deleteButton.parentNode.replaceChild(newDeleteButton, deleteButton);
-                        
-                        // Add new listener
-                        newDeleteButton.addEventListener('click', function(e) {
-                            if (!confirm('Are you sure you want to delete this contact?')) {
-                                e.preventDefault();
-                            }
-                            // Let the form submit normally to get the redirect with undo parameters
-                        });
-                    } else {
-                        console.error('Delete button not found in the form');
-                    }
-                } else {
-                    console.error('Delete form not found in the modal');
-                }
-            }, 100); // Short delay to ensure modal is fully rendered
-            
             // Populate all fields - wrap in try/catch to handle missing elements
             try {
                 document.getElementById('detailName').textContent = data.name || '';
@@ -112,20 +83,24 @@ function formatDate(dateString) {
 
 // Format birthday for display (MMM DD format)
 function formatBirthday(birthdayString) {
-    if (!birthdayString) return '';
+    if (!birthdayString) return 'Not set';
     
-    // The server will handle the formatting via the format_date filter
-    // This function is kept for backward compatibility
-    return birthdayString;
+    // Format: MM/DD/YYYY
+    const date = new Date(birthdayString);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    
+    return `${month}/${day}`;
 }
 
 // Initialize contact row click events
 function initializeContactRows() {
     const contactRows = document.querySelectorAll('.contact-row');
+    
     contactRows.forEach(row => {
         row.addEventListener('click', function(e) {
-            // Skip if the click was on or inside a checkbox
-            if (e.target.closest('.contact-checkbox') || e.target.classList.contains('contact-checkbox')) {
+            // Ignore clicks on checkboxes or action buttons
+            if (e.target.closest('.contact-checkbox') || e.target.closest('.contact-actions')) {
                 return;
             }
             
@@ -135,35 +110,10 @@ function initializeContactRows() {
     });
 }
 
-// Initialize single client action buttons
-function initializeSingleClientActions() {
-    // Set up single client action button event listeners in the contact detail modal
-    document.getElementById('singleConfirmAddress')?.addEventListener('click', function() {
-        const contactId = document.getElementById('deleteContactForm')?.action.split('/').pop();
-        console.log('Request address confirmation for client:', contactId);
-    });
-    
-    document.getElementById('singleEnrichData')?.addEventListener('click', function() {
-        const contactId = document.getElementById('deleteContactForm')?.action.split('/').pop();
-        console.log('Enrich data for client:', contactId);
-    });
-    
-    document.getElementById('singleSendGift')?.addEventListener('click', function() {
-        const contactId = document.getElementById('deleteContactForm')?.action.split('/').pop();
-        console.log('Send gift to client:', contactId);
-    });
-    
-    document.getElementById('singleSendMessage')?.addEventListener('click', function() {
-        const contactId = document.getElementById('deleteContactForm')?.action.split('/').pop();
-        console.log('Send message to client:', contactId);
-    });
-}
-
 export { 
     openContactDetailModal, 
     fetchContactDetails, 
     formatDate, 
     formatBirthday, 
-    initializeContactRows,
-    initializeSingleClientActions
+    initializeContactRows
 }; 

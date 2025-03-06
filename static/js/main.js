@@ -4,7 +4,7 @@
  */
 
 import { initializeModals, openModal, closeModal } from './modals.js';
-import { initializeContactRows, initializeSingleClientActions, formatDate, formatBirthday } from './contacts.js';
+import { initializeContactRows, formatDate, formatBirthday } from './contacts.js';
 import { setupEditableFields } from './editableFields.js';
 import { initializeSearch, initializeTableSorting, initializeAlerts } from './tableOperations.js';
 import { initializeFileUpload } from './fileUpload.js';
@@ -27,9 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize contact rows
     initializeContactRows();
-    
-    // Initialize single client actions
-    initializeSingleClientActions();
     
     // Initialize search functionality
     initializeSearch();
