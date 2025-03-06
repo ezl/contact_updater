@@ -136,18 +136,13 @@
   background-color: transparent;
   min-height: 2rem;
   cursor: pointer;
+  margin-left: -0.5rem;
 }
 
 .modal-value:hover {
   background-color: rgba(47, 133, 90, 0.05);
 }
 
-.modal-value.editing {
-  background-color: white;
-  border: 1px solid var(--forest-green);
-  box-shadow: 0 0 0 2px rgba(47, 133, 90, 0.2);
-  cursor: text;
-}
 
 /* Flatpickr integration */
 .modal-value .flatpickr-calendar {
