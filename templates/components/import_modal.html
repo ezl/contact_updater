@@ -10,7 +10,7 @@
 {% extends "components/modal_base.html" %}
 
 {% block modal_content %}
-<form action="/dashboard" method="post" enctype="multipart/form-data" class="space-y-4">
+<form action="/upload" method="post" enctype="multipart/form-data" class="space-y-4">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div>
         <label for="csv_file" class="block text-sm font-medium text-gray-700 mb-1">Select CSV File</label>

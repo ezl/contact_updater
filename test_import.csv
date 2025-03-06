@@ -1,0 +1,6 @@
+name,cell,email,mailing_address,notes,birthday,facebook,instagram,twitter
+John Doe,(555) 123-4567,john.doe@example.com,123 Main St,Test notes,05-15,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
+Jane Smith,(555) 987-6543,jane.smith@example.com,456 Oak Ave,More notes,07-22,https://facebook.com/janesmith,https://instagram.com/janesmith,
+Incomplete 1,,,,Just one field,,,, 
+Incomplete 2,Phone only,(555) 555-5555,,,,,,
+Almost Complete,,,123 Address St,Notes field,01-01,,, 

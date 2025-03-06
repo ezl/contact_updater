@@ -74,41 +74,27 @@ function initializeFileUpload() {
                     // Set the file input value
                     fileInput.files = files;
                     
-                    // Create a FormData object and submit via fetch
-                    const formData = new FormData(importForm);
-                    
-                    fetch('/dashboard', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.text();
-                    })
-                    .then(html => {
-                        // Remove loading indicator
-                        document.body.removeChild(loadingToast);
-                        
-                        // Redirect to dashboard with success message
-                        window.location.href = '/dashboard?success_message=Successfully imported clients from CSV file.';
-                    })
-                    .catch(error => {
-                        // Remove loading indicator
-                        document.body.removeChild(loadingToast);
-                        
-                        // Redirect to dashboard with error message
-                        window.location.href = '/dashboard?error_message=Error importing contacts. Please try again.';
-                        
-                        console.error('Upload error:', error);
-                    });
+                    // Instead of using fetch, submit the form directly
+                    importForm.submit();
                 } else {
-                    // For non-CSV files, redirect to dashboard with error message
-                    window.location.href = `/dashboard?error_message=Invalid file type: ${files[0].name}. Only CSV files are supported.`;
+                    // For non-CSV files, we need to send a request to set the error in session
+                    fetch('/upload/error', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                        },
+                        body: JSON.stringify({
+                            error_message: `Invalid file type: ${files[0].name}. Only CSV files are supported.`
+                        })
+                    })
+                    .then(() => {
+                        window.location.href = '/dashboard';
+                    })
+                    .catch(() => {
+                        // Fallback if the error endpoint fails
+                        window.location.href = '/dashboard';
+                    });
                 }
             }
         });
