@@ -161,18 +161,6 @@
   opacity: 1;
 }
 
-/* Edit success message */
-.edit-success {
-  display: none;
-  font-size: 0.75rem;
-  color: var(--forest-green);
-  margin-top: 0.25rem;
-}
-
-.edit-success.show {
-  display: block;
-}
-
 /* Editable field hover styles */
 .modal-field {
   position: relative;

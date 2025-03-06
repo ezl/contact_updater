@@ -318,15 +318,6 @@ function saveFieldEdit(field, newValue, fieldName, contactId) {
                 }, 2000);
             }
             
-            // Show success message
-            const successMessage = field.closest('.modal-field').querySelector('.edit-success');
-            if (successMessage) {
-                successMessage.classList.add('show');
-                setTimeout(() => {
-                    successMessage.classList.remove('show');
-                }, 3000);
-            }
-            
             // Also update the row in the table if visible
             updateTableRow(contactId, fieldName, displayValue);
             
