@@ -10,6 +10,7 @@ import { initializeSearch, initializeTableSorting, initializeAlerts } from './ta
 import { initializeFileUpload } from './fileUpload.js';
 import { initializeBulkActions } from './bulkActions.js';
 import { initializeKebabMenu, initializeActionButtons, initializeFlatpickrCloseButton } from './uiUtils.js';
+import { initializeDeleteContact } from './deleteContact.js';
 
 // Make certain functions available globally
 window.openModal = openModal;
@@ -51,6 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize flatpickr close button
     initializeFlatpickrCloseButton();
+    
+    // Initialize delete contact functionality
+    initializeDeleteContact();
     
     console.log('All dashboard.js modules initialized successfully.');
 }); 

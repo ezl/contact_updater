@@ -46,7 +46,10 @@ function initializeActionButtons() {
     
     if (exportBtn) {
         exportBtn.addEventListener('click', function() {
-            window.location.href = '/download_all_contacts';
+            // The URL is already handled in the HTML with url_for
+            // This is just a fallback
+            const downloadUrl = exportBtn.getAttribute('href') || '/download_all_contacts';
+            window.location.href = downloadUrl;
         });
     }
     

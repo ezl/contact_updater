@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block modal_footer %}
-<form action="/remove_duplicates" method="post">
+<form action="{{ url_for('contacts.remove_duplicates') }}" method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-warning text-base font-medium text-white hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 sm:ml-3 sm:w-auto sm:text-sm">
         Remove Duplicates

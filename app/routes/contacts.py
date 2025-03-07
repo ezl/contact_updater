@@ -144,10 +144,12 @@ def delete_contact(id):
         db.session.delete(contact)
         db.session.commit()
         
-        session['success_message'] = f"Successfully deleted {name} from your contacts."
-        return redirect(url_for('main.dashboard', 
-                              undo_action='single', 
-                              undo_id=deleted_contact.operation_id))
+        # Create success message with undo link
+        undo_url = url_for('contacts.undo_delete', action='single', id=deleted_contact.operation_id)
+        session['success_message'] = f"Successfully deleted {name} from your contacts. <a href=\"{undo_url}\" class=\"underline font-medium\">Undo</a>"
+        session['has_html'] = True
+        
+        return redirect(url_for('main.dashboard'))
     except Exception as e:
         db.session.rollback()
         session['error_message'] = f"Error deleting contact: {str(e)}"
@@ -187,10 +189,12 @@ def delete_all_contacts():
         Contact.query.delete()
         db.session.commit()
         
-        session['success_message'] = f"Successfully deleted all {count} clients from the database."
-        return redirect(url_for('main.dashboard', 
-                              undo_action='all', 
-                              undo_id=operation_id))
+        # Create success message with undo link
+        undo_url = url_for('contacts.undo_delete', action='all', id=operation_id)
+        session['success_message'] = f"Successfully deleted all {count} clients from the database. <a href=\"{undo_url}\" class=\"underline font-medium\">Undo</a>"
+        session['has_html'] = True
+        
+        return redirect(url_for('main.dashboard'))
     except Exception as e:
         db.session.rollback()
         session['error_message'] = f"Error deleting contacts: {str(e)}"
@@ -205,7 +209,7 @@ def get_contact(contact_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 404
 
-@contacts_bp.route('/undo_delete/<string:action>/<string:id>')
+@contacts_bp.route('/undo_delete/<string:action>/<string:id>', methods=['GET', 'POST'])
 def undo_delete(action, id):
     """Undo a delete operation"""
     try:
@@ -351,8 +355,12 @@ def remove_duplicates():
         
         db.session.commit()
         
-        session['success_message'] = f"Successfully removed {len(duplicates)} duplicate contacts."
+        # Create success message with undo link
+        undo_url = url_for('contacts.undo_delete', action='duplicate', id=operation_id)
+        
+        # Set success message directly in the redirect
         return redirect(url_for('main.dashboard', 
+                              success_message=f"Successfully removed {len(duplicates)} duplicate contacts.",
                               undo_action='duplicate', 
                               undo_id=operation_id))
     except Exception as e:
@@ -403,10 +411,12 @@ def bulk_delete_contacts():
         
         db.session.commit()
         
-        session['success_message'] = f"Successfully deleted {count} selected contacts."
-        return redirect(url_for('main.dashboard', 
-                              undo_action='bulk', 
-                              undo_id=operation_id))
+        # Create success message with undo link
+        undo_url = url_for('contacts.undo_delete', action='bulk', id=operation_id)
+        session['success_message'] = f"Successfully deleted {count} selected contacts. <a href=\"{undo_url}\" class=\"underline font-medium\">Undo</a>"
+        session['has_html'] = True
+        
+        return redirect(url_for('main.dashboard'))
     except Exception as e:
         db.session.rollback()
         session['error_message'] = f"Error deleting contacts: {str(e)}"

@@ -6,6 +6,10 @@ from app.utils.helpers import get_holidays_for_month
 main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
+def index():
+    """Home page route"""
+    return render_template('index.html')
+
 @main_bp.route('/dashboard')
 def dashboard():
     """Main dashboard route"""
@@ -13,14 +17,24 @@ def dashboard():
     success_message = session.pop('success_message', None)
     error_message = session.pop('error_message', None)
     
+    # If no success message in session, check query parameters
+    if not success_message:
+        success_message = request.args.get('success_message')
+    
+    # Get undo parameters
+    undo_action = request.args.get('undo_action')
+    undo_id = request.args.get('undo_id')
+    
+    # Debug print
+    print(f"Dashboard route - success_message: {success_message}")
+    print(f"Dashboard route - error_message: {error_message}")
+    print(f"Dashboard route - undo_action: {undo_action}")
+    print(f"Dashboard route - undo_id: {undo_id}")
+    
     # Check for HTML content in success message
     has_html = False
     if success_message and ('<' in success_message and '>' in success_message):
         has_html = True
-    
-    # Get undo parameters if present
-    undo_action = request.args.get('undo_action')
-    undo_id = request.args.get('undo_id')
     
     # Load contacts
     try:

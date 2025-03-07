@@ -10,7 +10,7 @@
     </span>
     {% if undo_action and undo_id %}
     <span class="ml-2">
-        <form action="{{ url_for('undo_delete', action=undo_action, id=undo_id) }}" method="POST" class="inline">
+        <form action="{{ url_for('contacts.undo_delete', action=undo_action, id=undo_id) }}" method="POST" class="inline">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="underline font-medium text-success hover:text-success-dark">Undo</button>
         </form>

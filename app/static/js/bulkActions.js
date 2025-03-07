@@ -86,40 +86,36 @@ function setupBulkActionButtons() {
         console.log('Send message to:', selectedIds);
     });
     
-    document.getElementById('bulkDelete')?.addEventListener('click', function() {
+    document.getElementById('bulkDelete')?.addEventListener('click', function(e) {
         const selectedIds = getSelectedContactIds();
         
         if (selectedIds.length === 0) {
             alert('No contacts selected for deletion.');
+            e.preventDefault();
             return;
         }
         
         if (confirm(`Are you sure you want to delete ${selectedIds.length} selected contact(s)?`)) {
-            // Create a form to submit the selected IDs
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/bulk_delete_contacts';
+            // Get the form
+            const form = document.getElementById('bulkDeleteForm');
             
-            // Add CSRF token
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = 'csrf_token';
-            csrfInput.value = csrfToken;
-            form.appendChild(csrfInput);
+            // Clear any existing hidden inputs
+            const selectedContactIdsDiv = document.getElementById('selectedContactIds');
+            selectedContactIdsDiv.innerHTML = '';
             
             // Add selected IDs
             selectedIds.forEach(id => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
-                input.name = 'contact_ids';
+                input.name = 'contact_ids[]';
                 input.value = id;
-                form.appendChild(input);
+                selectedContactIdsDiv.appendChild(input);
             });
             
-            // Append form to body and submit
-            document.body.appendChild(form);
+            // Submit the form
             form.submit();
+        } else {
+            e.preventDefault();
         }
     });
 }
