@@ -64,57 +64,125 @@ def update_contact(id):
         # Find the contact
         contact = Contact.query.get_or_404(id)
         
-        # Get form data
-        name = request.form.get('name')
-        cell = request.form.get('cell')
-        email = request.form.get('email')
-        mailing_address = request.form.get('mailing_address')
-        notes = request.form.get('notes')
-        birthday = request.form.get('birthday')
-        facebook = request.form.get('facebook')
-        instagram = request.form.get('instagram')
-        twitter = request.form.get('twitter')
-        
-        # Format birthday if provided
-        if birthday:
-            try:
-                # Parse the date from the form
-                date_obj = datetime.strptime(birthday, '%Y-%m-%d')
-                # Format as MM-DD
-                birthday = date_obj.strftime('%m-%d')
-            except ValueError:
-                # If the date is invalid, use the raw input
-                pass
-        
-        # Update contact fields
-        contact.name = name
-        
-        # Track field updates with timestamps
-        if cell != contact.cell:
-            contact.cell = cell
-            contact.cell_updated = datetime.utcnow()
+        # Check if this is an AJAX request with JSON data
+        if request.is_json:
+            data = request.json
+            field = data.get('field')
+            value = data.get('value')
             
-        if email != contact.email:
-            contact.email = email
-            contact.email_updated = datetime.utcnow()
+            # Update the specific field
+            if field == 'name':
+                contact.name = value
+            elif field == 'cell':
+                if value != contact.cell:
+                    contact.cell = value
+                    contact.cell_updated = datetime.utcnow()
+            elif field == 'email':
+                if value != contact.email:
+                    contact.email = value
+                    contact.email_updated = datetime.utcnow()
+            elif field == 'mailing_address':
+                if value != contact.mailing_address:
+                    contact.mailing_address = value
+                    contact.mailing_address_updated = datetime.utcnow()
+            elif field == 'notes':
+                contact.notes = value
+            elif field == 'birthday':
+                if value:
+                    try:
+                        # Try to parse the date in various formats
+                        for fmt in ['%b %d', '%B %d', '%Y-%m-%d', '%m-%d']:
+                            try:
+                                date_obj = datetime.strptime(value, fmt)
+                                value = date_obj.strftime('%m-%d')
+                                break
+                            except ValueError:
+                                continue
+                    except Exception as e:
+                        print(f"Error parsing birthday: {e}")
+                contact.birthday = value
+            elif field == 'facebook':
+                contact.facebook = value
+            elif field == 'instagram':
+                contact.instagram = value
+            elif field == 'twitter':
+                contact.twitter = value
             
-        if mailing_address != contact.mailing_address:
-            contact.mailing_address = mailing_address
-            contact.mailing_address_updated = datetime.utcnow()
-        
-        contact.notes = notes
-        contact.birthday = birthday
-        contact.facebook = facebook
-        contact.instagram = instagram
-        contact.twitter = twitter
-        
-        # Save changes
-        db.session.commit()
-        
-        session['success_message'] = f"Successfully updated {name}'s information."
-        return redirect(url_for('main.dashboard'))
+            # Save changes
+            db.session.commit()
+            
+            # Return updated data
+            response_data = {
+                'success': True,
+                'message': 'Contact updated successfully'
+            }
+            
+            # Add timestamp for tracked fields
+            if field in ['email', 'cell', 'mailing_address']:
+                updated_field = field
+                if field == 'mailing_address':
+                    updated_field = 'address'
+                response_data['updated_timestamp'] = getattr(contact, f'{field}_updated').isoformat() if getattr(contact, f'{field}_updated') else None
+                response_data['updated_field'] = updated_field
+            
+            return jsonify(response_data)
+            
+        else:
+            # Handle regular form submission
+            # Get form data
+            name = request.form.get('name')
+            cell = request.form.get('cell')
+            email = request.form.get('email')
+            mailing_address = request.form.get('mailing_address')
+            notes = request.form.get('notes')
+            birthday = request.form.get('birthday')
+            facebook = request.form.get('facebook')
+            instagram = request.form.get('instagram')
+            twitter = request.form.get('twitter')
+            
+            # Format birthday if provided
+            if birthday:
+                try:
+                    # Parse the date from the form
+                    date_obj = datetime.strptime(birthday, '%Y-%m-%d')
+                    # Format as MM-DD
+                    birthday = date_obj.strftime('%m-%d')
+                except ValueError:
+                    # If the date is invalid, use the raw input
+                    pass
+            
+            # Update contact fields
+            contact.name = name
+            
+            # Track field updates with timestamps
+            if cell != contact.cell:
+                contact.cell = cell
+                contact.cell_updated = datetime.utcnow()
+                
+            if email != contact.email:
+                contact.email = email
+                contact.email_updated = datetime.utcnow()
+                
+            if mailing_address != contact.mailing_address:
+                contact.mailing_address = mailing_address
+                contact.mailing_address_updated = datetime.utcnow()
+            
+            contact.notes = notes
+            contact.birthday = birthday
+            contact.facebook = facebook
+            contact.instagram = instagram
+            contact.twitter = twitter
+            
+            # Save changes
+            db.session.commit()
+            
+            session['success_message'] = f"Successfully updated {name}'s information."
+            return redirect(url_for('main.dashboard'))
+            
     except Exception as e:
         db.session.rollback()
+        if request.is_json:
+            return jsonify({'success': False, 'message': str(e)}), 400
         session['error_message'] = f"Error updating contact: {str(e)}"
         return redirect(url_for('main.dashboard'))
 
