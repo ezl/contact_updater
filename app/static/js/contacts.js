@@ -13,7 +13,7 @@ function openContactDetailModal(contactId) {
 // Function to fetch contact details
 function fetchContactDetails(contactId) {
     console.log('Fetching contact details for ID:', contactId);
-    fetch(`/contacts/get_contact/${contactId}`)
+    fetch(`/get_contact/${contactId}`)
         .then(response => response.json())
         .then(data => {
             // Populate the modal with contact data
@@ -27,7 +27,7 @@ function fetchContactDetails(contactId) {
             // Update the delete form action in the client_actions component
             const deleteContactForm = contactDetailModal.querySelector('#deleteContactForm');
             if (deleteContactForm) {
-                deleteContactForm.action = `/contacts/delete_contact/${contactId}`;
+                deleteContactForm.action = `/delete_contact/${contactId}`;
             }
             
             // Show the modal first, so the client_actions component is rendered
