@@ -24,3 +24,5 @@ instance/
 Thumbs.db 
 
 todo
+# Flask session files
+flask_session/
