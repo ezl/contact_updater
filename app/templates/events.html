@@ -69,6 +69,98 @@
     .nav-button:hover {
         background-color: #e5e7eb;
     }
+    /* Toggle switch styles */
+    .view-toggle-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 10px;
+        background-color: #f9fafb;
+        border-radius: 8px;
+    }
+    .toggle-label {
+        margin: 0 10px;
+        font-weight: 500;
+        color: #4b5563;
+    }
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 30px;
+    }
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 22px;
+        width: 22px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+        background-color: #2c7a7b;
+    }
+    input:checked + .toggle-slider:before {
+        transform: translateX(30px);
+    }
+    .active-view {
+        font-weight: bold;
+        color: #2c7a7b;
+    }
+    .year-view {
+        display: none;
+    }
+    .year-view.active {
+        display: block;
+    }
+    .month-view.active {
+        display: block;
+    }
+    .month-view {
+        display: none;
+    }
+    .year-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    .month-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+    }
+    .month-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 2px solid #f3f4f6;
+    }
+    .month-events {
+        max-height: 300px;
+        overflow-y: auto;
+    }
 </style>
 {% endblock %}
 
@@ -80,72 +172,125 @@
     
     <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <p class="text-gray-700">
-            This page shows upcoming birthdays for your clients and holidays for {{ month_name }} {{ year }}.
+            This page shows upcoming birthdays for your clients and holidays. Toggle between month view and year view.
         </p>
     </div>
     
-    <div class="month-navigation">
-        {% set prev_month = month - 1 if month > 1 else 12 %}
-        {% set prev_year = year if month > 1 else year - 1 %}
-        {% set next_month = month + 1 if month < 12 else 1 %}
-        {% set next_year = year if month < 12 else year + 1 %}
-        
-        <a href="{{ url_for('main.events', month=prev_month, year=prev_year) }}" class="nav-button">
-            <i class="fas fa-chevron-left mr-2"></i> Previous Month
-        </a>
-        
-        <span class="font-bold text-xl">{{ month_name }} {{ year }}</span>
-        
-        <a href="{{ url_for('main.events', month=next_month, year=next_year) }}" class="nav-button">
-            Next Month <i class="fas fa-chevron-right ml-2"></i>
-        </a>
+    <!-- View Toggle -->
+    <div class="view-toggle-container">
+        <span id="month-label" class="toggle-label active-view">Month View</span>
+        <label class="toggle-switch">
+            <input type="checkbox" id="view-toggle">
+            <span class="toggle-slider"></span>
+        </label>
+        <span id="year-label" class="toggle-label">Year View</span>
     </div>
     
-    <div class="events-container">
-        <div class="month-header">
-            {{ month_name }} {{ year }}
+    <!-- Month View -->
+    <div id="month-view" class="month-view active">
+        <div class="month-navigation">
+            {% set prev_month = month - 1 if month > 1 else 12 %}
+            {% set prev_year = year if month > 1 else year - 1 %}
+            {% set next_month = month + 1 if month < 12 else 1 %}
+            {% set next_year = year if month < 12 else year + 1 %}
+            
+            <a href="{{ url_for('main.events', month=prev_month, year=prev_year, view=view) }}" class="nav-button">
+                <i class="fas fa-chevron-left mr-2"></i> Previous Month
+            </a>
+            
+            <span class="font-bold text-xl">{{ month_name }} {{ year }}</span>
+            
+            <a href="{{ url_for('main.events', month=next_month, year=next_year, view=view) }}" class="nav-button">
+                Next Month <i class="fas fa-chevron-right ml-2"></i>
+            </a>
         </div>
         
-        {% set birthday_events = [] %}
-        {% set holiday_events = [] %}
-        
-        {% for event in events %}
-            {% if event.type == 'birthday' %}
-                {% set _ = birthday_events.append(event) %}
-            {% elif event.type == 'holiday' %}
-                {% set _ = holiday_events.append(event) %}
+        <div class="events-container">
+            <div class="month-header">
+                {{ month_name }} {{ year }}
+            </div>
+            
+            {% set birthday_events = [] %}
+            {% set holiday_events = [] %}
+            
+            {% for event in events %}
+                {% if event.type == 'birthday' %}
+                    {% set _ = birthday_events.append(event) %}
+                {% elif event.type == 'holiday' %}
+                    {% set _ = holiday_events.append(event) %}
+                {% endif %}
+            {% endfor %}
+            
+            <h2 class="text-xl font-semibold mb-4">Client Birthdays</h2>
+            {% if birthday_events %}
+                <div class="event-list">
+                    {% for event in birthday_events %}
+                        <div class="event-card birthday-card">
+                            <div class="event-date">{{ month_name }} {{ event.date }}</div>
+                            <div class="event-title">{{ event.title }}</div>
+                            <div class="event-type">Birthday</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-events">No client birthdays this month</div>
             {% endif %}
-        {% endfor %}
-        
-        <h2 class="text-xl font-semibold mb-4">Client Birthdays</h2>
-        {% if birthday_events %}
-            <div class="event-list">
-                {% for event in birthday_events %}
-                    <div class="event-card birthday-card">
-                        <div class="event-date">{{ month_name }} {{ event.date }}</div>
-                        <div class="event-title">{{ event.title }}</div>
-                        <div class="event-type">Birthday</div>
+            
+            <h2 class="text-xl font-semibold mb-4 mt-8">Holidays</h2>
+            {% if holiday_events %}
+                <div class="event-list">
+                    {% for event in holiday_events %}
+                        <div class="event-card holiday-card">
+                            <div class="event-date">{{ month_name }} {{ event.date }}</div>
+                            <div class="event-title">{{ event.title }}</div>
+                            <div class="event-type">Holiday</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-events">No holidays this month</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Year View -->
+    <div id="year-view" class="year-view">
+        <h2 class="text-xl font-semibold mb-4">Events for {{ year }}</h2>
+        <div class="year-container">
+            {% for month_num in range(1, 13) %}
+                {% if year_events and month_num in year_events %}
+                    {% set month_data = year_events[month_num] %}
+                    <div class="month-card">
+                        <div class="month-title">
+                            {{ month_data.name }}
+                        </div>
+                        <div class="month-events">
+                            {% if month_data.events %}
+                                {% for event in month_data.events %}
+                                    <div class="event-item {% if event.type == 'birthday' %}text-green-600{% else %}text-blue-600{% endif %} mb-2">
+                                        <div class="font-semibold">{{ month_data.name }} {{ event.date }}</div>
+                                        <div>{{ event.title }}</div>
+                                        <div class="text-xs text-gray-500">{{ event.type|capitalize }}</div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-gray-500 italic">No events this month</div>
+                            {% endif %}
+                        </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="no-events">No client birthdays this month</div>
-        {% endif %}
-        
-        <h2 class="text-xl font-semibold mb-4 mt-8">Holidays</h2>
-        {% if holiday_events %}
-            <div class="event-list">
-                {% for event in holiday_events %}
-                    <div class="event-card holiday-card">
-                        <div class="event-date">{{ month_name }} {{ event.date }}</div>
-                        <div class="event-title">{{ event.title }}</div>
-                        <div class="event-type">Holiday</div>
+                {% else %}
+                    {% set month_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] %}
+                    <div class="month-card">
+                        <div class="month-title">
+                            {{ month_names[month_num-1] }}
+                        </div>
+                        <div class="month-events">
+                            <div class="text-gray-500 italic">No events this month</div>
+                        </div>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="no-events">No holidays this month</div>
-        {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -153,7 +298,51 @@
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add any JavaScript functionality here if needed
+        const viewToggle = document.getElementById('view-toggle');
+        const monthView = document.getElementById('month-view');
+        const yearView = document.getElementById('year-view');
+        const monthLabel = document.getElementById('month-label');
+        const yearLabel = document.getElementById('year-label');
+        
+        viewToggle.addEventListener('change', function() {
+            // Get current URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const month = urlParams.get('month') || "{{ current_month }}";
+            const year = urlParams.get('year') || "{{ current_year }}";
+            
+            if (this.checked) {
+                // Year view
+                monthView.classList.remove('active');
+                yearView.classList.add('active');
+                monthLabel.classList.remove('active-view');
+                yearLabel.classList.add('active-view');
+                
+                // Update URL
+                const newUrl = window.location.pathname + "?month=" + month + "&year=" + year + "&view=year";
+                history.pushState({}, '', newUrl);
+            } else {
+                // Month view
+                yearView.classList.remove('active');
+                monthView.classList.add('active');
+                yearLabel.classList.remove('active-view');
+                monthLabel.classList.add('active-view');
+                
+                // Update URL
+                const newUrl = window.location.pathname + "?month=" + month + "&year=" + year + "&view=month";
+                history.pushState({}, '', newUrl);
+            }
+        });
+        
+        // Initialize based on URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const viewParam = urlParams.get('view');
+        if (viewParam === 'year') {
+            viewToggle.checked = true;
+            monthView.classList.remove('active');
+            yearView.classList.add('active');
+            monthLabel.classList.remove('active-view');
+            yearLabel.classList.add('active-view');
+        }
     });
 </script>
 {% endblock %} 

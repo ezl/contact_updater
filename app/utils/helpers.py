@@ -49,6 +49,23 @@ def get_holidays_for_month(month, year):
     
     return month_holidays
 
+def get_holidays_for_year(year):
+    """Get all holidays for an entire year, organized by month"""
+    us_holidays = holidays.US(years=year)
+    
+    # Initialize a dictionary to hold holidays for each month
+    year_holidays = {month: [] for month in range(1, 13)}
+    
+    # Populate the dictionary with holidays
+    for date, name in us_holidays.items():
+        if date.year == year:
+            year_holidays[date.month].append({
+                'date': date.day,
+                'name': name
+            })
+    
+    return year_holidays
+
 def cleanup_deleted_contacts(app):
     """Clean up old deleted contacts based on expiration time"""
     with app.app_context():
