@@ -65,7 +65,7 @@ function initializeTableSorting() {
                     
                     // If both values are valid dates
                     if (aText !== '-' && bText !== '-') {
-                        // Parse the "Month Day" format (e.g., "January 15")
+                        // Parse the "MMM D" format (e.g., "Jan 5")
                         const aParts = aText.split(' ');
                         const bParts = bText.split(' ');
                         

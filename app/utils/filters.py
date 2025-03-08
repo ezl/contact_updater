@@ -37,7 +37,7 @@ def register_filters(app):
             current_year = datetime.now().year
             date_obj = datetime(current_year, month_int, day_int)
             
-            # Format as "Month Day"
-            return date_obj.strftime('%B %d')
+            # Format as "MMM D" (3-letter month abbreviation)
+            return date_obj.strftime('%b %-d')
         except (ValueError, AttributeError):
             return value 

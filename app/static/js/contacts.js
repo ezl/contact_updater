@@ -95,7 +95,13 @@ function formatBirthday(birthdayString) {
     if (birthdayString.match(/^\d{2}-\d{2}$/)) {
         // Parse MM-DD format
         const [month, day] = birthdayString.split('-');
-        return `${month}/${day}`;
+        const monthInt = parseInt(month);
+        const dayInt = parseInt(day);
+        
+        // Create a date object to get the month name
+        const date = new Date(2000, monthInt - 1, dayInt);
+        const monthName = date.toLocaleString('en-US', { month: 'short' });
+        return `${monthName} ${dayInt}`;
     }
     
     // Try to parse as a full date if not in MM-DD format
@@ -104,9 +110,9 @@ function formatBirthday(birthdayString) {
         if (isNaN(date.getTime())) {
             return 'Invalid date';
         }
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        return `${month}/${day}`;
+        const monthName = date.toLocaleString('en-US', { month: 'short' });
+        const day = date.getDate();
+        return `${monthName} ${day}`;
     } catch (e) {
         console.error('Error formatting birthday:', e);
         return 'Invalid date';
