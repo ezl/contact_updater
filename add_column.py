@@ -1,55 +1,59 @@
+from app import create_app
 import sqlite3
 import os
+import sys
 
-# Get the database file paths
-instance_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance')
-db_paths = [
-    os.path.join(instance_dir, 'contacts.db'),
-    os.path.join(instance_dir, 'sqlite3.db')
-]
+# This script adds a new column to the contacts table
+# Usage: python add_column.py column_name column_type
 
-success = False
+if len(sys.argv) < 3:
+    print("Usage: python add_column.py column_name column_type")
+    print("Example: python add_column.py facebook TEXT")
+    sys.exit(1)
 
-for db_path in db_paths:
-    print(f"Checking database: {db_path}")
-    
-    # Connect to the database
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+column_name = sys.argv[1]
+column_type = sys.argv[2]
 
-    try:
-        # Check if the contact table exists
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='contact'")
-        if not cursor.fetchone():
-            print(f"Table 'contact' not found in {db_path}")
-            conn.close()
-            continue
-            
-        # Check if the column already exists
-        cursor.execute("PRAGMA table_info(contact)")
-        columns = [column[1] for column in cursor.fetchall()]
-        
-        if 'mailing_address_updated' not in columns:
-            # Add the new column
-            cursor.execute("ALTER TABLE contact ADD COLUMN mailing_address_updated TIMESTAMP")
-            print(f"Column 'mailing_address_updated' added successfully to {db_path}!")
-            success = True
-        else:
-            print(f"Column 'mailing_address_updated' already exists in {db_path}.")
-            success = True
-        
-        # Commit the changes
-        conn.commit()
-        
-    except Exception as e:
-        print(f"Error updating database {db_path}: {e}")
-        conn.rollback()
-        
-    finally:
-        # Close the connection
-        conn.close()
-
-if success:
-    print("Database schema updated successfully!")
+# Get the database file path from the app configuration
+app = create_app()
+db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+if db_uri.startswith('sqlite:///'):
+    db_path = db_uri.replace('sqlite:///', '')
 else:
-    print("Failed to update any database schema.") 
+    print("This script only works with SQLite databases")
+    sys.exit(1)
+
+print(f"Using database: {db_path}")
+print(f"Adding column '{column_name}' with type '{column_type}' to contacts table...")
+
+# Connect to the database
+conn = sqlite3.connect(db_path)
+cursor = conn.cursor()
+
+try:
+    # Check if the column already exists
+    cursor.execute("PRAGMA table_info(contact)")
+    columns = [info[1] for info in cursor.fetchall()]
+    
+    if column_name in columns:
+        print(f"Column '{column_name}' already exists in the contacts table.")
+        sys.exit(0)
+    
+    # Add the column
+    cursor.execute(f"ALTER TABLE contact ADD COLUMN {column_name} {column_type}")
+    conn.commit()
+    print(f"Column '{column_name}' added successfully.")
+    
+    # Verify the column was added
+    cursor.execute("PRAGMA table_info(contact)")
+    columns = [info[1] for info in cursor.fetchall()]
+    if column_name in columns:
+        print("Verification successful: Column exists in the schema.")
+    else:
+        print("Warning: Column was not found in schema after adding!")
+        
+except Exception as e:
+    print(f"Error: {e}")
+    conn.rollback()
+finally:
+    conn.close() 

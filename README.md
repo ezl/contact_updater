@@ -1,6 +1,6 @@
 # Contact Updater
 
-A Flask web application for managing contacts with CSV import/export functionality.
+A Flask web application for managing contacts with CSV import/export functionality and email campaign capabilities.
 
 ## Features
 
@@ -11,22 +11,27 @@ A Flask web application for managing contacts with CSV import/export functionali
 - Track contact information updates
 - View birthdays and holidays in a calendar
 - Remove duplicate contacts
+- Create and send email campaigns to contacts
 
 ## Project Structure
 
-The application is organized into a modular structure:
+The application is organized into a modular structure using the Flask factory pattern:
 
 ```
 contact_updater/
 ├── app/                      # Application package
 │   ├── models/               # Database models
 │   │   ├── __init__.py
-│   │   └── contact_model.py  # Contact and DeletedContact models
+│   │   ├── contact_model.py  # Contact and DeletedContact models
+│   │   └── email_campaign_model.py # Email campaign models
 │   ├── routes/               # Route handlers
 │   │   ├── __init__.py
 │   │   ├── main.py           # Main routes (dashboard, events)
 │   │   ├── contacts.py       # Contact CRUD operations
-│   │   └── file_operations.py # File import/export operations
+│   │   ├── file_operations.py # File import/export operations
+│   │   └── email_campaigns.py # Email campaign operations
+│   ├── services/             # Service layer
+│   │   └── email_service.py  # Email service for campaigns
 │   ├── utils/                # Utility functions
 │   │   ├── __init__.py
 │   │   ├── filters.py        # Template filters
@@ -87,6 +92,15 @@ The application accepts CSV files with the following columns:
 - twitter
 
 You can download a sample CSV template from the application.
+
+## Email Campaigns
+
+The application allows you to:
+1. Select contacts to include in an email campaign
+2. Compose an email with a rich text editor
+3. Review the campaign before sending
+4. Send the campaign and track opens, clicks, and bounces
+5. View campaign statistics and recipient status
 
 ## Maintenance
 
