@@ -56,9 +56,8 @@ function initializeTableSorting() {
                     aValue = a.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
                     bValue = b.querySelector('td:nth-child(1)').textContent.trim().toLowerCase();
                 } else if (column === 'birthday') {
-                    // Get the text content
-                    const aText = a.querySelector('td:nth-child(4)').textContent.trim();
-                    const bText = b.querySelector('td:nth-child(4)').textContent.trim();
+                    const aText = a.querySelector('td:nth-child(5)').textContent.trim();
+                    const bText = b.querySelector('td:nth-child(5)').textContent.trim();
                     
                     // Handle empty values
                     if (aText === '-') aValue = 'z'; // Sort empty values to the end
@@ -66,12 +65,15 @@ function initializeTableSorting() {
                     
                     // If both values are valid dates
                     if (aText !== '-' && bText !== '-') {
-                        // Convert to MM-DD format for comparison
-                        const aMonth = getMonthNumber(aText.split(' ')[0]);
-                        const aDay = parseInt(aText.split(' ')[1]);
+                        // Parse the "Month Day" format (e.g., "January 15")
+                        const aParts = aText.split(' ');
+                        const bParts = bText.split(' ');
                         
-                        const bMonth = getMonthNumber(bText.split(' ')[0]);
-                        const bDay = parseInt(bText.split(' ')[1]);
+                        const aMonth = getMonthNumber(aParts[0]);
+                        const aDay = parseInt(aParts[1]);
+                        
+                        const bMonth = getMonthNumber(bParts[0]);
+                        const bDay = parseInt(bParts[1]);
                         
                         // Compare months first, then days
                         if (aMonth !== bMonth) {
@@ -105,11 +107,15 @@ function initializeTableSorting() {
 
 // Helper function to convert month name to number
 function getMonthNumber(monthName) {
+    if (!monthName) return 0;
+    
     const months = {
-        'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'may': 5, 'jun': 6,
+        'january': 1, 'february': 2, 'march': 3, 'april': 4, 'may': 5, 'june': 6,
+        'july': 7, 'august': 8, 'september': 9, 'october': 10, 'november': 11, 'december': 12,
+        'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'jun': 6,
         'jul': 7, 'aug': 8, 'sep': 9, 'oct': 10, 'nov': 11, 'dec': 12
     };
-    return months[monthName.toLowerCase().substring(0, 3)] || 0;
+    return months[monthName.toLowerCase()] || 0;
 }
 
 // Initialize close alert buttons
