@@ -95,12 +95,17 @@ function setupBulkActionButtons() {
             return;
         }
         
-        if (confirm(`Are you sure you want to delete ${selectedIds.length} selected contact(s)?`)) {
-            // Get the form
-            const form = document.getElementById('bulkDeleteForm');
-            
+        // Update the count in the modal
+        const bulkDeleteCount = document.getElementById('bulkDeleteCount');
+        if (bulkDeleteCount) {
+            bulkDeleteCount.textContent = selectedIds.length;
+        }
+        
+        // Get the form and clear any existing hidden inputs
+        const form = document.getElementById('bulkDeleteModalForm');
+        const selectedContactIdsDiv = document.getElementById('bulkDeleteContactIds');
+        if (form && selectedContactIdsDiv) {
             // Clear any existing hidden inputs
-            const selectedContactIdsDiv = document.getElementById('selectedContactIds');
             selectedContactIdsDiv.innerHTML = '';
             
             // Add selected IDs
@@ -112,11 +117,11 @@ function setupBulkActionButtons() {
                 selectedContactIdsDiv.appendChild(input);
             });
             
-            // Submit the form
-            form.submit();
-        } else {
-            e.preventDefault();
+            // Open the modal
+            window.openModal('bulkDeleteModal');
         }
+        
+        e.preventDefault();
     });
 }
 

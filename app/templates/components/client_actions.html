@@ -35,13 +35,9 @@
                 </button>
             </form>
             {% else %}
-            <form method="POST" action="{{ url_for('contacts.bulk_delete_contacts') }}" id="bulkDeleteForm" class="inline">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                <div id="selectedContactIds"></div>
-                <button type="submit" id="{{ mode }}Delete" class="px-3 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition duration-150">
-                    <i class="fas fa-trash-alt mr-1"></i> Delete
-                </button>
-            </form>
+            <button id="{{ mode }}Delete" class="px-3 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition duration-150">
+                <i class="fas fa-trash-alt mr-1"></i> Delete
+            </button>
             {% endif %}
         </div>
         {% if mode == 'bulk' %}
