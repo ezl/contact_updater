@@ -84,14 +84,20 @@ The application accepts CSV files with the following columns:
 - name
 - cell
 - email
-- mailing_address
+- mailing_address (format: street address, city, state zipcode)
 - notes
 - birthday (formats: MM-DD, DD-MMM, MM/DD/YYYY, YYYY-MM-DD)
 - facebook
 - instagram
 - twitter
 
-You can download a sample CSV template from the application.
+A sample CSV file (`test_import.csv`) is included in the repository and can be downloaded from the application. The sample file includes examples of:
+- Full addresses with city, state, and zip code
+- Various birthday formats
+- Different combinations of social media links
+- Different types of notes and contact information
+
+You can use this file as a template for importing your own contacts.
 
 ## Email Campaigns
 

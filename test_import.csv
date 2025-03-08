@@ -1,6 +1,13 @@
 name,cell,email,mailing_address,notes,birthday,facebook,instagram,twitter
-John Doe,(555) 123-4567,john.doe@example.com,123 Main St,Test notes,05-15,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
-Jane Smith,(555) 987-6543,jane.smith@example.com,456 Oak Ave,More notes,07-22,https://facebook.com/janesmith,https://instagram.com/janesmith,
+John Doe,(555) 123-4567,john.doe@example.com,123 Main St, Boston, MA 02108,Test notes,05-15,https://facebook.com/johndoe,https://instagram.com/johndoe,https://twitter.com/johndoe
+Jane Smith,(555) 987-6543,jane.smith@example.com,456 Oak Ave, San Francisco, CA 94110,More notes,07-22,https://facebook.com/janesmith,https://instagram.com/janesmith,
+Michael Johnson,(555) 234-5678,michael.j@example.com,789 Pine Rd, Chicago, IL 60601,Regular customer,03-30,https://facebook.com/mjohnson,https://instagram.com/mj,https://twitter.com/mj
+Sarah Williams,(555) 345-6789,sarah.w@example.com,321 Elm St, Seattle, WA 98101,Birthday reminder needed,11-05,https://facebook.com/swilliams,,https://twitter.com/sarahw
+David Brown,(555) 456-7890,david.b@example.com,654 Maple Dr, Austin, TX 78701,Prefers email contact,09-15,,,https://twitter.com/davidb
+Emily Davis,(555) 567-8901,emily.d@example.com,987 Cedar Ln, Portland, OR 97201,Follow up in June,06-20,https://facebook.com/emilyd,https://instagram.com/emilydavis,
+Robert Wilson,(555) 678-9012,robert.w@example.com,147 Birch Ave, Denver, CO 80202,New client 2024,01-10,https://facebook.com/rwilson,https://instagram.com/robwilson,https://twitter.com/robw
+Lisa Anderson,(555) 789-0123,lisa.a@example.com,258 Spruce Ct, Miami, FL 33101,Met at conference,04-25,https://facebook.com/lisaa,https://instagram.com/lisa.anderson,
+Thomas Taylor,(555) 890-1234,thomas.t@example.com,369 Walnut Pl, New York, NY 10001,Referred by John Doe,08-12,https://facebook.com/ttaylor,https://instagram.com/thomast,https://twitter.com/thomast
 Incomplete 1,,,,Just one field,,,, 
 Incomplete 2,Phone only,(555) 555-5555,,,,,,
 Almost Complete,,,123 Address St,Notes field,01-01,,, 

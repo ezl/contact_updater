@@ -71,15 +71,50 @@ function initializeFileUpload() {
                     `;
                     document.body.appendChild(loadingToast);
                     
-                    // Set the file input value
-                    fileInput.files = files;
+                    // Create FormData and append the file
+                    const formData = new FormData();
+                    formData.append('csv_file', files[0]);
                     
-                    // Instead of using fetch, submit the form directly
-                    importForm.submit();
+                    // Get the CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                    
+                    // Submit the form using fetch
+                    fetch(importForm.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken
+                        },
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        // Redirect to the dashboard
+                        window.location.href = importForm.getAttribute('data-dashboard-url') || '/';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Handle error and redirect
+                        const uploadErrorUrl = importForm.getAttribute('data-error-url') || '/upload/error';
+                        return fetch(uploadErrorUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({
+                                error_message: 'Error uploading file. Please try again.'
+                            })
+                        });
+                    })
+                    .then(() => {
+                        window.location.href = importForm.getAttribute('data-dashboard-url') || '/';
+                    });
                 } else {
                     // For non-CSV files, we need to send a request to set the error in session
                     const uploadErrorUrl = importForm.getAttribute('data-error-url') || '/upload/error';
-                    const dashboardUrl = importForm.getAttribute('data-dashboard-url') || '/dashboard';
+                    const dashboardUrl = importForm.getAttribute('data-dashboard-url') || '/';
                     
                     fetch(uploadErrorUrl, {
                         method: 'POST',

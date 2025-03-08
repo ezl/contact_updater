@@ -268,49 +268,19 @@ def download_all_contacts():
 def download_sample():
     """Download a sample CSV template"""
     try:
-        # Create a CSV in memory
-        output = io.StringIO()
+        # Use the static test_import.csv file
+        sample_file_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'test_import.csv')
         
-        # Define the CSV fields
-        fieldnames = ['name', 'cell', 'email', 'mailing_address', 'notes', 'birthday', 
-                     'facebook', 'instagram', 'twitter']
+        if not os.path.exists(sample_file_path):
+            session['error_message'] = "Sample file not found."
+            return redirect(url_for('main.dashboard'))
         
-        # Write the CSV header and sample rows
-        writer = csv.DictWriter(output, fieldnames=fieldnames)
-        writer.writeheader()
-        
-        # Add sample data
-        writer.writerow({
-            'name': 'John Doe',
-            'cell': '(555) 123-4567',
-            'email': 'john.doe@example.com',
-            'mailing_address': '123 Main St, Anytown, CA 12345',
-            'notes': 'College friend',
-            'birthday': '05-15',
-            'facebook': 'https://facebook.com/johndoe',
-            'instagram': 'https://instagram.com/johndoe',
-            'twitter': 'https://twitter.com/johndoe'
-        })
-        
-        writer.writerow({
-            'name': 'Jane Smith',
-            'cell': '(555) 987-6543',
-            'email': 'jane.smith@example.com',
-            'mailing_address': '456 Oak Ave, Someville, NY 54321',
-            'notes': 'Work colleague',
-            'birthday': '07-22',
-            'facebook': 'https://facebook.com/janesmith',
-            'instagram': 'https://instagram.com/janesmith',
-            'twitter': ''
-        })
-        
-        # Create a response with the CSV
-        output.seek(0)
-        response = make_response(output.getvalue())
-        response.headers['Content-Disposition'] = 'attachment; filename=sample_contacts.csv'
-        response.headers['Content-type'] = 'text/csv'
-        
-        return response
+        return send_file(
+            sample_file_path,
+            mimetype='text/csv',
+            as_attachment=True,
+            download_name='sample_contacts.csv'
+        )
     except Exception as e:
-        session['error_message'] = f"Error generating sample file: {str(e)}"
+        session['error_message'] = f"Error downloading sample file: {str(e)}"
         return redirect(url_for('main.dashboard')) 
