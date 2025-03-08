@@ -91,12 +91,26 @@ function formatDate(dateString) {
 function formatBirthday(birthdayString) {
     if (!birthdayString) return 'Not set';
     
-    // Format: MM/DD/YYYY
-    const date = new Date(birthdayString);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
+    // Check if the birthday is in MM-DD format
+    if (birthdayString.match(/^\d{2}-\d{2}$/)) {
+        // Parse MM-DD format
+        const [month, day] = birthdayString.split('-');
+        return `${month}/${day}`;
+    }
     
-    return `${month}/${day}`;
+    // Try to parse as a full date if not in MM-DD format
+    try {
+        const date = new Date(birthdayString);
+        if (isNaN(date.getTime())) {
+            return 'Invalid date';
+        }
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        return `${month}/${day}`;
+    } catch (e) {
+        console.error('Error formatting birthday:', e);
+        return 'Invalid date';
+    }
 }
 
 // Initialize contact row click events
