@@ -63,6 +63,9 @@ class EmailService:
     
     def send_email(self, campaign, recipient):
         """Send an individual email for a campaign (stub method)"""
+        # Debug print statement
+        print(f"Sending email to {recipient.email} - Subject: {campaign.subject}")
+        
         # This would be where we call the third-party email service
         # For now, just update the recipient status
         recipient.status = 'sent'
