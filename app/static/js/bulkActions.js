@@ -81,9 +81,14 @@ function setupBulkActionButtons() {
         console.log('Send gift to:', selectedIds);
     });
     
+    document.getElementById('bulkSendEmail')?.addEventListener('click', function() {
+        const selectedIds = getSelectedContactIds();
+        console.log('Send email to:', selectedIds);
+    });
+    
     document.getElementById('bulkSendMessage')?.addEventListener('click', function() {
         const selectedIds = getSelectedContactIds();
-        console.log('Send message to:', selectedIds);
+        console.log('Send text message to:', selectedIds);
     });
     
     document.getElementById('bulkDelete')?.addEventListener('click', function(e) {
