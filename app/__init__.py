@@ -42,10 +42,12 @@ def create_app():
     from app.routes.main import main_bp
     from app.routes.contacts import contacts_bp
     from app.routes.file_operations import file_ops_bp
+    from app.routes.email_campaigns import email_campaigns_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(contacts_bp)
     app.register_blueprint(file_ops_bp)
+    app.register_blueprint(email_campaigns_bp)
     
     # Import models to ensure they're registered with SQLAlchemy
     from app.models import contact_model

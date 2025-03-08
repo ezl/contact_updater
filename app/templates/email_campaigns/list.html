@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Email Campaigns{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/tables.css') }}">
+<style>
+    .campaign-status {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    .status-draft {
+        background-color: #e5e7eb;
+        color: #4b5563;
+    }
+    .status-sending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+    .status-sent {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+    .status-failed {
+        background-color: #fee2e2;
+        color: #b91c1c;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">
+            Email Campaigns
+        </h1>
+        <a href="{{ url_for('main.dashboard') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition duration-150">
+            <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    {% if campaigns %}
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Subject
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Recipients
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Created
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Sent
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for campaign in campaigns %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">
+                            {{ campaign.name }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">
+                            {{ campaign.subject }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">
+                            {{ campaign.recipients|length }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="campaign-status status-{{ campaign.status }}">
+                            {{ campaign.status|capitalize }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">
+                            {{ campaign.created_at|date }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">
+                            {% if campaign.sent_at %}
+                                {{ campaign.sent_at|date }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="{{ url_for('email_campaigns.view_campaign', campaign_id=campaign.id) }}" class="text-forest-green hover:text-forest-green-dark">
+                            View
+                        </a>
+                        {% if campaign.status == 'draft' %}
+                        <a href="{{ url_for('email_campaigns.review', campaign_id=campaign.id) }}" class="ml-3 text-blue-600 hover:text-blue-900">
+                            Edit
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="bg-white shadow-md rounded-lg p-6 text-center">
+        <p class="text-gray-500 mb-4">No email campaigns yet.</p>
+        <a href="{{ url_for('main.dashboard') }}" class="inline-block px-4 py-2 bg-forest-green text-white rounded-md hover:bg-forest-green-dark transition duration-150">
+            Select contacts to create a campaign
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

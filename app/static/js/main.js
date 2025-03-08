@@ -11,6 +11,7 @@ import { initializeFileUpload } from './fileUpload.js';
 import { initializeBulkActions } from './bulkActions.js';
 import { initializeKebabMenu, initializeActionButtons, initializeFlatpickrCloseButton } from './uiUtils.js';
 import { initializeDeleteContact } from './deleteContact.js';
+import { initializeEmailCampaigns } from './emailCampaigns.js';
 
 // Make certain functions available globally
 window.openModal = openModal;
@@ -55,6 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize delete contact functionality
     initializeDeleteContact();
+    
+    // Initialize email campaigns
+    initializeEmailCampaigns();
     
     console.log('All dashboard.js modules initialized successfully.');
 }); 
