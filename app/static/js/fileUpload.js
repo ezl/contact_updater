@@ -82,7 +82,8 @@ function initializeFileUpload() {
                     fetch(importForm.action, {
                         method: 'POST',
                         headers: {
-                            'X-CSRFToken': csrfToken
+                            'X-CSRFToken': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: formData
                     })
@@ -90,11 +91,32 @@ function initializeFileUpload() {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
                         }
-                        // Redirect to the dashboard
-                        window.location.href = importForm.getAttribute('data-dashboard-url') || '/';
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Remove loading toast if it exists
+                        const loadingToast = document.querySelector('.fixed.bottom-4.right-4');
+                        if (loadingToast) {
+                            loadingToast.remove();
+                        }
+                        
+                        if (data.success) {
+                            // Wait a brief moment to ensure session is set before redirect
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 100);
+                        } else {
+                            throw new Error(data.message || 'Error uploading file');
+                        }
                     })
                     .catch(error => {
                         console.error('Error:', error);
+                        // Remove loading toast if it exists
+                        const loadingToast = document.querySelector('.fixed.bottom-4.right-4');
+                        if (loadingToast) {
+                            loadingToast.remove();
+                        }
+                        
                         // Handle error and redirect
                         const uploadErrorUrl = importForm.getAttribute('data-error-url') || '/upload/error';
                         return fetch(uploadErrorUrl, {
@@ -104,12 +126,15 @@ function initializeFileUpload() {
                                 'X-CSRFToken': csrfToken
                             },
                             body: JSON.stringify({
-                                error_message: 'Error uploading file. Please try again.'
+                                error_message: error.message || 'Error uploading file. Please try again.'
                             })
+                        })
+                        .then(() => {
+                            // Wait a brief moment to ensure session is set before redirect
+                            setTimeout(() => {
+                                window.location.href = importForm.getAttribute('data-dashboard-url') || '/';
+                            }, 100);
                         });
-                    })
-                    .then(() => {
-                        window.location.href = importForm.getAttribute('data-dashboard-url') || '/';
                     });
                 } else {
                     // For non-CSV files, we need to send a request to set the error in session
@@ -127,11 +152,15 @@ function initializeFileUpload() {
                         })
                     })
                     .then(() => {
-                        window.location.href = dashboardUrl;
+                        setTimeout(() => {
+                            window.location.href = dashboardUrl;
+                        }, 100);
                     })
                     .catch(() => {
                         // Fallback if the error endpoint fails
-                        window.location.href = dashboardUrl;
+                        setTimeout(() => {
+                            window.location.href = dashboardUrl;
+                        }, 100);
                     });
                 }
             }
