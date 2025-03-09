@@ -10,26 +10,51 @@
 {% extends "components/modal_base.html" %}
 
 {% block modal_content %}
-<form action="{{ url_for('file_ops.upload_file') }}" method="post" enctype="multipart/form-data" class="space-y-4"
+<form action="{{ url_for('file_ops.upload_file') }}" method="post" enctype="multipart/form-data" class="space-y-6 px-4 py-5 sm:p-6"
       data-error-url="{{ url_for('file_ops.upload_error') }}"
       data-dashboard-url="{{ url_for('main.dashboard') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <div>
-        <label for="csv_file" class="block text-sm font-medium text-gray-700 mb-1">Select CSV File</label>
-        <input type="file" name="csv_file" id="csv_file" class="form-input w-full" accept=".csv">
-        <p class="mt-1 text-xs text-red-500">Only CSV files are supported</p>
+    
+    <div class="space-y-6">
+        <div>
+            <label for="csv_file" class="block text-sm font-medium leading-6 text-gray-900">Select CSV File</label>
+            <div class="mt-2">
+                <input type="file" name="csv_file" id="csv_file" 
+                       class="block w-full rounded-md border-0 py-1.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-forest-green sm:text-sm sm:leading-6"
+                       accept=".csv">
+                <p class="mt-1 text-sm text-gray-500">Only CSV files are supported</p>
+            </div>
+        </div>
+
+        <div class="rounded-md bg-gray-50 p-4">
+            <div class="text-sm text-gray-700">
+                <p class="font-medium mb-2">CSV Format Requirements</p>
+                <p>Headers should include:</p>
+                <ul class="list-disc pl-5 mt-1 space-y-1">
+                    <li>name</li>
+                    <li>cell</li>
+                    <li>email</li>
+                    <li>mailing_address</li>
+                    <li>notes</li>
+                    <li>birthday (MM-DD format)</li>
+                    <li>facebook</li>
+                    <li>instagram</li>
+                    <li>twitter</li>
+                </ul>
+                <p class="mt-3">
+                    <a href="{{ url_for('file_ops.download_sample') }}" class="text-forest-green hover:text-forest-green-dark font-medium">
+                        <i class="fas fa-download mr-1"></i> Download Sample CSV
+                    </a>
+                </p>
+            </div>
+        </div>
     </div>
-    <div class="text-sm text-gray-500">
-        <p>CSV should have headers: name, cell, email, mailing_address, notes, birthday (MM-DD format), facebook, instagram, twitter</p>
-        <p class="mt-2">
-            <a href="{{ url_for('file_ops.download_sample') }}" class="text-forest-green hover:underline">
-                <i class="fas fa-download mr-1"></i> Download Sample CSV
-            </a>
-        </p>
-    </div>
-    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-        {{ submit_button("Import") }}
-        {{ cancel_button() }}
+
+    <div class="pt-5 mt-6 border-t border-gray-200">
+        <div class="flex justify-end space-x-3">
+            {{ cancel_button() }}
+            {{ submit_button("Import", icon="upload") }}
+        </div>
     </div>
 </form>
 {% endblock %} 
