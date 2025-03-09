@@ -1,63 +1,55 @@
-{% from "macros/form_macros.html" import input_field, textarea_field %}
+{% from "macros/form_macros.html" import input_field, textarea_field, submit_button, cancel_button %}
 
-<!-- Add Contact Modal -->
-<div id="addContactModal" class="modal hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-    <div class="relative top-20 mx-auto p-5 border max-w-2xl shadow-lg rounded-md bg-white">
-        <div class="flex items-start justify-between p-4 border-b rounded-t">
-            <h3 class="text-xl font-semibold text-gray-900">
-                Add New Contact
-            </h3>
-            <button type="button" onclick="closeModal('addContactModal')" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center">
-                <i class="fas fa-times"></i>
-            </button>
+{% set modal_id = "addContactModal" %}
+{% set title = "Add New Contact" %}
+{% set show_close_button = true %}
+{% set full_width = true %}
+{% set show_icon = false %}
+{% set show_footer = true %}
+
+{% extends "components/modal_base.html" %}
+
+{% block modal_content %}
+<form id="addContactForm" method="POST" class="space-y-6">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+    <!-- Personal Information -->
+    <div class="space-y-6">
+        <div>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Personal Information</h3>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {{ input_field(name="name", label="Name", required=true) }}
+                {{ input_field(name="birthday", label="Birthday (MM-DD)", placeholder="MM-DD") }}
+            </div>
+            {{ textarea_field(name="notes", label="Notes", rows=3) }}
         </div>
 
-        <form id="addContactForm" method="POST" class="space-y-6 px-4 py-5 sm:p-6">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            
-            <!-- Personal Information -->
-            <div class="space-y-6">
-                <div>
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Personal Information</h3>
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {{ input_field(name="name", label="Name", required=true) }}
-                        {{ input_field(name="birthday", label="Birthday (MM-DD)", placeholder="MM-DD") }}
-                    </div>
-                    {{ textarea_field(name="notes", label="Notes", rows=3) }}
-                </div>
-
-                <!-- Contact Information -->
-                <div>
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Contact Information</h3>
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {{ input_field(name="cell", label="Cell Phone", type="tel") }}
-                        {{ input_field(name="email", label="Email", type="email") }}
-                    </div>
-                    {{ input_field(name="mailing_address", label="Mailing Address") }}
-                </div>
-
-                <!-- Social Media -->
-                <div>
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Social Media</h3>
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                        {{ input_field(name="facebook", label="Facebook") }}
-                        {{ input_field(name="instagram", label="Instagram") }}
-                        {{ input_field(name="twitter", label="Twitter") }}
-                    </div>
-                </div>
+        <!-- Contact Information -->
+        <div>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Contact Information</h3>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {{ input_field(name="cell", label="Cell Phone", type="tel") }}
+                {{ input_field(name="email", label="Email", type="email") }}
             </div>
+            {{ input_field(name="mailing_address", label="Mailing Address") }}
+        </div>
 
-            <!-- Form Actions -->
-            <div class="flex justify-end space-x-3 px-4 py-3 sm:px-6 border-t border-gray-200">
-                <button type="button" onclick="closeModal('addContactModal')" 
-                        class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-forest-green focus:ring-offset-2">
-                    Cancel
-                </button>
-                <button type="submit" 
-                        class="inline-flex justify-center rounded-md border border-transparent bg-forest-green px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-forest-green-dark focus:outline-none focus:ring-2 focus:ring-forest-green focus:ring-offset-2">
-                    Add Contact
-                </button>
+        <!-- Social Media -->
+        <div>
+            <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Social Media</h3>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {{ input_field(name="facebook", label="Facebook") }}
+                {{ input_field(name="instagram", label="Instagram") }}
+                {{ input_field(name="twitter", label="Twitter") }}
             </div>
-        </form>
+        </div>
     </div>
-</div> 
+</form>
+{% endblock %}
+
+{% block modal_footer %}
+<div class="flex justify-end space-x-3">
+    {{ submit_button("Add Contact") }}
+    {{ cancel_button() }}
+</div>
+{% endblock %} 
