@@ -14,13 +14,13 @@
 <!-- Include Global Dropzone Component -->
 {% include "components/dropzone.html" %}
 
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">
-            Clients
+        <h1 class="text-3xl font-bold text-gray-800">
+            Clients <span class="text-gray-400 font-normal">({{ contacts|length }})</span>
         </h1>
     </div>
-
+    
     <!-- Notification Messages -->
     {% include "components/notifications.html" %}
 
