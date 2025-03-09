@@ -4,6 +4,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_session import Session
 from dotenv import load_dotenv
 import os
+from config import Config
 
 # Initialize extensions
 db = SQLAlchemy()
@@ -12,12 +13,12 @@ csrf = CSRFProtect()
 # Load environment variables from .env file
 load_dotenv()
 
-def create_app():
+def create_app(config_class=Config):
     """Create and configure the Flask application"""
     app = Flask(__name__)
     
     # Configure the app
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_secret_key_here')
+    app.config.from_object(config_class)
     app.config['UPLOAD_FOLDER'] = 'uploads'
     app.config['ALLOWED_EXTENSIONS'] = {'csv'}
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI', 'sqlite:///contacts.db')
@@ -39,11 +40,13 @@ def create_app():
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     
     # Import and register blueprints
+    from app.auth import auth_bp
     from app.routes.main import main_bp
     from app.routes.contacts import contacts_bp
     from app.routes.file_operations import file_ops_bp
     from app.routes.email_campaigns import email_campaigns_bp
     
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(main_bp)
     app.register_blueprint(contacts_bp)
     app.register_blueprint(file_ops_bp)

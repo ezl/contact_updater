@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, session, jsonify
 from datetime import datetime
 from app.models import Contact
 from app.utils.helpers import get_holidays_for_month, get_holidays_for_year
+from app.auth.utils import login_required
 
 main_bp = Blueprint('main', __name__)
 
@@ -11,6 +12,7 @@ def index():
     return render_template('index.html')
 
 @main_bp.route('/dashboard')
+@login_required
 def dashboard():
     """Main dashboard route"""
     # Get messages from session
@@ -52,6 +54,7 @@ def dashboard():
                           undo_id=undo_id)
 
 @main_bp.route('/events', methods=['GET'])
+@login_required
 def events():
     """Events calendar route"""
     # Get all contacts
@@ -196,4 +199,9 @@ def debug_session():
     return jsonify({
         'session_contents': dict(session),
         'session_id': session.sid if hasattr(session, 'sid') else None
-    }) 
+    })
+
+@main_bp.route('/settings')
+@login_required
+def settings():
+    return render_template('settings.html') 

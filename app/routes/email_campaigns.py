@@ -2,18 +2,21 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from app import db
 from app.models import Contact, EmailCampaign, EmailCampaignRecipient
 from app.services.email_service import EmailService
+from app.auth.utils import login_required
 import json
 
 email_campaigns_bp = Blueprint('email_campaigns', __name__, url_prefix='/email-campaigns')
 email_service = EmailService()
 
 @email_campaigns_bp.route('/')
+@login_required
 def list_campaigns():
     """List all email campaigns"""
     campaigns = EmailCampaign.query.order_by(EmailCampaign.created_at.desc()).all()
     return render_template('email_campaigns/list.html', campaigns=campaigns)
 
 @email_campaigns_bp.route('/<int:campaign_id>')
+@login_required
 def view_campaign(campaign_id):
     """View email campaign details"""
     campaign = EmailCampaign.query.get_or_404(campaign_id)
@@ -22,6 +25,7 @@ def view_campaign(campaign_id):
     return render_template('email_campaigns/view.html', campaign=campaign, recipients=recipients, stats=stats)
 
 @email_campaigns_bp.route('/compose', methods=['GET', 'POST'])
+@login_required
 def compose():
     """Compose a new email campaign"""
     if request.method == 'GET':
@@ -64,6 +68,7 @@ def compose():
         return redirect(url_for('email_campaigns.review', campaign_id=campaign.id))
 
 @email_campaigns_bp.route('/<int:campaign_id>/review', methods=['GET'])
+@login_required
 def review(campaign_id):
     """Review email campaign before sending"""
     campaign = EmailCampaign.query.get_or_404(campaign_id)
@@ -71,6 +76,7 @@ def review(campaign_id):
     return render_template('email_campaigns/review.html', campaign=campaign, recipients=recipients)
 
 @email_campaigns_bp.route('/<int:campaign_id>/send', methods=['POST'])
+@login_required
 def send(campaign_id):
     """Send email campaign"""
     try:
@@ -90,6 +96,7 @@ def send(campaign_id):
         return redirect(url_for('email_campaigns.review', campaign_id=campaign_id))
 
 @email_campaigns_bp.route('/select-contacts', methods=['POST'])
+@login_required
 def select_contacts():
     """Store selected contact IDs in session and redirect to compose page"""
     contact_ids = request.json.get('contact_ids', [])

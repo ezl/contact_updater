@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Client Magic - Settings{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+            <p class="mt-1 text-sm text-gray-500">Manage your account settings and email integrations.</p>
+        </div>
+
+        <!-- Email Integration Section -->
+        <div class="bg-white shadow rounded-lg divide-y divide-gray-200">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900">Email Integration</h2>
+                <p class="mt-1 text-sm text-gray-500">Connect your email account to send emails on your behalf.</p>
+
+                <!-- Connected Email Status -->
+                <div class="mt-6 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-envelope text-gray-400 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-900">Connected Email</div>
+                            <div class="text-sm text-gray-500">No email account connected</div>
+                        </div>
+                    </div>
+                    <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green">
+                        Connect Email
+                    </button>
+                </div>
+
+                <!-- Email Provider Options -->
+                <div class="mt-8 space-y-4">
+                    <!-- Gmail Option -->
+                    <div class="border rounded-lg p-4 hover:border-forest-green cursor-pointer transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://www.google.com/gmail/about/static/images/logo-gmail.png?cache=1adba63" alt="Gmail" class="h-8 w-8">
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-gray-900">Connect with Gmail</h3>
+                                    <p class="text-sm text-gray-500">Send emails using your Gmail account</p>
+                                </div>
+                            </div>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-forest-green hover:bg-forest-green hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green">
+                                Connect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Outlook Option -->
+                    <div class="border rounded-lg p-4 hover:border-forest-green cursor-pointer transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://img.icons8.com/color/48/000000/microsoft-outlook-2019--v2.png" alt="Outlook" class="h-8 w-8">
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-gray-900">Connect with Outlook</h3>
+                                    <p class="text-sm text-gray-500">Send emails using your Outlook account</p>
+                                </div>
+                            </div>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-forest-green hover:bg-forest-green hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green">
+                                Connect
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- SMTP Option -->
+                    <div class="border rounded-lg p-4 hover:border-forest-green cursor-pointer transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-server text-gray-600"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-gray-900">Custom SMTP Server</h3>
+                                    <p class="text-sm text-gray-500">Connect using your own SMTP server</p>
+                                </div>
+                            </div>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-forest-green hover:bg-forest-green hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green">
+                                Configure
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Settings Notice -->
+                <div class="mt-6 bg-gray-50 rounded-md p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-info-circle text-forest-green"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-gray-900">About Email Integration</h3>
+                            <div class="mt-2 text-sm text-gray-500">
+                                <p>Connecting your email account allows Client Magic to send emails on your behalf. We use secure OAuth2 authentication and never store your email password.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

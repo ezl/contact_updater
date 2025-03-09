@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Client Magic - Sign In{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Sign in to Client Magic
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Enter your email to receive a magic link
+            </p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="rounded-md bg-{{ 'green' if category == 'success' else 'red' }}-50 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }} text-{{ 'green' if category == 'success' else 'red' }}-400"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-{{ 'green' if category == 'success' else 'red' }}-700">
+                                    {{ message }}
+                                </p>
+                                {% if session.get('next_url') %}
+                                    <p class="text-sm text-gray-500 mt-1">
+                                        You'll be redirected to your requested page after login.
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form class="mt-8 space-y-6" action="{{ url_for('auth.login') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="rounded-md shadow-sm -space-y-px">
+                <div>
+                    <label for="email" class="sr-only">Email address</label>
+                    <input id="email" name="email" type="email" required 
+                           class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-forest-green focus:border-forest-green focus:z-10 sm:text-sm"
+                           placeholder="Email address">
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-forest-green hover:bg-forest-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-forest-green">
+                    Send Magic Link
+                </button>
+            </div>
+        </form>
+
+        {% if config.DEBUG and dev_magic_link %}
+            <div class="mt-8 border-t border-gray-200 pt-8">
+                <div class="rounded-md bg-blue-50 p-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-info-circle text-blue-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-blue-800">Development Mode</h3>
+                            <div class="mt-2 text-sm text-blue-700">
+                                <p class="font-medium">Magic Link (Click to login):</p>
+                                <a href="{{ dev_magic_link }}" class="text-blue-600 hover:text-blue-500 break-all">
+                                    {{ dev_magic_link }}
+                                </a>
+                            </div>
+                            {% if dev_email_text %}
+                                <div class="mt-4">
+                                    <p class="font-medium">Email Content:</p>
+                                    <pre class="mt-1 text-sm text-blue-700 whitespace-pre-wrap">{{ dev_email_text }}</pre>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
